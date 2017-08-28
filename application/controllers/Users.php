@@ -48,6 +48,7 @@ class Users extends MY_Controller {
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
+
             $user = $this->users_model->get_user_detail(['id' => $id, 'is_delete' => 0, 'is_active' => 1]);
             if ($user) {
                 $data['user'] = $user;
