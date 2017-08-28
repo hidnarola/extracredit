@@ -6,14 +6,14 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Fund Types</span></h4>
+            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Payment Types</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home') ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('settings') ?>"><i class="icon-gear position-left"></i> Settings></a></li>
-            <li class="active">Fund Types</li>
+            <li><a href="<?php echo site_url('settings') ?>"><i class="icon-gear position-left"></i> Settings</a></li>
+            <li class="active">Payment Types</li>
         </ul>
     </div>
 </div>
@@ -38,37 +38,29 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4" id="fund_type_row">
-            <form method="POST" class="form-validate-jquery" id="add_fundtype_form" name="add_fundtype_form">
+        <div class="col-md-4" id="payment_type_row">
+            <form method="POST" class="form-validate-jquery" id="add_paymenttype_form" name="add_paymenttype_form">
                 <div class="panel panel-flat">
                     <div class="panel-heading">
-                        <h5 class="panel-title">Add/Update Fund Type</h5>
+                        <h5 class="panel-title">Add/Update Payment Type</h5>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group form-group-material has-feedback">
-                                    <label class="required">Fund Type </label>
-                                    <input type="text" class="form-control" name="fund_type" id="fund_type" required="required">
+                                    <label class="required">Payment Type </label>
+                                    <input type="text" class="form-control" name="payment_type" id="payment_type" required="required">
                                     <?php
-                                    echo '<label id="fund_type-error" class="validation-error-label" for="fund_type">' . form_error('fund_type') . '</label>';
+                                    echo '<label id="payment_type-error" class="validation-error-label" for="payment_type">' . form_error('payment_type') . '</label>';
                                     ?>
-                                    <input type="hidden" name="fund_type_id" id="fund_type_id">
+                                    <input type="hidden" name="payment_type_id" id="payment_type_id">
                                 </div>
                             </div>
-<!--                            <div class="col-md-12">
-                                <div class="form-group form-group-material has-feedback">
-                                    <label class="checkbox-inline checkbox-right">
-                                        <input type="checkbox" class="styled" name="is_vendor" id="is_vendor" value="1">
-                                        Is Vendor?
-                                    </label>
-                                </div>
-                            </div>-->
                         </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-success custom_save_button" id="fundtype_submit_btn">Save</button>
+                                    <button type="submit" class="btn btn-success custom_save_button" id="paymenttype_submit_btn">Save</button>
                                     <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
                             </div>
@@ -80,7 +72,7 @@
         <div class="col-md-8">
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h5 class="panel-title">Fund Types List</h5>
+                    <h5 class="panel-title">Payment Types List</h5>
                 </div>
                 <table class="table datatable-basic">
                     <thead>
@@ -92,14 +84,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($fund_types as $key => $val) { ?>
+                        <?php foreach ($payment_types as $key => $val) { ?>
                             <tr>
                                 <td><?php echo $key + 1; ?></td>
                                 <td><?php echo $val['type']; ?></td>
                                 <td><?php echo date('d,M Y', strtotime($val['created'])); ?></td>
                                 <td>
-                                    <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Fund Type"><i class="icon-pencil3"></i></a>
-                                    &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_fundtype/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Fund Type"><i class="icon-trash"></i></a>
+                                    <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Payment Type"><i class="icon-pencil3"></i></a>
+                                    &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_paymenttype/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Payment Type"><i class="icon-trash"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -127,8 +119,8 @@
             width: 'auto'
         });
     });
-    //-- Validate Fund type form
-    $("#add_fundtype_form").validate({
+    //-- Validate Payment type form
+    $("#add_paymenttype_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',
         successClass: 'validation-valid-label',
@@ -180,28 +172,28 @@
             label.addClass("validation-valid-label")
         },
         rules: {
-            fund_type: {
+            payment_type: {
                 required: true,
-                remote: site_url + "settings/check_fund_type/",
+                remote: site_url + "settings/check_payment_type/",
             },
         },
         messages: {
-            fund_type: {
-                remote: $.validator.format("This fund type already exist!")
+            payment_type: {
+                remote: $.validator.format("This payment type already exist!")
             }
         },
         submitHandler: function (form) {
-            $('#fundtype_submit_btn').attr('disabled', true);
+            $('#paymenttype_submit_btn').attr('disabled', true);
             form.submit();
         }
     });
     //-- This function is used to edit particular records
     $(document).on('click', '.edit', function () {
         var id = $(this).attr('id').replace('edit_', '');
-        var url = site_url + 'settings/get_fund_type_by_id';
+        var url = site_url + 'settings/get_payment_type_by_id';
         $('#custom_loading').removeClass('hide');
         $('#custom_loading img').addClass('hide');
-        $('#fund_type_row').css('z-index', '999999');
+        $('#payment_type_row').css('z-index', '999999');
         $.ajax({
             type: 'POST',
             url: url,
@@ -209,20 +201,15 @@
             dataType: 'JSON',
             data: {id: id},
             success: function (data) {
-                $('#fund_type').val(data.type);
-                $('#fund_type_id').val(data.id);
-                if (data.is_vendor == 1) {
-                    $('#is_vendor').prop('checked', true);
-                } else {
-                    $('#is_vendor').prop('checked', false);
-                }
-                $("#fund_type").rules("add", {
-                    remote: site_url + "settings/check_fund_type/" + data.id,
+                $('#payment_type').val(data.type);
+                $('#payment_type_id').val(data.id);
+                $("#payment_type").rules("add", {
+                    remote: site_url + "settings/check_payment_type/" + data.id,
                     messages: {
-                        remote: $.validator.format("This fund type already exist!")
+                        remote: $.validator.format("This payment type already exist!")
                     }
                 });
-                $("#add_fundtype_form").validate().resetForm();
+                $("#add_paymenttype_form").validate().resetForm();
                 $('html, body').animate({scrollTop: 0}, 500);
                 setTimeout(function () {
                     $('body').css('overflow', 'hidden');
@@ -234,25 +221,24 @@
     function cancel_click() {
         $('#custom_loading').addClass('hide');
         $('#custom_loading img').removeClass('hide');
-        $('#fund_type_row').css('z-index', '0');
-        $('#fund_type').val('');
-        $('#fund_type_id').val('');
-        $('#is_vendor').prop('checked', false);
-        $("#fund_type").rules("add", {
-            remote: site_url + "settings/check_fund_type/",
+        $('#payment_type_row').css('z-index', '0');
+        $('#payment_type').val('');
+        $('#payment_type_id').val('');
+        $("#payment_type").rules("add", {
+            remote: site_url + "settings/check_payment_type/",
             messages: {
-                remote: $.validator.format("This fund type already exist!")
+                remote: $.validator.format("This payment type already exist!")
             }
         });
-        $('#fund_type').valid();
-        $("#add_fundtype_form").validate().resetForm();
+        $('#payment_type').valid();
+        $("#add_paymenttype_form").validate().resetForm();
         $('body').css('overflow', 'auto');
     }
-    //-- Confirmation alert for delete fund type
+    //-- Confirmation alert for delete payment type
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this Fund Type!",
+            text: "You will not be able to recover this Payment Type!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",
@@ -268,7 +254,4 @@
         });
         return false;
     }
-    $(".styled, .multiselect-container input").uniform({
-        radioClass: 'choice'
-    });
 </script>

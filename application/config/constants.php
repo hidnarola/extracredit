@@ -89,6 +89,7 @@ defined('EXIT__AUTO_MAX') OR define('EXIT__AUTO_MAX', 125); // highest automatic
  * Contants for Tables
  */
 define('TBL_FUND_TYPES', 'fund_types');
+define('TBL_PAYMENT_TYPES', 'payment_types');
 define('TBL_SETTINGS', 'settings');
 define('TBL_USERS', 'users');
 /**

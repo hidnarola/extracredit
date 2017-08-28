@@ -131,6 +131,92 @@ class Settings extends MY_Controller {
         }
     }
 
+    /**
+     * List all payment types added and add/update payment type
+     */
+    public function payment_types() {
+        $data['title'] = 'Extracredit | Payment Types';
+        $data['payment_types'] = $this->settings_model->sql_select(TBL_PAYMENT_TYPES, null, ['where' => ['is_delete' => 0]]);
+        $this->form_validation->set_rules('payment_type', 'Payment Type', 'trim|required');
+        if ($this->form_validation->run() == TRUE) {
+            $id = $this->input->post('payment_type_id');
+            //-- If id is not blank then update payment type else insert new payment type
+            if ($id != '') {
+                $result = $this->settings_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($result)) {
+                    $update_array = array(
+                        'type' => trim($this->input->post('payment_type')),
+                        'modified' => date('Y-m-d H:i:s')
+                    );
+                    $this->users_model->common_insert_update('update', TBL_PAYMENT_TYPES, $update_array, ['id' => $id]);
+                    $this->session->set_flashdata('success', 'Payment type updated successfully');
+                } else {
+                    $this->session->set_flashdata('error', 'Invalid request! Please try again later');
+                }
+            } else {
+                $update_array = array(
+                    'type' => trim($this->input->post('payment_type')),
+                    'created' => date('Y-m-d H:i:s')
+                );
+                $this->users_model->common_insert_update('insert', TBL_PAYMENT_TYPES, $update_array);
+                $this->session->set_flashdata('success', trim($this->input->post('payment_type')) . ' Payment Type inserted successfully');
+            }
+            redirect('settings/payment_types');
+        }
+        $this->template->load('default', 'settings/payment_types', $data);
+    }
+
+    /**
+     * Delete payment type
+     * @param int $id
+     */
+    public function delete_paymenttype($id = NULL) {
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $result = $this->settings_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
+            if (!empty($result)) {
+                $update_array = array(
+                    'is_delete' => 1
+                );
+                $this->users_model->common_insert_update('update', TBL_PAYMENT_TYPES, $update_array, ['id' => $id]);
+                $this->session->set_flashdata('success', $result['type'] . ' deleted successfully');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request! Please try again later');
+            }
+            redirect('settings/payment_types');
+        } else {
+            show_404();
+        }
+    }
+
+    /**
+     * Check payment type exist or not
+     * @param int $id If Id is passed then do not consider that id to check payment type
+     */
+    public function check_payment_type($id = NULL) {
+        $payment_type = trim($this->input->get('payment_type'));
+        $where = ['is_delete' => 0, 'type' => $payment_type];
+        if (!is_null($id)) {
+            $where = array_merge($where, ['id!=' => $id]);
+        }
+        $result = $this->settings_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => $where], ['single' => true]);
+        if (!empty($result)) {
+            echo "false";
+        } else {
+            echo "true";
+        }
+        exit;
+    }
+
+    /**
+     * Get payment type details by id
+     */
+    public function get_payment_type_by_id() {
+        $id = base64_decode($this->input->post('id'));
+        $payment_type = $this->settings_model->sql_select(TBL_PAYMENT_TYPES, null, ['where' => ['is_delete' => 0, 'id' => $id]], ['single' => true]);
+        echo json_encode($payment_type);
+    }
+
 }
 
 /* End of file Settings.php */

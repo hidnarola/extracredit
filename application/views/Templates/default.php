@@ -103,7 +103,7 @@
                                         <a href="#" class="has-ul"><i class="icon-gear"></i><span>Settings</span></a>
                                         <ul class="hidden-ul" style="<?php echo ($this->controller == 'settings' || in_array($this->action, array('fund_types'))) ? 'display: block;' : ''; ?>">
                                             <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'index')) ? 'active' : ''; ?>"><a href="<?php echo site_url('settings'); ?>">Donation Split Settings</a></li>
-                                            <!--<li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Manage Fund Types</a></li>-->
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Manage Fund Types</a></li>
                                             <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'payment_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/payment_types'); ?>">Manage Payment Types</a></li>
                                         </ul>
                                     </li>
