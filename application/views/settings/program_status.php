@@ -6,14 +6,14 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Fund Types</span></h4>
+            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Program/AMC Status</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home') ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('settings') ?>"><i class="icon-gear position-left"></i> Settings</a></li>
-            <li class="active">Fund Types</li>
+            <li class="active">Program Status</li>
         </ul>
     </div>
 </div>
@@ -24,7 +24,7 @@
             if ($this->session->flashdata('success')) {
                 ?>
                 <div class="alert alert-success hide-msg">
-                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Close</span></button>
+                    <button Status="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Close</span></button>
                     <strong><?php echo $this->session->flashdata('success') ?></strong>
                 </div>
             <?php } ?>
@@ -38,37 +38,29 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4" id="fund_type_row">
-            <form method="POST" class="form-validate-jquery" id="add_fundtype_form" name="add_fundtype_form">
+        <div class="col-md-4" id="program_status_row">
+            <form method="POST" class="form-validate-jquery" id="add_programstatus_form" name="add_programstatus_form">
                 <div class="panel panel-flat">
                     <div class="panel-heading">
-                        <h5 class="panel-title">Add/Update Fund Type</h5>
+                        <h5 class="panel-title">Add/Update Program Status</h5>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group form-group-material has-feedback">
-                                    <label class="required">Fund Type </label>
-                                    <input type="text" class="form-control" name="fund_type" id="fund_type" required="required">
+                                    <label class="required">Program Status </label>
+                                    <input type="text" class="form-control" name="program_status" id="program_status" required="required">
                                     <?php
-                                    echo '<label id="fund_type-error" class="validation-error-label" for="fund_type">' . form_error('fund_type') . '</label>';
+                                    echo '<label id="program_status-error" class="validation-error-label" for="program_status">' . form_error('program_status') . '</label>';
                                     ?>
-                                    <input type="hidden" name="fund_type_id" id="fund_type_id">
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group form-group-material has-feedback">
-                                    <label class="checkbox-inline checkbox-right">
-                                        <input type="checkbox" class="styled" name="is_vendor" id="is_vendor" value="1">
-                                        Is Vendor?
-                                    </label>
+                                    <input type="hidden" name="program_status_id" id="program_status_id">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-success custom_save_button" id="fundtype_submit_btn">Save</button>
+                                    <button type="submit" class="btn btn-success custom_save_button" id="programstatus_submit_btn">Save</button>
                                     <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
                             </div>
@@ -80,28 +72,26 @@
         <div class="col-md-8">
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h5 class="panel-title">Fund Types List</h5>
+                    <h5 class="panel-title">Prgram/AMC Status List</h5>
                 </div>
                 <table class="table datatable-basic">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Type</th>
-                            <th>Is Vendor?</th>
+                            <th>Status</th>
                             <th>Added Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($fund_types as $key => $val) { ?>
+                        <?php foreach ($program_status as $key => $val) { ?>
                             <tr>
                                 <td><?php echo $key + 1; ?></td>
-                                <td><?php echo $val['type']; ?></td>
-                                <td><?php echo ($val['is_vendor'] == 1) ? 'Yes' : 'No'; ?></td>
+                                <td><?php echo $val['status']; ?></td>
                                 <td><?php echo date('d,M Y', strtotime($val['created'])); ?></td>
                                 <td>
-                                    <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Fund Type"><i class="icon-pencil3"></i></a>
-                                    &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_fundtype/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Fund Type"><i class="icon-trash"></i></a>
+                                    <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Program Status"><i class="icon-pencil3"></i></a>
+                                    &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_programstatus/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Program Status"><i class="icon-trash"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -129,8 +119,8 @@
             width: 'auto'
         });
     });
-    //-- Validate Fund type form
-    $("#add_fundtype_form").validate({
+    //-- Validate Program status form
+    $("#add_programstatus_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',
         successClass: 'validation-valid-label',
@@ -182,28 +172,28 @@
             label.addClass("validation-valid-label")
         },
         rules: {
-            fund_type: {
+            program_status: {
                 required: true,
-                remote: site_url + "settings/check_fund_type/",
+                remote: site_url + "settings/check_program_status/",
             },
         },
         messages: {
-            fund_type: {
-                remote: $.validator.format("This fund type already exist!")
+            program_status: {
+                remote: $.validator.format("This program status already exist!")
             }
         },
         submitHandler: function (form) {
-            $('#fundtype_submit_btn').attr('disabled', true);
+            $('#programstatus_submit_btn').attr('disabled', true);
             form.submit();
         }
     });
     //-- This function is used to edit particular records
     $(document).on('click', '.edit', function () {
         var id = $(this).attr('id').replace('edit_', '');
-        var url = site_url + 'settings/get_fund_type_by_id';
+        var url = site_url + 'settings/get_program_status_by_id';
         $('#custom_loading').removeClass('hide');
         $('#custom_loading img').addClass('hide');
-        $('#fund_type_row').css('z-index', '999999');
+//        $('#program_status_row').css('z-index', '999999');
         $.ajax({
             type: 'POST',
             url: url,
@@ -211,21 +201,15 @@
             dataType: 'JSON',
             data: {id: id},
             success: function (data) {
-                $('#fund_type').val(data.type);
-                $('#fund_type_id').val(data.id);
-                if (data.is_vendor == 1) {
-                    $('#is_vendor').prop('checked', true);
-                } else {
-                    $('#is_vendor').prop('checked', false);
-                }
-                $.uniform.update('#is_vendor');
-                $("#fund_type").rules("add", {
-                    remote: site_url + "settings/check_fund_type/" + data.id,
+                $('#program_status').val(data.status);
+                $('#program_status_id').val(data.id);
+                $("#program_status").rules("add", {
+                    remote: site_url + "settings/check_program_status/" + data.id,
                     messages: {
-                        remote: $.validator.format("This fund type already exist!")
+                        remote: $.validator.format("This program status already exist!")
                     }
                 });
-                $("#add_fundtype_form").validate().resetForm();
+                $("#add_programstatus_form").validate().resetForm();
                 $('html, body').animate({scrollTop: 0}, 500);
                 setTimeout(function () {
                     $('body').css('overflow', 'hidden');
@@ -237,26 +221,24 @@
     function cancel_click() {
         $('#custom_loading').addClass('hide');
         $('#custom_loading img').removeClass('hide');
-        $('#fund_type_row').css('z-index', '0');
-        $('#fund_type').val('');
-        $('#fund_type_id').val('');
-        $('#is_vendor').prop('checked', false);
-        $.uniform.update('#is_vendor');
-        $("#fund_type").rules("add", {
-            remote: site_url + "settings/check_fund_type/",
+//        $('#program_status_row').css('z-index', '0');
+        $('#program_status').val('');
+        $('#program_status_id').val('');
+        $("#program_status").rules("add", {
+            remote: site_url + "settings/check_program_status/",
             messages: {
-                remote: $.validator.format("This fund type already exist!")
+                remote: $.validator.format("This program status already exist!")
             }
         });
-        $('#fund_type').valid();
-        $("#add_fundtype_form").validate().resetForm();
+        $('#program_status').valid();
+        $("#add_programstatus_form").validate().resetForm();
         $('body').css('overflow', 'auto');
     }
-    //-- Confirmation alert for delete fund type
+    //-- Confirmation alert for delete program status
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this Fund Type!",
+            text: "You will not be able to recover this Program Status!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",
@@ -272,7 +254,4 @@
         });
         return false;
     }
-    $(".styled, .multiselect-container input").uniform({
-        radioClass: 'choice'
-    });
 </script>

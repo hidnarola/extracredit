@@ -81,28 +81,30 @@ class Users extends MY_Controller {
                     $profile_image = $image_data;
                 }
             }
-            $dataArr = array(
-                'role' => 'staff',
-                'firstname' => trim($this->input->post('firstname')),
-                'lastname' => trim($this->input->post('lastname')),
-                'profile_image' => $profile_image,
-                'is_active' => 1,
-            );
-            if (is_numeric($id)) {
-                $dataArr['modified'] = date('Y-m-d H:i:s');
-                $this->users_model->common_insert_update('update', TBL_USERS, $dataArr, ['id' => $id]);
-                $this->session->set_flashdata('success', 'User\'s data has been updated successfully.');
-            } else {
-                $password = randomPassword();
-                $dataArr['email'] = trim($this->input->post('email'));
-                $dataArr['password'] = password_hash($password, PASSWORD_BCRYPT);
-                $dataArr['created'] = date('Y-m-d H:i:s');
-                $email_data = ['firstname' => trim($this->input->post('firstname')), 'lastname' => trim($this->input->post('lastname')), 'email' => trim($this->input->post('email')), 'url' => site_url('login'), 'password' => $password, 'subject' => 'Invitation - Extracredit'];
-                send_email(trim($this->input->post('email')), 'add_user', $email_data);
-                $this->users_model->common_insert_update('insert', TBL_USERS, $dataArr);
-                $this->session->set_flashdata('success', 'User has been added successfully and Email has been sent to user successfully');
+            if ($flag == 0) {
+                $dataArr = array(
+                    'role' => 'staff',
+                    'firstname' => trim($this->input->post('firstname')),
+                    'lastname' => trim($this->input->post('lastname')),
+                    'profile_image' => $profile_image,
+                    'is_active' => 1,
+                );
+                if (is_numeric($id)) {
+                    $dataArr['modified'] = date('Y-m-d H:i:s');
+                    $this->users_model->common_insert_update('update', TBL_USERS, $dataArr, ['id' => $id]);
+                    $this->session->set_flashdata('success', 'User\'s data has been updated successfully.');
+                } else {
+                    $password = randomPassword();
+                    $dataArr['email'] = trim($this->input->post('email'));
+                    $dataArr['password'] = password_hash($password, PASSWORD_BCRYPT);
+                    $dataArr['created'] = date('Y-m-d H:i:s');
+                    $email_data = ['firstname' => trim($this->input->post('firstname')), 'lastname' => trim($this->input->post('lastname')), 'email' => trim($this->input->post('email')), 'url' => site_url('login'), 'password' => $password, 'subject' => 'Invitation - Extracredit'];
+                    send_email(trim($this->input->post('email')), 'add_user', $email_data);
+                    $this->users_model->common_insert_update('insert', TBL_USERS, $dataArr);
+                    $this->session->set_flashdata('success', 'User has been added successfully and Email has been sent to user successfully');
+                }
+                redirect('users');
             }
-            redirect('users');
         }
         $this->template->load('default', 'users/form', $data);
     }

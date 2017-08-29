@@ -193,7 +193,7 @@
         var url = site_url + 'settings/get_payment_type_by_id';
         $('#custom_loading').removeClass('hide');
         $('#custom_loading img').addClass('hide');
-        $('#payment_type_row').css('z-index', '999999');
+//        $('#payment_type_row').css('z-index', '999999');
         $.ajax({
             type: 'POST',
             url: url,
@@ -221,7 +221,7 @@
     function cancel_click() {
         $('#custom_loading').addClass('hide');
         $('#custom_loading img').removeClass('hide');
-        $('#payment_type_row').css('z-index', '0');
+//        $('#payment_type_row').css('z-index', '0');
         $('#payment_type').val('');
         $('#payment_type_id').val('');
         $("#payment_type").rules("add", {

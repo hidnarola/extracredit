@@ -103,10 +103,13 @@
                                         <a href="#" class="has-ul"><i class="icon-gear"></i><span>Settings</span></a>
                                         <ul class="hidden-ul" style="<?php echo ($this->controller == 'settings' || in_array($this->action, array('fund_types'))) ? 'display: block;' : ''; ?>">
                                             <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'index')) ? 'active' : ''; ?>"><a href="<?php echo site_url('settings'); ?>">Donation Split Settings</a></li>
-                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Manage Fund Types</a></li>
-                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'payment_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/payment_types'); ?>">Manage Payment Types</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Fund/Account Types</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'payment_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/payment_types'); ?>">Payment Types</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_types'); ?>">Program/AMC Types</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_status')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_status'); ?>">Program/AMC Stauts</a></li>
                                         </ul>
                                     </li>
+                                    <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-grid6"></i> <span>Accounts</span></a></li>
                                     <li class=""><a href="<?php echo site_url('logout') ?>"><i class="icon-switch2"></i> <span>Logout</span></a></li>
                                 </ul>
                             </div>
