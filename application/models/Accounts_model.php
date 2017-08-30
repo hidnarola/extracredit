@@ -18,7 +18,7 @@ class Accounts_model extends MY_Model {
     public function get_accounts($type = 'result') {
         $columns = ['id', 'fund_type', 'action_matters_campaign,vendor_name', 'email', 'contact_name', 'city', 'created', 'is_active'];
         $keyword = $this->input->get('search');
-        $this->db->select('a.*,f.type as fund_type,c.name as city');
+        $this->db->select('a.*,f.type as fund_type,c.name as city,f.is_vendor');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
 

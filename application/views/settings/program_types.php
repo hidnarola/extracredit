@@ -72,7 +72,7 @@
         <div class="col-md-8">
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h5 class="panel-title">Prgram/AMC Types List</h5>
+                    <h5 class="panel-title">Program/AMC Types List</h5>
                 </div>
                 <table class="table datatable-basic">
                     <thead>

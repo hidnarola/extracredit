@@ -70,7 +70,7 @@
 <script type="text/javascript">
 
     //-- Admin donation & Program donation key change event
-    $('#admin-donation-percent').keyup(function () {
+    $("#admin-donation-percent").on("keyup keydown change", function (event) {
         if ($(this).val() != '' && Number($(this).val()) >= 0 && Number($(this).val()) <= 100) {
             /*
              var num = parseFloat($(this).val());

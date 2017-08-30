@@ -6322,3 +6322,5 @@ h6.panel-title,
 .popover[class*=border-].left > .arrow:after {
   border-left-color: inherit;
 }
+/*30-8-17 (KU)*/
+.capitalize-text{text-transform: capitalize;}

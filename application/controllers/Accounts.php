@@ -47,7 +47,6 @@ class Accounts extends MY_Controller {
     public function add($id = NULL) {
         if (!is_null($id))
             $id = base64_decode($id);
-        $data['cities'] = [];
         if (is_numeric($id)) {
             $account = $this->accounts_model->get_account_details($id);
             if ($account) {
@@ -61,41 +60,84 @@ class Accounts extends MY_Controller {
         } else {
             $data['title'] = 'Extracredit | Add Account';
             $data['heading'] = 'Add Account';
+            $data['cities'] = [];
         }
         $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,type,is_vendor', ['where' => ['is_delete' => 0]]);
+        $data['program_types'] = $this->accounts_model->sql_select(TBL_PROGRAM_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
+        $data['program_status'] = $this->accounts_model->sql_select(TBL_PROGRAM_STATUS, 'id,status', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->accounts_model->sql_select(TBL_STATES, NULL);
 
-        $this->form_validation->set_rules('fund_type', 'Fund Type', 'trim|required');
+        $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
+        $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
+        $this->form_validation->set_rules('address', 'Address', 'trim|required');
+        $this->form_validation->set_rules('state_id', 'State', 'trim|required');
+        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
+        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
+        $this->form_validation->set_rules('website', 'Website', 'trim|required');
+
         if ($this->input->post('fund_type_id') != '') {
-            $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'is_vendor', ['where' => ['is_delete' => 0]], ['single' => true]);
+            $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'is_vendor', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
             if ($fund_type['is_vendor'] == 1) {
                 $this->form_validation->set_rules('vendor_name', 'Vendor Name', 'trim|required');
             } else {
                 $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
+                $this->form_validation->set_rules('tax_id', 'Tax ID', 'trim|required');
+                $this->form_validation->set_rules('program_type_id', 'Prgram Type', 'trim|required');
             }
         } else {
             $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
         }
-        $this->form_validation->set_rules('conatact_name', 'Contact Name', 'trim|required');
-        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+
 
         if ($this->form_validation->run() == TRUE) {
-
             $dataArr = array(
-                'fund_type_id' => $this->input->post('fund_type'),
+                'fund_type_id' => $this->input->post('fund_type_id'),
                 'is_active' => ($this->input->post('is_active') == 1) ? 1 : 0,
+                'contact_name' => $this->input->post('contact_name'),
+                'address' => $this->input->post('address'),
+                'state_id' => $this->input->post('state_id'),
+                'city_id' => $this->input->post('city_id'),
+                'zip' => $this->input->post('zip'),
+                'email' => $this->input->post('email'),
+                'phone' => $this->input->post('phone'),
+                'website' => $this->input->post('website'),
             );
+            $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'is_vendor', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
+            if ($fund_type['is_vendor'] == 1) {
+                $dataArr['vendor_name'] = $this->input->post('vendor_name');
+                $dataArr['action_matters_campaign'] = NULL;
+                $dataArr['tax_id'] = NULL;
+                $dataArr['program_type_id'] = NULL;
+                $dataArr['program_status_id'] = NULL;
+            } else {
+                $dataArr['vendor_name'] = NULL;
+                $dataArr['action_matters_campaign'] = $this->input->post('action_matters_campaign');
+                $dataArr['tax_id'] = $this->input->post('tax_id');
+                $dataArr['program_type_id'] = $this->input->post('program_type_id');
+                $dataArr['program_status_id'] = $this->input->post('program_status_id');
+            }
             if (is_numeric($id)) {
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $dataArr, ['id' => $id]);
-                $this->session->set_flashdata('success', 'User\'s data has been updated successfully.');
+                $this->session->set_flashdata('success', 'Account details has been updated successfully.');
             } else {
+                $dataArr['created'] = date('Y-m-d H:i:s');
                 $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $dataArr);
-                $this->session->set_flashdata('success', 'User has been added successfully and Email has been sent to user successfully');
+                $this->session->set_flashdata('success', 'Account has been added successfully');
             }
             redirect('accounts');
         }
         $this->template->load('default', 'accounts/form', $data);
+    }
+
+    /**
+     * Edit Account data
+     * @param int $id
+     * */
+    public function edit($id) {
+        $this->add($id);
     }
 
     /**
@@ -112,7 +154,7 @@ class Accounts extends MY_Controller {
      */
     public function get_cities() {
         $id = base64_decode($this->input->post('id'));
-        $cities = $this->accounts_model->sql_select(TBL_CITIES, 'name,state_id', ['where' => ['state_id' => $id]]);
+        $cities = $this->accounts_model->sql_select(TBL_CITIES, 'name,id', ['where' => ['state_id' => $id]]);
         echo json_encode($cities);
     }
 
