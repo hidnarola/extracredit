@@ -17,9 +17,10 @@ class Home extends MY_Controller {
      */
     public function index() {
         $data['title'] = 'Extra Credit | Dashboard';
-        $data['users'] = $this->users_model->sql_select(TBL_USERS, 'id', ['where' => ['role' => 'staff']], ['count' => true]);
-        $data['donors'] = 0;
-        $data['guests'] = 0;
+        $data['users'] = $this->users_model->sql_select(TBL_USERS, 'id', ['where' => ['role' => 'staff', 'is_delete' => 0]], ['count' => true]);
+        $data['accounts'] = $this->users_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
+        $data['donors'] = $this->users_model->sql_select(TBL_DONORS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
+        $data['guests'] = $this->users_model->sql_select(TBL_GUESTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $this->template->load('default', 'dashboard', $data);
     }
 

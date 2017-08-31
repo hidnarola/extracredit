@@ -90,7 +90,12 @@ defined('EXIT__AUTO_MAX') OR define('EXIT__AUTO_MAX', 125); // highest automatic
  */
 define('TBL_ACCOUNTS', 'accounts');
 define('TBL_CITIES', 'cities');
+define('TBL_COMMUNICATIONS', 'communications');
+define('TBL_DONORS', 'donors');
+define('TBL_FUNDS', 'funds');
 define('TBL_FUND_TYPES', 'fund_types');
+define('TBL_GUESTS', 'guests');
+define('TBL_PAYMENTS', 'payments');
 define('TBL_PAYMENT_TYPES', 'payment_types');
 define('TBL_PROGRAM_STATUS', 'program_status');
 define('TBL_PROGRAM_TYPES', 'program_types');

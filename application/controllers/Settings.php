@@ -118,6 +118,12 @@ class Settings extends MY_Controller {
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_FUND_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
             if (!empty($result)) {
+                //-- check if it is assigned to any account or not
+                $is_assigned = $this->users_model->sql_select(TBL_ACCOUNTS, NULL, ['where' => ['fund_type_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($is_assigned)) {
+                    $this->session->set_flashdata('error', 'You can not delete ' . $result['type'] . ' fund type,It is assigned to account');
+                    redirect('settings/fund_types');
+                }
                 $update_array = array(
                     'is_delete' => 1
                 );
@@ -176,6 +182,13 @@ class Settings extends MY_Controller {
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
             if (!empty($result)) {
+                //-- check if it is assigned to any donor or not
+                $is_assigned = $this->users_model->sql_select(TBL_DONORS, NULL, ['where' => ['payment_type_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($is_assigned)) {
+                    $this->session->set_flashdata('error', 'You can not delete ' . $result['type'] . ' payment type,It is assigned to donors');
+                    redirect('settings/payment_types');
+                }
+
                 $update_array = array(
                     'is_delete' => 1
                 );
@@ -262,6 +275,12 @@ class Settings extends MY_Controller {
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PROGRAM_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
             if (!empty($result)) {
+                //-- check if it is assigned to any account or not
+                $is_assigned = $this->users_model->sql_select(TBL_ACCOUNTS, NULL, ['where' => ['program_type_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($is_assigned)) {
+                    $this->session->set_flashdata('error', 'You can not delete ' . $result['type'] . ' program type,It is assigned to account');
+                    redirect('settings/program_types');
+                }
                 $update_array = array(
                     'is_delete' => 1
                 );
@@ -348,6 +367,12 @@ class Settings extends MY_Controller {
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PROGRAM_STATUS, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
             if (!empty($result)) {
+                //-- check if it is assigned to any account or not
+                $is_assigned = $this->users_model->sql_select(TBL_ACCOUNTS, NULL, ['where' => ['program_status_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($is_assigned)) {
+                    $this->session->set_flashdata('error', 'You can not delete ' . $result['status'] . ' program status,It is assigned to account');
+                    redirect('settings/program_status');
+                }
                 $update_array = array(
                     'is_delete' => 1
                 );

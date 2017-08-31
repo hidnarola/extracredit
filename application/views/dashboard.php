@@ -14,7 +14,7 @@
 <div class="content">
     <div class="row">
         <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
-            <div class="col-lg-4">
+            <div class="col-lg-3">
                 <!-- Total Users -->
                 <div class="panel bg-teal-400">
                     <div class="panel-body">
@@ -28,9 +28,22 @@
             </div>
         <?php } ?>
 
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <!-- Total Products -->
             <div class="panel bg-pink-400">
+                <div class="panel-body">
+                    <a href="<?php echo site_url('accounts') ?>"  style="color: white">
+                        <h3 class="no-margin"><?php echo $accounts; ?></h3>
+                        <i class="icon-grid6"></i> Accounts
+                    </a>
+                </div>
+            </div>
+            <!-- /Total Products -->
+        </div>
+
+        <div class="col-lg-3">
+            <!-- Total Feedbacks -->
+            <div class="panel bg-blue-400">
                 <div class="panel-body">
                     <a href="<?php echo site_url('donors') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $donors; ?></h3>
@@ -38,12 +51,11 @@
                     </a>
                 </div>
             </div>
-            <!-- /Total Products -->
+            <!-- /Total Feedbacks -->
         </div>
-
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <!-- Total Feedbacks -->
-            <div class="panel bg-blue-400">
+            <div class="panel bg-indigo-400">
                 <div class="panel-body">
                     <a href="<?php echo site_url('guests') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $guests; ?></h3>

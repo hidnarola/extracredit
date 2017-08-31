@@ -110,6 +110,7 @@
                                         </ul>
                                     </li>
                                     <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-grid6"></i> <span>Accounts</span></a></li>
+                                    <li class="<?php echo ($this->controller == 'donors') ? 'active' : ''; ?>"><a href="<?php echo site_url('donors'); ?>"><i class="icon-coins"></i> <span>Donors</span></a></li>
                                     <li class=""><a href="<?php echo site_url('logout') ?>"><i class="icon-switch2"></i> <span>Logout</span></a></li>
                                 </ul>
                             </div>

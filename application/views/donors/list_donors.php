@@ -4,13 +4,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-grid6"></i> <span class="text-semibold">Accounts</span></h4>
+            <h4><i class="icon-coins"></i> <span class="text-semibold">Donors</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Accounts</li>
+            <li class="active">Donors</li>
         </ul>
     </div>
 </div>
@@ -35,20 +35,20 @@
     </div>
     <div class="panel panel-flat">
         <div class="panel-heading text-right">
-            <a href="<?php echo site_url('accounts/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Account</a>
+            <a href="<?php echo site_url('donors/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Donor</a>
         </div>
         <table class="table datatable-basic">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Fund Type</th>
-                    <th>AMC/Vendor</th>
+                    <th>Program/AMC</th>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
                     <th>Email</th>
-                    <th>Contact Name</th>
                     <th>City</th>
-                    <th>Total Fund</th>
+                    <th>Payment Type</th>
+                    <th>Amount</th>
                     <th>Added Date</th>
-                    <th>Active</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -70,16 +70,12 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
-            ajax: site_url + 'accounts/get_accounts',
+            ajax: site_url + 'donors/get_donors',
             columns: [
                 {
                     data: "id",
                     visible: true,
                     sortable: false,
-                },
-                {
-                    data: "fund_type",
-                    visible: true,
                 },
                 {
                     data: "action_matters_campaign",
@@ -93,11 +89,15 @@
                     }
                 },
                 {
-                    data: "email",
-                    visible: true
+                    data: "firstname",
+                    visible: true,
                 },
                 {
-                    data: "contact_name",
+                    data: "lastname",
+                    visible: true,
+                },
+                {
+                    data: "email",
                     visible: true
                 },
                 {
@@ -105,7 +105,11 @@
                     visible: true
                 },
                 {
-                    data: "total_fund",
+                    data: "payment_type",
+                    visible: true
+                },
+                {
+                    data: "amount",
                     visible: true
                 },
                 {
@@ -132,8 +136,8 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
-                        action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Account"><i class="icon-pencil3"></i></a>';
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i></a>'
+                        action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
+                        action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i></a>'
                         return action;
                     }
                 }
@@ -149,7 +153,7 @@
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this account!",
+            text: "You will not be able to recover this donor!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",
