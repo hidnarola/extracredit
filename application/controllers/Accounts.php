@@ -40,7 +40,7 @@ class Accounts extends MY_Controller {
         echo json_encode($final);
     }
 
-    /**
+    /***
      * Add /edit accounts data
      * @param int $id
      * */
