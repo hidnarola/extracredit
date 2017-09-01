@@ -23,11 +23,12 @@ class MY_Model extends CI_Model {
     public function common_insert_update($mode = '', $table = '', $dataArr = '', $condition = '') {
         if ($mode == 'insert') {
             $this->db->insert($table, $dataArr);
+            $affected_row = $this->db->insert_id(); // fetch last inserted id in table
         } else if ($mode == 'update') {
             $this->db->where($condition);
             $this->db->update($table, $dataArr);
+            $affected_row = $this->db->affected_rows();
         }
-        $affected_row = $this->db->affected_rows();
         return $affected_row;
     }
 

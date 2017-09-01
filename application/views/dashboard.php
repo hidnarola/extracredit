@@ -47,7 +47,7 @@
                 <div class="panel-body">
                     <a href="<?php echo site_url('donors') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $donors; ?></h3>
-                        <i class="icon-grid2"></i> Donors
+                        <i class="icon-coins"></i> Donors
                     </a>
                 </div>
             </div>
@@ -59,7 +59,7 @@
                 <div class="panel-body">
                     <a href="<?php echo site_url('guests') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $guests; ?></h3>
-                        <i class="icon-grid2"></i> Guests
+                        <i class="icon-people"></i> Guests
                     </a>
                 </div>
             </div>

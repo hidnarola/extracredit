@@ -40,10 +40,10 @@ class Accounts extends MY_Controller {
         echo json_encode($final);
     }
 
-    /***
+    /**
      * Add /edit accounts data
-     * @param int $id
-     * */
+     * @param type $id
+     */
     public function add($id = NULL) {
         if (!is_null($id))
             $id = base64_decode($id);
@@ -156,6 +156,47 @@ class Accounts extends MY_Controller {
         $id = base64_decode($this->input->post('id'));
         $cities = $this->accounts_model->sql_select(TBL_CITIES, 'name,id', ['where' => ['state_id' => $id]]);
         echo json_encode($cities);
+    }
+
+    /**
+     * This function used to check Unique email at the time of account's add
+     * */
+    public function checkUniqueEmail($id = NULL) {
+        $where = ['email' => trim($this->input->get('email'))];
+        if (!is_null($id)) {
+            $id = base64_decode($id);
+            $where['id!='] = $id;
+        }
+        $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => $where], ['single' => true]);
+        if (!empty($account)) {
+            echo "false";
+        } else {
+            echo "true";
+        }
+        exit;
+    }
+
+    /**
+     * Delete account
+     * @param int $id
+     * */
+    public function delete($id = NULL) {
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['id' => $id]], ['single' => true]);
+            if ($account) {
+                $update_array = array(
+                    'is_delete' => 1
+                );
+                $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $update_array, ['id' => $id]);
+                $this->session->set_flashdata('success', 'Account has been deleted successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+            }
+            redirect('accounts');
+        } else {
+            show_404();
+        }
     }
 
 }

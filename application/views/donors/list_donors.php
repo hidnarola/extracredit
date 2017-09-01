@@ -117,19 +117,6 @@
                     visible: true,
                 },
                 {
-                    data: "is_active",
-                    visible: true,
-                    searchable: false,
-                    sortable: false,
-                    render: function (data, type, full, meta) {
-                        var status = '<span class="label bg-success">Active</span>';
-                        if (full.is_active == 0) {
-                            status = '<span class="label bg-warning">Not Active</span>';
-                        }
-                        return status;
-                    }
-                },
-                {
                     data: "is_delete",
                     visible: true,
                     searchable: false,

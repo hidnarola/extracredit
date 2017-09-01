@@ -274,6 +274,11 @@ if (isset($account)) {
 </div>
 <script type="text/javascript">
     var edit = <?php echo $edit ?>;
+    var email_url = site_url + 'accounts/checkUniqueEmail/';
+    if (edit == 1) {
+        var append_id = <?php echo (isset($account)) ? $account['id'] : '' ?>;
+        email_url += btoa(append_id);
+    }
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
     //-- fund type change event
@@ -376,6 +381,7 @@ if (isset($account)) {
             email: {
                 required: true,
                 email: true,
+                remote: email_url,
             },
             tax_id: {
                 taxUS: true,
@@ -383,6 +389,11 @@ if (isset($account)) {
             website: {
                 url: true,
             },
+        },
+        messages: {
+            email: {
+                remote: $.validator.format("Email address is already in use!")
+            }
         },
         submitHandler: function (form) {
             $('#account_btn_submit').attr('disabled', true);
