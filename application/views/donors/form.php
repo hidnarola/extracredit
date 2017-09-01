@@ -1,6 +1,8 @@
 <script type="text/javascript" src="assets/js/plugins/forms/validation/validate.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
 <?php
 $edit = 0;
 if (isset($donor)) {
@@ -95,153 +97,157 @@ if (isset($donor)) {
                                 ?>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Date <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="date" id="date" placeholder="Enter Date" class="form-control capitalize-text" value="<?php echo (isset($donor)) ? $donor['date'] : set_value('date'); ?>" required="required">
-                                <?php
-                                echo '<label id="date-error" class="validation-error-label" for="date">' . form_error('date') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Post Date <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="post_date" id="post_date" placeholder="Enter Post Date" class="form-control capitalize-text" value="<?php echo (isset($donor)) ? $donor['post_date'] : set_value('post_date'); ?>" required="required">
-                                <?php
-                                echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">First Name <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($donor)) ? $donor['firstname'] : set_value('firstname'); ?>">
-                                <?php
-                                echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Last Name <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($donor)) ? $donor['lastname'] : set_value('lastname'); ?>">
-                                <?php
-                                echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Address <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <textarea name="address" id="address" placeholder="Enter Address" class="form-control capitalize-text" required="required"><?php echo (isset($donor)) ? $donor['address'] : set_value('address'); ?></textarea>
-                                <?php
-                                echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">State <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <select name="state_id" id="state_id" class="select2" required="required" data-placeholder="Select State">
-                                    <option value=""></option>
+                        <fieldset class="content-group">
+                            <legend class="text-bold">Basic Donor Details</legend>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">First Name <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($donor)) ? $donor['firstname'] : set_value('firstname'); ?>">
                                     <?php
-                                    foreach ($states as $state) {
-                                        $selected = '';
-                                        if (isset($donor) && $donor['state_id'] == $state['id'])
-                                            $selected = 'selected';
-                                        ?>
-                                        <option value="<?php echo $state['id']; ?>" <?php echo $selected ?>><?php echo $state['name'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">City <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <select name="city_id" id="city_id" class="select2" required="required" data-placeholder="Select City">
-                                    <option value=""></option>
+                                    echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">Last Name <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($donor)) ? $donor['lastname'] : set_value('lastname'); ?>">
                                     <?php
-                                    foreach ($cities as $city) {
-                                        $selected = '';
-                                        if (isset($donor) && $donor['city_id'] == $city['id'])
-                                            $selected = 'selected';
-                                        ?>
-                                        <option value="<?php echo $city['id']; ?>" <?php echo $selected ?>><?php echo $city['name'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
-                                ?>
+                                    echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
+                                    ?>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Zip <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" required="required" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
-                                <?php
-                                echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Email <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($donor) && $donor['email']) ? $donor['email'] : set_value('email'); ?>">
-                                <?php
-                                echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Amount <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['amount'] : set_value('amount'); ?>" required="required">
-                                <?php
-                                echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Payment Type <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <select name="payment_type_id" id="payment_type_id" class="select2" data-placeholder="Select Payment Type" required="required">
-                                    <option value=""></option>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Address <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control capitalize-text" required="required"><?php echo (isset($donor)) ? $donor['address'] : set_value('address'); ?></textarea>
                                     <?php
-                                    foreach ($payment_types as $payment_type) {
-                                        $selected = '';
-                                        if (isset($donor) && $donor['payment_type_id'] == $payment_type['id'])
-                                            $selected = 'selected';
-                                        ?>
-                                        <option value="<?php echo $payment_type['id']; ?>" <?php echo $selected ?>><?php echo $payment_type['type'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                echo '<label id="payment_type_id-error" class="validation-error-label" for="payment_type_id">' . form_error('payment_type_id') . '</label>';
-                                ?>
+                                    echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">Email <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($donor) && $donor['email']) ? $donor['email'] : set_value('email'); ?>">
+                                    <?php
+                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
+                                    ?>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Payment Number <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="payment_number" id="payment_number" placeholder="Enter Payment Number" class="form-control" value="<?php echo (isset($donor) && $donor['payment_number']) ? $donor['payment_number'] : set_value('payment_number'); ?>" required="required">
-                                <?php
-                                echo '<label id="payment_number-error" class="validation-error-label" for="payment_number">' . form_error('payment_number') . '</label>';
-                                ?>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <select name="state_id" id="state_id" class="select2" required="required" data-placeholder="Select State">
+                                        <option value=""></option>
+                                        <?php
+                                        foreach ($states as $state) {
+                                            $selected = '';
+                                            if (isset($donor) && $donor['state_id'] == $state['id'])
+                                                $selected = 'selected';
+                                            ?>
+                                            <option value="<?php echo $state['id']; ?>" <?php echo $selected ?>><?php echo $state['name'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <?php
+                                    echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <select name="city_id" id="city_id" class="select2" required="required" data-placeholder="Select City">
+                                        <option value=""></option>
+                                        <?php
+                                        foreach ($cities as $city) {
+                                            $selected = '';
+                                            if (isset($donor) && $donor['city_id'] == $city['id'])
+                                                $selected = 'selected';
+                                            ?>
+                                            <option value="<?php echo $city['id']; ?>" <?php echo $selected ?>><?php echo $city['name'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <?php
+                                    echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
+                                    ?>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Memo </label>
-                            <div class="col-lg-6">
-                                <textarea name="memo" id="memo" placeholder="Enter Memo" class="form-control capitalize-text" required="required"><?php echo (isset($donor)) ? $donor['memo'] : set_value('memo'); ?></textarea>
-                                <?php
-                                echo '<label id="memo-error" class="validation-error-label" for="memo">' . form_error('memo') . '</label>';
-                                ?>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Zip <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" required="required" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
+                                    <?php
+                                    echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
+                                    ?>
+                                </div>
                             </div>
-                        </div>
+                        </fieldset>
+                        <fieldset class="content-group">
+                            <legend class="text-bold">Payment Details</legend>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Date <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                        <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php echo (isset($donor)) ? date('d F,Y', strtotime($donor['date'])) : set_value('date'); ?>" required="required">
+                                    </div>
+                                    <?php
+                                    echo '<label id="date-error" class="validation-error-label" for="date">' . form_error('date') . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">Post Date <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                        <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php echo (isset($donor)) ? date('d F,Y', strtotime($donor['post_date'])) : set_value('post_date'); ?>" required="required">
+                                    </div>
+                                    <?php
+                                    echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Amount <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['amount'] : set_value('amount'); ?>" required="required">
+                                    <?php
+                                    echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Payment Type <span class="text-danger">*</span></label>
+                                <div class="col-lg-6">
+                                    <select name="payment_type_id" id="payment_type_id" class="select2" data-placeholder="Select Payment Type" required="required">
+                                        <option value=""></option>
+                                        <?php
+                                        foreach ($payment_types as $payment_type) {
+                                            $selected = '';
+                                            if (isset($donor) && $donor['payment_type_id'] == $payment_type['id'])
+                                                $selected = 'selected';
+                                            ?>
+                                            <option value="<?php echo $payment_type['id']; ?>" <?php echo $selected ?>><?php echo $payment_type['type'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <?php
+                                    echo '<label id="payment_type_id-error" class="validation-error-label" for="payment_type_id">' . form_error('payment_type_id') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Payment Number <span class="text-danger">*</span></label>
+                                <div class="col-lg-6">
+                                    <input type="text" name="payment_number" id="payment_number" placeholder="Enter Payment Number" class="form-control" value="<?php echo (isset($donor) && $donor['payment_number']) ? $donor['payment_number'] : set_value('payment_number'); ?>" required="required">
+                                    <?php
+                                    echo '<label id="payment_number-error" class="validation-error-label" for="payment_number">' . form_error('payment_number') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Memo </label>
+                                <div class="col-lg-6">
+                                    <textarea name="memo" id="memo" placeholder="Enter Memo" class="form-control capitalize-text" required="required"><?php echo (isset($donor)) ? $donor['memo'] : set_value('memo'); ?></textarea>
+                                    <?php
+                                    echo '<label id="memo-error" class="validation-error-label" for="memo">' . form_error('memo') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
+                        </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button class="btn btn-success" type="submit" id="donor_btn_submit">Save <i class="icon-arrow-right14 position-right"></i></button>
@@ -255,6 +261,9 @@ if (isset($donor)) {
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script type="text/javascript">
+    $('.pickadate').pickadate({
+        max: new Date()
+    });
     var edit = <?php echo $edit ?>;
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch

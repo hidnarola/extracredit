@@ -1,6 +1,16 @@
 <script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
+<link rel="stylesheet" type="text/css" href="assets/css/jquery.fancybox.css?v=2.1.5" media="screen" />
+<script type="text/javascript" src="assets/js/jquery.fancybox.js?v=2.1.5"></script>
+<script type="text/javascript">
+    $(function () {
+        $('.fancybox').fancybox();
+    });
+</script>
+<style>.fancybox-close:after {display: none;}
+.fancybox-nav span:after {display: none;}
+</style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -82,9 +92,9 @@
                     render: function (data, type, full, meta) {
                         var profile_img = '';
                         if (data != null) {
-                            profile_img = '<img src="' + profile_img_url + data + '" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle">';
+                            profile_img = '<a class="fancybox" href="' + profile_img_url + data + '"><img src="' + profile_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
                         } else {
-                            profile_img = '<img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle">';
+                            profile_img = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return profile_img;
                     }
@@ -127,7 +137,7 @@
                         var action = '';
                         if (full.is_active == 1) {
                             action += '<a href="' + site_url + 'users/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit User"><i class="icon-pencil3"></i></a>';
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'users/block/' + btoa(full.id) + '" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return block_alert(this,\'block\')" title="Block User"><i class="icon-user-block"></i></a>'
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'users/block/' + btoa(full.id) + '" class="btn border-slate text-slate-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return block_alert(this,\'block\')" title="Block User"><i class="icon-user-block"></i></a>'
                         } else {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'users/block/' + btoa(full.id) + '" class="btn border-success text-success-600 btn-flat btn-icon btn-rounded btn-xs" title="Unblock User" onclick="return block_alert(this,\'unblock\')" ><i class="icon-user-check"></i></a>'
                         }

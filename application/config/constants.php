@@ -106,5 +106,6 @@ define('TBL_USERS', 'users');
  * Contants for User Images
  */
 define('USER_IMAGES', 'uploads/user_images/');
+define('GUEST_IMAGES', 'uploads/guest_images/');
 
 define('REMEMBER_ME_COOKIE_NAME', 'ecs908f7d89f');
