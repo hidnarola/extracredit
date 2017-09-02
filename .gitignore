@@ -19,3 +19,5 @@ application/logs/*
 # IDE Files
 #-------------------------
 /nbproject/
+
+/application/config/database.php

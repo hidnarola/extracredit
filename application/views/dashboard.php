@@ -14,13 +14,17 @@
 <div class="content">
     <div class="row">
         <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
+
             <div class="col-lg-3">
                 <!-- Total Users -->
                 <div class="panel bg-teal-400">
                     <div class="panel-body">
+                        <div class="heading-elements icon-dasboard">
+                            <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-users4"></i></div>
+                        </div>
                         <a href="<?php echo site_url('users') ?>" style="color: white">
                             <h3 class="no-margin"><?php echo $users; ?></h3>
-                            <i class="icon-users4"></i> Users
+                            Users
                         </a>
                     </div>
                 </div>
@@ -32,9 +36,12 @@
             <!-- Total Products -->
             <div class="panel bg-pink-400">
                 <div class="panel-body">
+                    <div class="heading-elements icon-dasboard">
+                        <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-grid6"></i></div>
+                    </div>
                     <a href="<?php echo site_url('accounts') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $accounts; ?></h3>
-                        <i class="icon-grid6"></i> Accounts
+                        Accounts
                     </a>
                 </div>
             </div>
@@ -45,9 +52,12 @@
             <!-- Total Feedbacks -->
             <div class="panel bg-blue-400">
                 <div class="panel-body">
+                    <div class="heading-elements icon-dasboard">
+                        <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-coins"></i></div>
+                    </div>
                     <a href="<?php echo site_url('donors') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $donors; ?></h3>
-                        <i class="icon-coins"></i> Donors
+                        Donors
                     </a>
                 </div>
             </div>
@@ -57,13 +67,54 @@
             <!-- Total Feedbacks -->
             <div class="panel bg-indigo-400">
                 <div class="panel-body">
+                    <div class="heading-elements icon-dasboard">
+                        <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-people"></i></div>
+                    </div>
                     <a href="<?php echo site_url('guests') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $guests; ?></h3>
-                        <i class="icon-people"></i> Guests
+                        Guests
                     </a>
                 </div>
             </div>
             <!-- /Total Feedbacks -->
         </div>
     </div>
+    <div class="row">               
+        <div class="col-lg-4">
+            <div class="panel panel-flat">
+                <div class="panel-heading">
+                    <h6 class="panel-title">Admin Fund</h6>
+                    <div class="heading-elements">
+                        <span class="heading-text"><i class="icon-history text-warning position-left"></i> <?php echo date('d F, Y');?></span>                       
+                    </div>
+                    <a class="heading-elements-toggle"><i class="icon-more"></i></a></div>
+
+                <!-- Numbers -->
+                <div class="container-fluid">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="content-group">
+                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo $today_admin_fund['total'] ?></h6>
+                                <span class="text-muted text-size-small">Today</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="content-group">
+                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo $week_admin_fund['total'] ?></h6>
+                                <span class="text-muted text-size-small">This week</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="content-group">
+                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo $total_admin_fund['total'] ?></h6>
+                                <span class="text-muted text-size-small">Total Funds</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /numbers -->
+            </div>
+        </div>
+    </div>
+
 </div>
