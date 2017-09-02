@@ -217,6 +217,7 @@ class Donors extends MY_Controller {
                     'is_delete' => 1
                 );
                 $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $donor['account_id']]], ['single' => true]);
+                $store_admin_fund = $this->donors_model->sql_select(TBL_USERS, 'total_fund,id', ['where' => ['role' => 'admin']], ['single' => true]);
 
                 $this->db->trans_begin();
                 $this->donors_model->common_insert_update('update', TBL_DONORS, $update_array, ['id' => $id]);
@@ -224,6 +225,9 @@ class Donors extends MY_Controller {
                 $total_fund = $account['total_fund'] - $donor['account_fund'];
                 $admin_fund = $account['admin_fund'] - $donor['admin_fund'];
                 $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund, 'admin_fund' => $admin_fund], ['id' => $donor['account_id']]);
+                $total_admin_fund = $store_admin_fund['total_fund'] - $donor['admin_fund'];
+                $this->donors_model->common_insert_update('update', TBL_USERS, ['total_fund' => $total_admin_fund], ['id' => $store_admin_fund['id']]);
+
                 $this->db->trans_complete();
 
                 $this->session->set_flashdata('success', 'Donor has been deleted successfully!');
