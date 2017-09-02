@@ -5,7 +5,7 @@
 <script type="text/javascript" src="assets/js/pages/editor_ckeditor.js"></script>
 <?php
 $edit = 0;
-if (isset($account)) {
+if (isset($guest_communication)) {
     $edit = 1;
 }
 ?>
@@ -14,7 +14,7 @@ if (isset($account)) {
         <div class="page-title">
             <h4>
                 <?php
-                if (isset($account))
+                if (isset($guest_communication))
                     echo '<i class="icon-pencil3"></i>';
                 else
                     echo '<i class="icon-plus-circle2"></i>';
@@ -26,7 +26,8 @@ if (isset($account)) {
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-grid6 position-left"></i> Accounts</a></li>
+            <li><a href="<?php echo site_url('guests'); ?>"><i class="icon-people position-left"></i> Guests</a></li>
+            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-comment-discussion position-left"></i> Guest Communication</a></li>
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -63,25 +64,25 @@ if (isset($account)) {
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Conversation <span class="text-danger">*</span></label>
                             <div class="col-lg-8">
-                                <textarea name="editor-full" id="editor-full" rows="4" cols="4">										
-                                    <?php echo (isset($conversation)) ? $conversation['note'] : set_value('note'); ?>			
+                                <textarea name="note" id="editor-full" rows="4" cols="4">										
+                                    <?php echo (isset($guest_communication)) ? $guest_communication['note'] : set_value('note'); ?>			
                                 </textarea>
                                 <?php
-                                echo '<label id="tax_id-error" class="validation-error-label" for="website">' . form_error('website') . '</label>';
+                                echo '<label id="note-error" class="validation-error-label" for="note">' . form_error('note') . '</label>';
                                 ?>
                             </div>                            
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-lg-2">Media<span class="text-danger">*</span></label>
+                            <label class="control-label col-lg-2">Media</label>
                             <div class="col-lg-6">
                                 <div class="media no-margin-top">
                                     <div class="media-left" id="image_preview_div">
                                         <?php
                                         $required = 'required';
-                                        if (isset($conversation) && $conversation['media'] != '') {
+                                        if (isset($guest_communication) && $guest_communication['media'] != '') {
                                             $required = '';
                                             ?>
-                                            <img src="<?php echo GUEST_IMAGES . $conversation['media']; ?>" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
+                                            <img src="<?php echo COMMUNICATION_IMAGES . $guest_communication['media']; ?>" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
                                         <?php } else {
                                             ?>
                                             <img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
@@ -89,12 +90,12 @@ if (isset($account)) {
                                     </div>
 
                                     <div class="media-body">
-                                        <input type="file" name="media" id="media" class="file-styled" onchange="readURL(this);" <?php echo $required; ?>>
-                                        <span class="help-block">Accepted formats: png, jpg. Max file size 2Mb</span>
+                                        <input type="file" name="media" id="media" class="file-styled" onchange="readURL(this);ValidateSingleInput(this)">
+                                        <span class="help-block">Accepted formats:  png, jpg , jpeg, doc, docx, pdf</span>
                                     </div>
                                 </div>
                                 <?php
-                                if (isset($logo_validation))
+                                if (isset($media_validation))
                                     echo '<label id="logo-error" class="validation-error-label" for="logo">' . $logo_validation . '</label>';
                                 ?>
                             </div>
@@ -111,6 +112,19 @@ if (isset($account)) {
         </div>
     </div>
     <?php $this->load->view('Templates/footer'); ?>
+</div>
+<div id="validation_modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-teal-400">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title"></h6>
+            </div>
+            <div class="modal-body panel-body validation_alert">
+                <label></label>
+            </div>
+        </div>
+    </div>
 </div>
 <script type="text/javascript">
     var edit = <?php echo $edit ?>;
@@ -176,5 +190,41 @@ if (isset($account)) {
             form.submit();
         }
     });
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
+            reader.onload = function (e) {
+                var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                $('#image_preview_div').html(html);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    var _validFileExtensions = [".jpg", ".jpeg", ".doc", ".png", ".docx", ".pdf"];
+//    var _validFileExtensions_Video = [".mp4", ".webm", ".ogv", ".png",".MPG",".MPEG" ,".OGG",".ogg",".mpeg"];    
+    function ValidateSingleInput(oInput) {
+        if (oInput.type == "file") {
+            var sFileName = oInput.value;
+            if (sFileName.length > 0) {
+                var blnValid = false;
+                for (var j = 0; j < _validFileExtensions.length; j++) {
+                    var sCurExtension = _validFileExtensions[j];
+                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                        blnValid = true;
+                        break;
+                    }
+                }
+
+                if (!blnValid) {
+                    $(".validation_alert label").text("Sorry, invalid file, allowed extensions are: " + _validFileExtensions.join(", "));
+                    $("#validation_modal").modal();
+                    oInput.value = "";
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 </script>

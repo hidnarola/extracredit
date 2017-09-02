@@ -71,7 +71,13 @@ class Guests_model extends MY_Model {
         $query = $this->db->get(TBL_GUESTS);
         return $query->row_array();
     }
-    
+
+    /**
+     * At edit time check email unique
+     * @param type $email
+     * @param type $id
+     * @return int
+     */
     function check_email_edit($email, $id) {
         $this->db->select('email');
         $this->db->where('is_delete!=', 1);
@@ -86,12 +92,12 @@ class Guests_model extends MY_Model {
     }
 
     /**
-     * Get donors for datatable
+     * Get guest communication for datatable
      * @param string $type - Either result or count
      * @return array for result or int for count
      */
-    public function get_guests_conversation($type = 'result', $id) {
-        $columns = ['id', 'c.note', 'c.media','c.created'];
+    public function get_guests_communication($type = 'result', $id) {
+        $columns = ['id', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
         $this->db->select('c.*');
 
@@ -110,6 +116,18 @@ class Guests_model extends MY_Model {
             $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
             return $query->num_rows();
         }
+    }
+
+    /**
+     * Get guest communication details of particular id
+     * @param type $id
+     */
+    public function get_guest_communication_details($id) {
+        $this->db->select('gc.*,gc.id as conversation_id,g.firstname,g.lastname');
+        $this->db->join(TBL_GUESTS . ' as g', 'g.id=gc.guest_id', 'left');
+        $this->db->where(['gc.id' => $id, 'gc.is_delete' => 0]);
+        $query = $this->db->get(TBL_COMMUNICATIONS . ' gc');
+        return $query->row_array();
     }
 
 }

@@ -193,6 +193,7 @@ class Guests extends MY_Controller {
             return TRUE;
         }
     }
+
     function check_email_edit($email, $id) {
         $return_value = $this->guests_model->check_email_edit($email, $id);
 //        pr($return_value,1);
@@ -207,20 +208,21 @@ class Guests extends MY_Controller {
     /**
      * Listing of All Guests
      */
-    public function conversation($id = null) {
+    public function communication($id = null) {
         $data['title'] = 'Extracredit | Guests';
         $data['id'] = $id;
-        $this->template->load('default', 'guests/list_conversation', $data);
+        $this->template->load('default', 'guests/list_communication', $data);
     }
 
     /**
-     * Get guests data for ajax table
+     * Get guests communication data for ajax table
      * */
-    public function get_guests_conversation($id) {
-        $id =  ($id);
-        $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_conversation('count', $id);
+    public function get_guests_communication($id) {
+        $id = base64_decode($id);
+
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_communication('count', $id);
         $final['redraw'] = 1;
-        $guests = $this->guests_model->get_guests_conversation('result', $id);
+        $guests = $this->guests_model->get_guests_communication('result', $id);
         $start = $this->input->get('start') + 1;
 
         foreach ($guests as $key => $val) {
@@ -228,34 +230,69 @@ class Guests extends MY_Controller {
             $guests[$key]['created'] = date('d M, Y', strtotime($val['created']));
         }
 
-      
+
         $final['data'] = $guests;
         echo json_encode($final);
     }
 
-    public function add_conversation($id = null) {
-        if (!is_null($id))
-            $id = base64_decode($id);
-        if (is_numeric($id)) {
-
-            $guest = $this->guests_model->get_guest_details($id);
-            if ($guest) {
-                $data['guest'] = $guest;
-                $data['title'] = 'Extracredit | Edit Conversation';
-                $data['heading'] = 'Edit Conversation';
-                $logo = $guest['logo'];
-            } else {
-                show_404();
-            }
+    public function add_communication($guest_id = null, $comm_id = null) {
+        if (!is_null($guest_id))
+            $guest_id = base64_decode($guest_id);
+        $comm_id = base64_decode($comm_id);
+        if (is_numeric($comm_id)) {
+            $guest_communication = $this->guests_model->get_guest_communication_details($comm_id);
+            $data['guest_communication'] = $guest_communication;
+            $data['title'] = 'Extracredit | Edit Communication';
+            $data['heading'] = 'Edit Communication';
+            if ($guest_communication['media'] != '')
+                $media = $guest_communication['media'];
+            else
+                $media = NULL;
         } else {
-            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_is_uniquemail');
-            $logo = NULL;
-            $data['title'] = 'Extracredit | Add Conversation';
-            $data['heading'] = 'Add Conversation';
+            $media = NULL;
+            $data['title'] = 'Extracredit | Add Communication';
+            $data['heading'] = 'Add Communication';
             $data['cities'] = [];
             $data['accounts'] = [];
         }
-        $this->template->load('default', 'guests/add_conversation', $data);
+        $this->form_validation->set_rules('note', 'Note', 'trim|required');
+        if ($this->form_validation->run() == TRUE) {
+            $flag = 0;
+            if ($_FILES['media']['name'] != '') {
+                $image_data = upload_communication('media', COMMUNICATION_IMAGES);
+                if (is_array($image_data)) {
+                    $flag = 1;
+                    $data['media_validation'] = $image_data['errors'];
+                } else {
+                    if ($media != '') {
+                        unlink(COMMUNICATION_IMAGES . $media);
+                    }
+                    $media = $image_data;
+                }
+            }
+
+            if ($flag == 0) {
+                $dataArr = array(
+                    'note' => $this->input->post('note'),
+                    'guest_id' => $guest_id,
+                    'donor_id' => 0,
+                    'type' => 2,
+                    'media' => $media
+                );
+               
+                if (is_numeric($comm_id)) {
+                    $dataArr['modified'] = date('Y-m-d H:i:s');
+                    $this->guests_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
+                    $this->session->set_flashdata('success', 'Guest communication details has been updated successfully.');
+                } else {
+                    $dataArr['created'] = date('Y-m-d H:i:s');
+                    $this->guests_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    $this->session->set_flashdata('success', 'Guest communication has been added successfully');
+                }
+                redirect('guests/communication/' . base64_encode($guest_id));
+            }
+        }
+        $this->template->load('default', 'guests/add_communication', $data);
     }
 
 }

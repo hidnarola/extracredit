@@ -107,5 +107,6 @@ define('TBL_USERS', 'users');
  */
 define('USER_IMAGES', 'uploads/user_images/');
 define('GUEST_IMAGES', 'uploads/guest_images/');
+define('COMMUNICATION_IMAGES', 'uploads/communication_images/');
 
 define('REMEMBER_ME_COOKIE_NAME', 'ecs908f7d89f');

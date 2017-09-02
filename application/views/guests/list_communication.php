@@ -9,17 +9,18 @@
     });
 </script>
 <style>.fancybox-close:after {display: none;}
-.fancybox-nav span:after {display: none;}
+    .fancybox-nav span:after {display: none;}
 </style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-people"></i> <span class="text-semibold">Guest Conversation</span></h4>
+            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Guest Conversation</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
+            <li><a href="<?php echo site_url('guests'); ?>"><i class="icon-people position-left"></i> Guests</a></li>
             <li class="active">Guest Conversation</li>
         </ul>
     </div>
@@ -45,7 +46,7 @@
     </div>
     <div class="panel panel-flat">
         <div class="panel-heading text-right">
-            <a href="<?php echo site_url('guests/add_conversation'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Conversation</a>
+            <a href="<?php echo site_url('guests/add_communication' . '/' . $id); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Conversation</a>
         </div>
         <table class="table datatable-basic">
             <thead>
@@ -62,7 +63,7 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
-    var logo_img_url = '<?php echo base_url() . GUEST_IMAGES ?>';
+    var logo_img_url = '<?php echo base_url() . COMMUNICATION_IMAGES ?>';
     var guest_id = '<?php echo $id; ?>';
     $(function () {
         $('.datatable-basic').dataTable({
@@ -76,7 +77,7 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[3, "desc"]],
-            ajax: site_url + 'guests/get_guests_conversation/'+guest_id,
+            ajax: site_url + 'guests/get_guests_communication/' + guest_id,
             columns: [
                 {
                     data: "id",
@@ -89,15 +90,22 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var logo = '';
-                        if (data != null) {
-                            logo = '<a class="fancybox" href="' + logo_img_url + data + '"><img src="' + logo_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
+                        var _validFileExtensions = [".jpg", ".jpeg", ".png"];
+                        var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
+                        var ext = data.split('.').pop();
+                        if (valid_extensions.test(data)) {
+                            if (data != null) {
+                                logo = '<a class="fancybox" href="' + logo_img_url + data + '"><img src="' + logo_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
+                            } else {
+                                logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
+                            }
                         } else {
-                            logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
+                            logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return logo;
                     }
                 },
-                
+
                 {
                     data: "note",
                     visible: true,
@@ -106,7 +114,7 @@
                     data: "created",
                     visible: true,
                 },
-                
+
                 {
                     data: "is_delete",
                     visible: true,
@@ -114,9 +122,9 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
-                        action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/conversation/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Conversation"><i class="icon-comment-discussion"></i></a>'
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i></a>'
+                        action += '<a href="' + site_url + 'guests/add_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest Communication"><i class="icon-pencil3"></i></a>';
+//                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/conversation/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Conversation"><i class="icon-comment-discussion"></i></a>'
+                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete_communication/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest Communication"><i class="icon-trash"></i></a>'
                         return action;
                     }
                 }

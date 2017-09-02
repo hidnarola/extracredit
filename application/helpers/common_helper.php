@@ -122,6 +122,29 @@ function upload_image($image_name, $image_path) {
     return $imgname;
 }
 
+function upload_communication($image_name, $image_path) {
+    $CI = & get_instance();
+    $extension = explode('/', $_FILES[$image_name]['type']);
+    $randname = uniqid() . time() . '.' . end($extension);
+    $config = array(
+        'upload_path' => $image_path,
+        'allowed_types' => "png|jpg|jpeg|doc|docx|pdf",
+        // 'max_height'      => "768",
+        // 'max_width'       => "1024" ,
+        'file_name' => $randname
+    );
+    //--Load the upload library
+    $CI->load->library('upload');
+    $CI->upload->initialize($config);
+    if ($CI->upload->do_upload($image_name)) {
+        $img_data = $CI->upload->data();
+        $imgname = $img_data['file_name'];
+    } else {
+        $imgname = array('errors' => $CI->upload->display_errors());
+    }
+    return $imgname;
+}
+
 /**
  * Generated random password
  * @return generated password
