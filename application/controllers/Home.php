@@ -21,16 +21,15 @@ class Home extends MY_Controller {
         $data['accounts'] = $this->users_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['donors'] = $this->users_model->sql_select(TBL_DONORS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['guests'] = $this->users_model->sql_select(TBL_GUESTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
-        $data['today_admin_fund'] = $this->users_model->sql_select(TBL_FUNDS, 'sum(admin_fund) as total', ['where' => ['is_delete' => 0, 'created>=' => date('Y-m-d')]], ['single' => true]);
-
+        $data['today_admin_fund'] = $this->users_model->sql_select(TBL_FUNDS, 'IF(sum(admin_fund) IS NULL,0,sum(admin_fund)) as total', ['where' => ['is_delete' => 0, 'created>=' => date('Y-m-d')]], ['single' => true]);
         $monday = strtotime("last monday");
         $monday = date('w', $monday) == date('w') ? $monday + 7 * 86400 : $monday;
         $sunday = strtotime(date("Y-m-d", $monday) . " +6 days");
         $this_week_sd = date("Y-m-d", $monday);
         $this_week_ed = date("Y-m-d", $sunday);
 
-        $data['week_admin_fund'] = $this->users_model->sql_select(TBL_FUNDS, 'sum(admin_fund) as total', ['where' => ['is_delete' => 0, 'created>=' => $this_week_sd, 'created<=' => $this_week_ed]], ['single' => true]);
-        $data['total_admin_fund'] = $this->users_model->sql_select(TBL_FUNDS, 'sum(admin_fund) as total', ['where' => ['is_delete' => 0]], ['single' => true]);
+        $data['week_admin_fund'] = $this->users_model->sql_select(TBL_FUNDS, 'IF(sum(admin_fund) IS NULL,0,sum(admin_fund)) as total', ['where' => ['is_delete' => 0, 'created>=' => $this_week_sd, 'created<=' => $this_week_ed]], ['single' => true]);
+        $data['total_admin_fund'] = $this->users_model->sql_select(TBL_FUNDS, 'IF(sum(admin_fund) IS NULL,0,sum(admin_fund)) as total', ['where' => ['is_delete' => 0]], ['single' => true]);
         $this->template->load('default', 'dashboard', $data);
     }
 
