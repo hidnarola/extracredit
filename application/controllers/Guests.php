@@ -148,7 +148,7 @@ class Guests extends MY_Controller {
     }
 
     /**
-     * Edit user data
+     * Edit Guest data
      * @param int $id
      * */
     public function edit($id) {
@@ -156,7 +156,7 @@ class Guests extends MY_Controller {
     }
 
     /**
-     * Delete user
+     * Delete Guest
      * @param int $id
      * */
     public function delete($id = NULL) {
@@ -209,7 +209,7 @@ class Guests extends MY_Controller {
      * Listing of All Guests
      */
     public function communication($id = null) {
-        $data['title'] = 'Extracredit | Guests';
+        $data['title'] = 'Extracredit | Guests Communication';
         $data['id'] = $id;
         $this->template->load('default', 'guests/list_communication', $data);
     }
@@ -219,7 +219,6 @@ class Guests extends MY_Controller {
      * */
     public function get_guests_communication($id) {
         $id = base64_decode($id);
-
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_communication('count', $id);
         $final['redraw'] = 1;
         $guests = $this->guests_model->get_guests_communication('result', $id);
@@ -229,10 +228,19 @@ class Guests extends MY_Controller {
             $guests[$key] = $val;
             $guests[$key]['created'] = date('d M, Y', strtotime($val['created']));
         }
-
-
         $final['data'] = $guests;
         echo json_encode($final);
+    }
+
+    /**
+     * Get guests communication data for ajax call for view
+     * */
+    public function get_communication_by_id() {
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        $guest_communication = $this->guests_model->get_guest_communication_details($id);
+//        $final['data'] = $guest_communication;
+        echo json_encode($guest_communication);
     }
 
     public function add_communication($guest_id = null, $comm_id = null) {
@@ -279,7 +287,7 @@ class Guests extends MY_Controller {
                     'type' => 2,
                     'media' => $media
                 );
-               
+
                 if (is_numeric($comm_id)) {
                     $dataArr['modified'] = date('Y-m-d H:i:s');
                     $this->guests_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
@@ -295,4 +303,30 @@ class Guests extends MY_Controller {
         $this->template->load('default', 'guests/add_communication', $data);
     }
 
+    /**
+     * Delete Guest Communication
+     * @param int $id
+     * */
+    public function delete_communication($guest_id = null, $id = NULL) {
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $guest_communication = $this->guests_model->get_guest_communication_details($id);
+            if ($guest_communication) {
+                $update_array = array(
+                    'is_delete' => 1
+                );
+                $this->guests_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id, 'type' => 2]);
+                $this->session->set_flashdata('success', 'Guest communication has been deleted successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+            }
+            redirect('guests/communication/' . $guest_id);
+        } else {
+            show_404();
+        }
+    }
+
 }
+
+/* End of file Guests.php */
+/* Location: ./application/controllers/Guests.php */

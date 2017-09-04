@@ -239,7 +239,137 @@ class Donors extends MY_Controller {
             show_404();
         }
     }
+    
+    /**
+     * Listing of All Donors Communication
+     */
+    public function communication($id = null) {
+        $data['title'] = 'Extracredit | Donors Communication';
+        $data['id'] = $id;
+        $this->template->load('default', 'donors/list_communication', $data);
+    }
 
+    /**
+     * Get Donors communication data for ajax table
+     * */
+    public function get_donors_communication($id) {
+        $id = base64_decode($id);
+
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_communication('count', $id);
+        $final['redraw'] = 1;
+        $donors = $this->donors_model->get_donors_communication('result', $id);
+        $start = $this->input->get('start') + 1;
+
+        foreach ($donors as $key => $val) {
+            $donors[$key] = $val;
+            $donors[$key]['created'] = date('d M, Y', strtotime($val['created']));
+        }
+
+
+        $final['data'] = $donors;
+        echo json_encode($final);
+    }
+
+    /**
+     * Get donors communication data for ajax call for view
+     * */
+    public function get_communication_by_id() {
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        $donor_communication = $this->donors_model->get_donor_communication_details($id);
+        echo json_encode($donor_communication);
+    }
+
+    
+    /**
+     * Add Donors communication 
+     * @param type $donor_id
+     * @param type $comm_id
+     */
+    public function add_communication($donor_id = null, $comm_id = null) {
+        if (!is_null($donor_id))
+            $donor_id = base64_decode($donor_id);       
+        $comm_id = base64_decode($comm_id);
+        if (is_numeric($comm_id)) {
+            $donor_communication = $this->donors_model->get_donor_communication_details($comm_id);
+            $data['donor_communication'] = $donor_communication;
+            $data['title'] = 'Extracredit | Edit Communication';
+            $data['heading'] = 'Edit Communication';
+            if ($donor_communication['media'] != '')
+                $media = $donor_communication['media'];
+            else
+                $media = NULL;
+        } else {
+            $media = NULL;
+            $data['title'] = 'Extracredit | Add Communication';
+            $data['heading'] = 'Add Communication';
+            $data['cities'] = [];
+            $data['accounts'] = [];
+        }
+        $this->form_validation->set_rules('note', 'Note', 'trim|required');
+        if ($this->form_validation->run() == TRUE) {
+            $flag = 0;
+            if ($_FILES['media']['name'] != '') {
+                $image_data = upload_communication('media', COMMUNICATION_IMAGES);
+                if (is_array($image_data)) {
+                    $flag = 1;
+                    $data['media_validation'] = $image_data['errors'];
+                } else {
+                    if ($media != '') {
+                        unlink(COMMUNICATION_IMAGES . $media);
+                    }
+                    $media = $image_data;
+                }
+            }
+
+            if ($flag == 0) {
+                $dataArr = array(
+                    'note' => $this->input->post('note'),
+                    'donor_id' => $donor_id,
+                    'guest_id' => 0,
+                    'type' => 1,
+                    'media' => $media
+                );
+               
+                if (is_numeric($comm_id)) {
+                    $dataArr['modified'] = date('Y-m-d H:i:s');
+                    $this->donors_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
+                    $this->session->set_flashdata('success', 'Donor communication details has been updated successfully.');
+                } else {
+                    $dataArr['created'] = date('Y-m-d H:i:s');
+                    $this->donors_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    $this->session->set_flashdata('success', 'Donor communication has been added successfully');
+                }
+                redirect('donors/communication/' . base64_encode($donor_id));
+            }
+        }
+        $this->template->load('default', 'donors/add_communication', $data);
+    }
+    
+     /**
+     * Delete Donor Communication
+     * @param int $id
+     * */
+    public function delete_communication($donor_id=null,$id = NULL) {
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $donor_communication = $this->donors_model->get_donor_communication_details($id);
+            if ($donor_communication) {
+                $update_array = array(
+                    'is_delete' => 1
+                );
+                $this->donors_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id,'type'=>2]);
+                $this->session->set_flashdata('success', 'Donor communication has been deleted successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+            }
+           redirect('donors/communication/' . $donor_id);
+        } else {
+            show_404();
+        }
+    }
+
+    
 }
 
 /* End of file Donors.php */

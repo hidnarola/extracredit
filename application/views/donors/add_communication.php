@@ -5,7 +5,7 @@
 <script type="text/javascript" src="assets/js/pages/editor_ckeditor.js"></script>
 <?php
 $edit = 0;
-if (isset($guest_communication)) {
+if (isset($donor_communication)) {
     $edit = 1;
 }
 ?>
@@ -14,7 +14,7 @@ if (isset($guest_communication)) {
         <div class="page-title">
             <h4>
                 <?php
-                if (isset($guest_communication))
+                if (isset($donor_communication))
                     echo '<i class="icon-pencil3"></i>';
                 else
                     echo '<i class="icon-plus-circle2"></i>';
@@ -26,7 +26,7 @@ if (isset($guest_communication)) {
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('guests'); ?>"><i class="icon-people position-left"></i> Guests</a></li>
+            <li><a href="<?php echo site_url('donors'); ?>"><i class="icon-coins position-left"></i> Donors</a></li>
             <!--<li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-comment-discussion position-left"></i> Guest Communication</a></li>-->
             <li class="active"><?php echo $heading; ?></li>
         </ul>
@@ -65,7 +65,7 @@ if (isset($guest_communication)) {
                             <label class="col-lg-2 control-label">Communication <span class="text-danger">*</span></label>
                             <div class="col-lg-8">
                                 <textarea name="note" id="editor-full" rows="4" cols="4">										
-                                    <?php echo (isset($guest_communication)) ? $guest_communication['note'] : set_value('note'); ?>			
+                                    <?php echo (isset($donor_communication)) ? $donor_communication['note'] : set_value('note'); ?>			
                                 </textarea>
                                 <?php
                                 echo '<label id="note-error" class="validation-error-label" for="note">' . form_error('note') . '</label>';
@@ -79,13 +79,13 @@ if (isset($guest_communication)) {
                                     <div class="media-left" id="image_preview_div">
                                         <?php
                                         $required = 'required';
-                                        if (isset($guest_communication) && $guest_communication['media'] != '') {
+                                        if (isset($donor_communication) && $donor_communication['media'] != '') {
                                             $required = '';
-                                            if (preg_match("/\.(gif|png|jpg)$/", $guest_communication['media'])) {
+                                            if (preg_match("/\.(gif|png|jpg)$/", $donor_communication['media'])) {
                                                 ?>
-                                                <img src="<?php echo COMMUNICATION_IMAGES . $guest_communication['media']; ?>" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
+                                                <img src="<?php echo COMMUNICATION_IMAGES . $donor_communication['media']; ?>" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
                                             <?php } else { ?>
-                                                <a class="fancybox" target="_blank" href="<?php echo COMMUNICATION_IMAGES . $guest_communication['media']; ?>" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" alt="" class="img-circle"/></a>
+                                                <a class="fancybox" target="_blank" href="<?php echo COMMUNICATION_IMAGES . $donor_communication['media']; ?>" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" alt="" class="img-circle"/></a>
                                                 <?php
                                             }
                                         } else {
@@ -105,7 +105,6 @@ if (isset($guest_communication)) {
                                 ?>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button class="btn btn-success" type="submit" id="account_btn_submit">Save <i class="icon-arrow-right14 position-right"></i></button>
@@ -198,10 +197,9 @@ if (isset($guest_communication)) {
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-
             reader.onload = function (e) {
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                 if (valid_extensions.test(input.files[0].name)) {
+                if (valid_extensions.test(input.files[0].name)) {
                     var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
                 } else {
                     var html = '<img src="assets/images/default_file.png" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
@@ -226,7 +224,6 @@ if (isset($guest_communication)) {
                         break;
                     }
                 }
-
                 if (!blnValid) {
                     $(".validation_alert label").text("Sorry, invalid file, allowed extensions are: " + _validFileExtensions.join(", "));
                     $("#validation_modal").modal();

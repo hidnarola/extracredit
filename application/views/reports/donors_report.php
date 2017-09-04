@@ -34,22 +34,27 @@
         </div>
     </div>
     <div class="panel panel-flat">
-        <div class="panel-heading text-right">
-            <a href="<?php echo site_url('donors/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Donor</a>
-        </div>
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Program/AMC</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Email</th>
+                    <!--<th>#</th>-->
+                    <th>Fund Type</th>
+                    <th>Subcategory</th>
+                    <th>Date</th>
+                    <th>Post Date</th>
+                    <th>Donar ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Address</th>
                     <th>City</th>
-                    <th>Payment Type</th>
+                    <th>State</th>
+                    <th>Zip</th>
+                    <th>Email</th>
                     <th>Amount</th>
-                    <th>Added Date</th>
-                    <th>Action</th>
+                    <th>Refund</th>
+                    <th>Pmt Method</th>
+                    <th>Pmt Number</th>
+                    <th>Memo</th>                    
                 </tr>
             </thead>
         </table>
@@ -60,6 +65,7 @@
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
+            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
@@ -70,13 +76,18 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
-            ajax: site_url + 'donors/get_donors',
+            ajax: site_url + 'reports/get_donors_reports',
             columns: [
+//                {
+//                    data: "id",
+//                    visible: true,
+//                    sortable: false,
+//                },
                 {
-                    data: "id",
+                    data: "fund_type",
                     visible: true,
-                    sortable: false,
                 },
+
                 {
                     data: "action_matters_campaign",
                     visible: true,
@@ -89,15 +100,31 @@
                     }
                 },
                 {
-                    data: "firstname",
+                    data: "date",
                     visible: true,
+                },
+                {
+                    data: "post_date",
+                    visible: true,
+                },
+                {
+                    data: "id",
+                    visible: true,
+                },
+                {
+                    data: "firstname",
+                    visible: true
                 },
                 {
                     data: "lastname",
-                    visible: true,
+                    visible: true
                 },
                 {
-                    data: "email",
+                    data: "address",
+                    visible: true
+                },
+                {
+                    data: "state",
                     visible: true
                 },
                 {
@@ -105,7 +132,11 @@
                     visible: true
                 },
                 {
-                    data: "payment_type",
+                    data: "zip",
+                    visible: true
+                },
+                {
+                    data: "email",
                     visible: true
                 },
                 {
@@ -113,22 +144,22 @@
                     visible: true
                 },
                 {
-                    data: "created",
-                    visible: true,
+                    data: "refund",
+                    visible: true
                 },
                 {
-                    data: "is_delete",
+                    data: "payment_type",
+                    visible: true
+                },
+                {
+                    data: "payment_number",
+                    visible: true
+                },
+                {
+                    data: "memo",
                     visible: true,
-                    searchable: false,
-                    sortable: false,
-                    render: function (data, type, full, meta) {
-                        var action = '';
-                        action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i></a>'
-                        return action;
-                    }
                 }
+
             ]
         });
 
@@ -137,24 +168,4 @@
             width: 'auto'
         });
     });
-
-    function confirm_alert(e) {
-        swal({
-            title: "Are you sure?",
-            text: "You will not be able to recover this donor!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#FF7043",
-            confirmButtonText: "Yes, delete it!"
-        },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-        return false;
-    }
 </script>

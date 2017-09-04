@@ -3,6 +3,7 @@
 <script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <link rel="stylesheet" type="text/css" href="assets/css/jquery.fancybox.css?v=2.1.5" media="screen" />
 <script type="text/javascript" src="assets/js/jquery.fancybox.js?v=2.1.5"></script>
+<script type="text/javascript" src="assets/js/pages/components_modals.js"></script>
 <script type="text/javascript">
     $(function () {
         $('.fancybox').fancybox();
@@ -14,7 +15,7 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Guest Conversation</span></h4>
+            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Guest Communication</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
@@ -62,6 +63,31 @@
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
+
+<div id="modalviewConversation" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-teal">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title">View Communication</h6>
+            </div>
+
+            <div class="modal-body">
+                <h6 class="text-semibold">Note</h6>
+                <p class="note"></p>
+                <hr>
+                <div class="media"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn bg-teal" data-dismiss="modal">Close</button>
+                <!--<button type="button" class="btn btn-info">Save changes</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     var logo_img_url = '<?php echo base_url() . COMMUNICATION_IMAGES ?>';
     var guest_id = '<?php echo $id; ?>';
@@ -90,17 +116,15 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var logo = '';
-                        var _validFileExtensions = [".jpg", ".jpeg", ".png"];
                         var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                        var ext = data.split('.').pop();
-                        if (valid_extensions.test(data)) {
-                            if (data != null) {
+                        if (data != null) {
+                            if (valid_extensions.test(data)) {
                                 logo = '<a class="fancybox" href="' + logo_img_url + data + '"><img src="' + logo_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
                             } else {
-                                logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
+                                logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                             }
                         } else {
-                            logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
+                            logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return logo;
                     }
@@ -123,8 +147,9 @@
                     render: function (data, type, full, meta) {
                         var action = '';
                         action += '<a href="' + site_url + 'guests/add_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest Communication"><i class="icon-pencil3"></i></a>';
-//                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/conversation/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Conversation"><i class="icon-comment-discussion"></i></a>'
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete_communication/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest Communication"><i class="icon-trash"></i></a>'
+//                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Conversation"><i class="icon-comment-discussion"></i></a>'
+                        action += '&nbsp;&nbsp;<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation"><i class="icon-eye"></i></a>'
+                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest Communication"><i class="icon-trash"></i></a>'
                         return action;
                     }
                 }
@@ -137,10 +162,35 @@
         });
     });
 
+    function view_communication(e) {
+        var url = site_url + 'guests/get_communication_by_id';
+        var id = $(e).attr('data-id');
+        $.ajax({
+            type: 'POST',
+            url: url,
+            async: false,
+            dataType: 'JSON',
+            data: {id: id},
+            success: function (data) {
+                console.log(data);
+                $('.note').html(data.note);
+                var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
+                if (data.media != null) {
+                    if (valid_extensions.test(data.media)) {
+                        logo = '<a class="fancybox" href="' + logo_img_url + data.media + '"><img src="' + logo_img_url + data.media + '" style="width: 58px; height: 58px; border-radius: 2px;" class="img-circle"/></a>';
+                    } else {
+                        logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data.media + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" class="img-circle"/></a>';
+                    }
+                }
+                $('.media').html(logo);
+            }
+        });
+    }
+
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this donor!",
+            text: "You will not be able to recover this guest communication!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",

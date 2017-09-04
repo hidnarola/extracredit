@@ -9,18 +9,19 @@
     });
 </script>
 <style>.fancybox-close:after {display: none;}
-.fancybox-nav span:after {display: none;}
+    .fancybox-nav span:after {display: none;}
 </style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-people"></i> <span class="text-semibold">Guests</span></h4>
+            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Donors Communication</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Guests</li>
+            <li><a href="<?php echo site_url('donors'); ?>"><i class="icon-people position-left"></i> Donors</a></li>
+            <li class="active">Donors Conversation</li>
         </ul>
     </div>
 </div>
@@ -45,20 +46,14 @@
     </div>
     <div class="panel panel-flat">
         <div class="panel-heading text-right">
-            <a href="<?php echo site_url('guests/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Guest</a>
+            <a href="<?php echo site_url('donors/add_communication' . '/' . $id); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Conversation</a>
         </div>
         <table class="table datatable-basic">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Logo</th>
-                    <th>Program/AMC</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Companyname</th>
-                    <th>Email</th>
-                    <th>City</th>
-                    <!--<th>Invite Date</th>-->
+                    <th>Media</th>                    
+                    <th>Note</th>                   
                     <th>Added Date</th>
                     <th>Action</th>
                 </tr>
@@ -67,8 +62,31 @@
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
+<div id="modalviewConversation" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-teal">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title">View Communication</h6>
+            </div>
+
+            <div class="modal-body">
+                <h6 class="text-semibold">Note</h6>
+                <p class="note"></p>
+                <hr>
+                <div class="media"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn bg-teal" data-dismiss="modal">Close</button>
+                <!--<button type="button" class="btn btn-info">Save changes</button>-->
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-    var logo_img_url = '<?php echo base_url() . GUEST_IMAGES ?>';
+    var logo_img_url = '<?php echo base_url() . COMMUNICATION_IMAGES ?>';
+    var guest_id = '<?php echo $id; ?>';
     $(function () {
         $('.datatable-basic').dataTable({
             autoWidth: false,
@@ -80,8 +98,8 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[7, "desc"]],
-            ajax: site_url + 'guests/get_guests',
+            order: [[3, "desc"]],
+            ajax: site_url + 'donors/get_donors_communication/' + guest_id,
             columns: [
                 {
                     data: "id",
@@ -89,58 +107,34 @@
                     sortable: false,
                 },
                 {
-                    data: "logo",
+                    data: "media",
                     visible: true,
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var logo = '';
+                        var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
                         if (data != null) {
-                            logo = '<a class="fancybox" href="' + logo_img_url + data + '"><img src="' + logo_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
+                            if (valid_extensions.test(data)) {
+                                logo = '<a class="fancybox" href="' + logo_img_url + data + '"><img src="' + logo_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
+                            } else {
+                                logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
+                            }
                         } else {
                             logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return logo;
                     }
                 },
+
                 {
-                    data: "action_matters_campaign",
-                    visible: true,
-                    render: function (data, type, full, meta) {
-                        if (full.is_vendor == 1) {
-                            return full.vendor_name;
-                        } else {
-                            return data
-                        }
-                    }
-                },
-                {
-                    data: "firstname",
+                    data: "note",
                     visible: true,
                 },
-                {
-                    data: "lastname",
-                    visible: true,
-                },
-                {
-                    data: "companyname",
-                    visible: true,
-                },
-                {
-                    data: "email",
-                    visible: true
-                },
-                {
-                    data: "city",
-                    visible: true
-                },
-//                {
-//                    data: "invite_date",
-//                    visible: true
-//                },
                 {
                     data: "created",
                     visible: true,
                 },
+
                 {
                     data: "is_delete",
                     visible: true,
@@ -148,9 +142,9 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
-                        action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest"><i class="icon-pencil3"></i></a>';
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest"><i class="icon-trash"></i></a>'
+                        action += '<a href="' + site_url + 'donors/add_communication/' + btoa(full.donor_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor Communication"><i class="icon-pencil3"></i></a>';
+                        action += '&nbsp;&nbsp;<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation"><i class="icon-eye"></i></a>'
+                        action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete_communication/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donors Communication"><i class="icon-trash"></i></a>'
                         return action;
                     }
                 }
@@ -163,10 +157,35 @@
         });
     });
 
+    function view_communication(e) {
+        var url = site_url + 'donors/get_communication_by_id';
+        var id = $(e).attr('data-id');
+        $.ajax({
+            type: 'POST',
+            url: url,
+            async: false,
+            dataType: 'JSON',
+            data: {id: id},
+            success: function (data) {
+                console.log(data);
+                $('.note').html(data.note);
+                var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
+                if (data.media != null) {
+                    if (valid_extensions.test(data.media)) {
+                        logo = '<a class="fancybox" href="' + logo_img_url + data.media + '"><img src="' + logo_img_url + data.media + '" style="width: 58px; height: 58px; border-radius: 2px;" class="img-circle"/></a>';
+                    } else {
+                        logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data.media + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" class="img-circle"/></a>';
+                    }
+                }
+                $('.media').html(logo);
+            }
+        });
+    }
+
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this guest!",
+            text: "You will not be able to recover this donor!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",
