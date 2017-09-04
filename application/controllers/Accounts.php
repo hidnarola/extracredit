@@ -185,6 +185,12 @@ class Accounts extends MY_Controller {
         if (is_numeric($id)) {
             $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['id' => $id]], ['single' => true]);
             if ($account) {
+                //-- Check if account is assigned to donor then don't allow to delete that account
+                $is_assigned = $this->accounts_model->sql_select(TBL_DONORS, NULL, ['where' => ['account_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($is_assigned)) {
+                    $this->session->set_flashdata('error', 'You can not delete account,It is assigned to donor');
+                    redirect('accounts');
+                }
                 $update_array = array(
                     'is_delete' => 1
                 );
