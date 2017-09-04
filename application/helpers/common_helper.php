@@ -125,10 +125,13 @@ function upload_image($image_name, $image_path) {
 function upload_communication($image_name, $image_path) {
     $CI = & get_instance();
     $extension = explode('/', $_FILES[$image_name]['type']);
-    $randname = uniqid() . time() . '.' . end($extension);
+    $file_extension = explode('/', $_FILES[$image_name]['name']);
+    $file_extension = explode('.', end($file_extension));
+    $randname = uniqid() . time() . '.' . end($file_extension);
     $config = array(
         'upload_path' => $image_path,
-        'allowed_types' => "png|jpg|jpeg|doc|docx|pdf",
+        'allowed_types' => "png|jpg|jpeg|pdf|docx|doc|DOCX|DOC",
+//        'max_size' => 10000,
         // 'max_height'      => "768",
         // 'max_width'       => "1024" ,
         'file_name' => $randname
