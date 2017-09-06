@@ -121,10 +121,12 @@
                                             <li class="<?php echo ($this->controller == 'funds' && ($this->action == 'payments')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('funds/payments'); ?>">Payments</a></li>
                                         </ul>
                                     </li>
+                                    <li class="<?php echo ($this->controller == 'payments') ? 'active' : ''; ?>"><a href="<?php echo site_url('payments'); ?>"><i class=" icon-credit-card"></i> <span>Payments</span></a></li>
                                     <li class="<?php echo ($this->controller == 'reports') ? 'active' : ''; ?>">
                                         <a href="#" class="has-ul"><i class="icon-graph"></i><span>Reports</span></a>
                                         <ul class="hidden-ul" style="<?php echo ($this->controller == 'reports' || in_array($this->action, array('donors_report'))) ? 'display: block;' : ''; ?>">
                                             <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'donors_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/donors_report'); ?>"><i class="icon-coins"></i> <span>Donors Reports</span></a></li>
+                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'guests_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/guests_report'); ?>"><i class="icon-people"></i> <span>Guests Reports</span></a></li>
                                         </ul>
                                     </li>
                                     <li class=""><a href="<?php echo site_url('logout') ?>"><i class="icon-switch2"></i> <span>Logout</span></a></li>

@@ -109,7 +109,7 @@
                         if (full.is_vendor == 1) {
                             return full.vendor_name;
                         } else {
-                            return data
+                            return data;
                         }
                     }
                 },

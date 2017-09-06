@@ -97,7 +97,7 @@ class Guests_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_guests_communication($type = 'result', $id) {
-        $columns = ['id', 'c.note', 'c.media', 'c.created'];
+        $columns = ['id', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
         $this->db->select('c.*');
 
@@ -128,6 +128,44 @@ class Guests_model extends MY_Model {
         $this->db->where(['gc.id' => $id, 'gc.is_delete' => 0]);
         $query = $this->db->get(TBL_COMMUNICATIONS . ' gc');
         return $query->row_array();
+    }
+
+    /**
+     * To generate donors report
+     * @param type $type
+     * @return type
+     */
+    public function get_guests_reports($type = 'result') {
+//        $columns = ['id', 'action_matters_campaign,vendor_name','d.date','d.post_date','id', 'd.firstname', 'd.lastname','d.address', 'city','state','d.zip','d.email','d.amount', 'd.refund', 'p.type','d.payment_number', 'd.memo'];
+        $columns = ['id', 'g.firstname', 'g.lastname', 'g.company_name', 'g.invite_date', 'g.guest_date', 'g.AIR_date', 'g.AMC_created', 'action_matters_campaign,vendor_name', 'g.address', 'city', 'state', 'g.zip', 'g.email', 'g.phone', 'g.assistant', 'g.assistant_phone', 'g.assistant_email'];
+        $keyword = $this->input->get('search');
+        $this->db->select('g.*,a.action_matters_campaign,a.vendor_name,c.name as city,s.name as state,f.is_vendor');
+
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left');     
+
+        if (!empty($keyword['value'])) {
+            $this->db->where('(f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR g.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR g.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR g.email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+        }
+
+        $this->db->where(['a.is_delete' => 0, 'g.is_delete' => 0]);
+        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        if ($type == 'result') {
+            $this->db->limit($this->input->get('length'), $this->input->get('start'));
+            $query = $this->db->get(TBL_GUESTS . ' g');
+            return $query->result_array();
+        } else {
+            $query = $this->db->get(TBL_GUESTS . ' g');
+            return $query->num_rows();
+        }
     }
 
 }

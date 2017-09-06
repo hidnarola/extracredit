@@ -52,7 +52,10 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Media</th>                    
+                    <th>Media</th>  
+                    <th>Subject</th>                   
+                    <th>Communication Date</th>                   
+                    <th>Follow Up Date</th>
                     <th>Note</th>                   
                     <th>Added Date</th>
                     <th>Action</th>
@@ -74,7 +77,7 @@
                 <h6 class="text-semibold">Note</h6>
                 <p class="note"></p>
                 <hr>
-                <div class="media"></div>
+                <div class="media-logo"></div>
             </div>
 
             <div class="modal-footer">
@@ -98,7 +101,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[3, "desc"]],
+            order: [[6, "desc"]],
             ajax: site_url + 'donors/get_donors_communication/' + guest_id,
             columns: [
                 {
@@ -125,10 +128,30 @@
                         return logo;
                     }
                 },
-
+                {
+                    data: "subject",
+                    visible: true
+                },
+                {
+                    data: "communication_date",
+                    visible: true
+                },
+                {
+                    data: "follow_up_date",
+                    visible: true
+                },
                 {
                     data: "note",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        var note = '';
+                        if (full.note.length > 20) {
+                            note = '<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation">'+ full.note.substr(0, 20) +'...</a>';
+                        } else {
+                            note = full.note;
+                        }
+                        return note;
+                    }
                 },
                 {
                     data: "created",
@@ -176,8 +199,8 @@
                     } else {
                         logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data.media + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" class="img-circle"/></a>';
                     }
+                    $('.media-logo').html(logo);
                 }
-                $('.media').html(logo);
             }
         });
     }

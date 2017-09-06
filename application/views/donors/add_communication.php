@@ -3,6 +3,8 @@
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="assets/js/pages/editor_ckeditor.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
 <?php
 $edit = 0;
 if (isset($donor_communication)) {
@@ -60,7 +62,39 @@ if (isset($donor_communication)) {
             <div class="panel panel-flat">
                 <div class="panel-body">
                     <form class="form-horizontal form-validate-jquery" action="" id="add_conversation_form" method="post" enctype="multipart/form-data">
-
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Communication Date <span class="text-danger">*</span></label>
+                            <div class="col-lg-6">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($donor_communication)) ? date('d F, Y', strtotime($donor_communication['communication_date'])) : set_value('communication_date'); ?>" required="required">
+                                </div>
+                                <?php
+                                echo '<label id="communication_date-error" class="validation-error-label" for="communication_date">' . form_error('communication_date') . '</label>';
+                                ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Follow Up Date <span class="text-danger">*</span></label>
+                            <div class="col-lg-6">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control pickadate" value="<?php echo (isset($donor_communication)) ? date('d F, Y', strtotime($donor_communication['follow_up_date'])) : set_value('follow_up_date'); ?>" required="required">
+                                </div>
+                                <?php
+                                echo '<label id="follow_up_date-error" class="validation-error-label" for="follow_up_date">' . form_error('follow_up_date') . '</label>';
+                                ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Subject <span class="text-danger">*</span></label>
+                            <div class="col-lg-6">
+                                <input type="text" name="subject" id="subject" placeholder="Enter Subject" class="form-control" required="required" value="<?php echo (isset($donor_communication) && $donor_communication['subject']) ? $guest_communication['subject'] : set_value('subject'); ?>">
+                                <?php
+                                echo '<label id="subject-error" class="validation-error-label" for="subject">' . form_error('subject') . '</label>';
+                                ?>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Communication <span class="text-danger">*</span></label>
                             <div class="col-lg-8">
@@ -137,7 +171,9 @@ if (isset($donor_communication)) {
     });
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
-
+    $('.pickadate').pickadate({
+        max: new Date()
+    });
     $("#add_conversation_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',

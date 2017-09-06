@@ -11,16 +11,17 @@
         </ul>
     </div>
 </div>
+<style>.dashboard_layout .dash-icon{margin-top: -5px;}</style>
 <div class="content">
-    <div class="row">
+    <div class="row dashboard_layout">
         <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
 
             <div class="col-lg-3">
                 <!-- Total Users -->
-                <div class="panel bg-teal-400">
+                <div class="panel bg-indigo-400">
                     <div class="panel-body">
                         <div class="heading-elements icon-dasboard">
-                            <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-users4"></i></div>
+                            <div class="icon-object border-white text-white dash-icon"><i class="icon-users4"></i></div>
                         </div>
                         <a href="<?php echo site_url('users') ?>" style="color: white">
                             <h3 class="no-margin"><?php echo $users; ?></h3>
@@ -37,7 +38,7 @@
             <div class="panel bg-pink-400">
                 <div class="panel-body">
                     <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-grid6"></i></div>
+                        <div class="icon-object border-white text-white dash-icon"><i class="icon-grid6"></i></div>
                     </div>
                     <a href="<?php echo site_url('accounts') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $accounts; ?></h3>
@@ -50,10 +51,10 @@
 
         <div class="col-lg-3">
             <!-- Total Feedbacks -->
-            <div class="panel bg-blue-400">
+            <div class="panel bg-slate-400">
                 <div class="panel-body">
                     <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-coins"></i></div>
+                        <div class="icon-object border-white text-white dash-icon"><i class="icon-coins"></i></div>
                     </div>
                     <a href="<?php echo site_url('donors') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $donors; ?></h3>
@@ -65,10 +66,10 @@
         </div>
         <div class="col-lg-3">
             <!-- Total Feedbacks -->
-            <div class="panel bg-indigo-400">
+            <div class="panel bg-warning-400">
                 <div class="panel-body">
                     <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white" style="border-style: inherit"><i class="icon-people"></i></div>
+                        <div class="icon-object border-white text-white dash-icon"><i class="icon-people"></i></div>
                     </div>
                     <a href="<?php echo site_url('guests') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $guests; ?></h3>

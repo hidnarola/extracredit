@@ -41,5 +41,33 @@ class Reports extends MY_Controller {
         $final['data'] = $donors;
         echo json_encode($final);
     }
+    /**
+     * Listing of All Guests
+     */
+    public function guests_report() {
+        $data['title'] = 'Extracredit | Guests';
+        $this->template->load('default', 'reports/guests_report', $data);
+    }
+    
+     /**
+     * Get donors data for ajax table
+     * */
+    public function get_guests_reports() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_reports('count');
+        $final['redraw'] = 1;
+        $guests = $this->guests_model->get_guests_reports('result');
+        $start = $this->input->get('start') + 1;
+
+        foreach ($guests as $key => $val) {
+            $guests[$key] = $val;
+            $guests[$key]['AIR_date'] = date('d M, Y', strtotime($val['AIR_date']));
+            $guests[$key]['invite_date'] = date('d M, Y', strtotime($val['invite_date']));
+            $guests[$key]['guest_date'] = date('d M, Y', strtotime($val['guest_date']));
+            $guests[$key]['created'] = date('d M, Y', strtotime($val['created']));
+        }
+
+        $final['data'] = $guests;
+        echo json_encode($final);
+    }
 
 }

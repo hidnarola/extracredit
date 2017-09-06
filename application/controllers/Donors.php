@@ -325,6 +325,9 @@ class Donors extends MY_Controller {
             if ($flag == 0) {
                 $dataArr = array(
                     'note' => $this->input->post('note'),
+                    'communication_date' => date('Y-m-d', strtotime($this->input->post('communication_date'))),
+                    'follow_up_date' => date('Y-m-d', strtotime($this->input->post('follow_up_date'))),
+                    'subject' => $this->input->post('subject'),
                     'donor_id' => $donor_id,
                     'guest_id' => 0,
                     'type' => 1,

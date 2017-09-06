@@ -67,7 +67,7 @@ class Donors_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_donors_communication($type = 'result', $id) {
-        $columns = ['id', 'c.note', 'c.media', 'c.created'];
+        $columns = ['id','c.subject','c.communication_date','c.follow_up_date', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
         $this->db->select('c.*');
 
