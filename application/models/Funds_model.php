@@ -96,7 +96,7 @@ class Funds_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_donorfund($type = 'result') {
-        $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'd.id','d.lastname','d.firstname', 'p.type', 'd.payment_number', 'd.memo', 'f.account_fund', 'd.amount', 'a.total_fund'];
+        $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'd.id', 'd.lastname', 'd.firstname', 'p.type', 'd.payment_number', 'd.memo', 'f.account_fund', 'd.amount', 'a.total_fund'];
         $keyword = $this->input->get('search');
         $this->db->select('d.date,d.post_date,ft.type as fund_type,a.action_matters_campaign,a.vendor_name,d.id,d.lastname,d.firstname,'
                 . 'p.type as payment_type,d.payment_number,d.memo,f.account_fund,d.amount,a.total_fund as balance,ft.is_vendor');
@@ -130,6 +130,42 @@ class Funds_model extends MY_Model {
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_DONORS . ' d');
+            return $query->num_rows();
+        }
+    }
+
+    /**
+     * Get payment fund for datatable
+     * @param string $type - Either result or count
+     * @return array for result or int for count
+     */
+    public function get_paymentfund($type = 'result') {
+        $columns = ['ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.check_date', 'p.check_number', 'p.amount', 'a.total_fund'];
+        $keyword = $this->input->get('search');
+        $this->db->select('ft.type as fund_type,a.action_matters_campaign,a.vendor_name,p.check_date,p.check_number,p.amount,'
+                . 'a.total_fund as balance,ft.is_vendor');
+
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id AND a.is_delete=0', 'left');
+        $this->db->join(TBL_FUND_TYPES . ' as ft', 'a.fund_type_id=ft.id AND ft.is_delete=0', 'left');
+
+        if (!empty($keyword['value'])) {
+            $this->db->where('(action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR ft.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR a.total_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+        }
+
+        $this->db->where(['p.is_delete' => 0]);
+        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        if ($type == 'result') {
+            $this->db->limit($this->input->get('length'), $this->input->get('start'));
+            $query = $this->db->get(TBL_PAYMENTS . ' p');
+            return $query->result_array();
+        } else {
+            $query = $this->db->get(TBL_PAYMENTS . ' p');
             return $query->num_rows();
         }
     }

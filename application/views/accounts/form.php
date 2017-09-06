@@ -276,7 +276,7 @@ if (isset($account)) {
     var edit = <?php echo $edit ?>;
     var email_url = site_url + 'accounts/checkUniqueEmail/';
     if (edit == 1) {
-        var append_id = <?php echo (isset($account)) ? $account['id'] : '' ?>;
+        var append_id = <?php echo (isset($account)) ? $account['id'] : 0 ?>;
         email_url += btoa(append_id);
     }
     $('.select2').select2(); //-- Initialize select 2
