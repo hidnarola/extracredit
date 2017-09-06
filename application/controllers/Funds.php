@@ -70,6 +70,25 @@ class Funds extends MY_Controller {
         echo json_encode($final);
     }
 
+    /**
+     * Listing of payment fund
+     */
+    public function payments() {
+        $data['title'] = 'Extracredit | Payment';
+        $this->template->load('default', 'funds/payments', $data);
+    }
+
+    /**
+     * This function used to get donor fund data for ajax table
+     * */
+    public function get_payment() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_paymentfund('count');
+        $final['redraw'] = 1;
+        $donor_fund = $this->funds_model->get_paymentfund('result');
+        $final['data'] = $donor_fund;
+        echo json_encode($final);
+    }
+
 }
 
 /* End of file Funds.php */
