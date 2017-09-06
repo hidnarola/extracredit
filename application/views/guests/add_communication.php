@@ -60,7 +60,39 @@ if (isset($guest_communication)) {
             <div class="panel panel-flat">
                 <div class="panel-body">
                     <form class="form-horizontal form-validate-jquery" action="" id="add_conversation_form" method="post" enctype="multipart/form-data">
-
+                        <div class="form-group">
+                            <label class="col-lg-1 control-label">Communication Date <span class="text-danger">*</span></label>
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F,Y', strtotime($guest['communication_date'])) : set_value('communication_date'); ?>" required="required">
+                                </div>
+                                <?php
+                                echo '<label id="communication_date-error" class="validation-error-label" for="communication_date">' . form_error('communication_date') . '</label>';
+                                ?>
+                            </div>
+                            <!--                        </div>
+                                                    <div class="form-group">-->
+                            <label class="col-lg-1 control-label">Follow Up Date <span class="text-danger">*</span></label>
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                    <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F,Y', strtotime($guest['guest_date'])) : set_value('guest_date'); ?>" required="required">
+                                </div>
+                                <?php
+                                echo '<label id="guest_date-error" class="validation-error-label" for="guest_date">' . form_error('guest_date') . '</label>';
+                                ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-1 control-label">Assistant <span class="text-danger">*</span></label>
+                            <div class="col-lg-4">
+                                <input type="text" name="assistant" id="assistant" placeholder="Enter Assistant" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['assistant']) ? $guest['assistant'] : set_value('assistant'); ?>">
+                                <?php
+                                echo '<label id="assistant-error" class="validation-error-label" for="assistant">' . form_error('assistant') . '</label>';
+                                ?>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Communication <span class="text-danger">*</span></label>
                             <div class="col-lg-8">
@@ -105,7 +137,6 @@ if (isset($guest_communication)) {
                                 ?>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button class="btn btn-success" type="submit" id="account_btn_submit">Save <i class="icon-arrow-right14 position-right"></i></button>
@@ -201,7 +232,7 @@ if (isset($guest_communication)) {
 
             reader.onload = function (e) {
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                 if (valid_extensions.test(input.files[0].name)) {
+                if (valid_extensions.test(input.files[0].name)) {
                     var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
                 } else {
                     var html = '<img src="assets/images/default_file.png" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
