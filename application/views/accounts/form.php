@@ -275,9 +275,13 @@ if (isset($account)) {
 <script type="text/javascript">
     var edit = <?php echo $edit ?>;
     var email_url = site_url + 'accounts/checkUniqueEmail/';
+    var vendor_url = site_url + 'accounts/checkUniqueVendor/';
+    var amc_url = site_url + 'accounts/checkUniqueAMC/';
     if (edit == 1) {
         var append_id = <?php echo (isset($account)) ? $account['id'] : 0 ?>;
         email_url += btoa(append_id);
+        vendor_url += btoa(append_id);
+        amc_url += btoa(append_id);
     }
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
@@ -383,6 +387,12 @@ if (isset($account)) {
                 email: true,
                 remote: email_url,
             },
+            action_matters_campaign: {
+                remote: amc_url,
+            },
+            vendor_name: {
+                remote: vendor_url,
+            },
             tax_id: {
                 taxUS: true,
             },
@@ -393,6 +403,12 @@ if (isset($account)) {
         messages: {
             email: {
                 remote: $.validator.format("Email address is already in use!")
+            },
+            vendor_name: {
+                remote: $.validator.format("Vendor name is already added!")
+            },
+            action_matters_campaign: {
+                remote: $.validator.format("AMC name is already added!")
             }
         },
         submitHandler: function (form) {

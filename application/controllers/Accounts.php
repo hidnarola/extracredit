@@ -159,7 +159,7 @@ class Accounts extends MY_Controller {
     }
 
     /**
-     * This function used to check Unique email at the time of account's add
+     * This function used to check Unique email at the time of account's add and edit
      * */
     public function checkUniqueEmail($id = NULL) {
         $where = ['email' => trim($this->input->get('email'))];
@@ -203,6 +203,42 @@ class Accounts extends MY_Controller {
         } else {
             show_404();
         }
+    }
+
+    /**
+     * This function used to check Unique Vedor at the time of account's add and edit
+     * */
+    public function checkUniqueVendor($id = NULL) {
+        $where = ['vendor_name' => trim($this->input->get('vendor_name'))];
+        if (!is_null($id)) {
+            $id = base64_decode($id);
+            $where['id!='] = $id;
+        }
+        $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => $where], ['single' => true]);
+        if (!empty($account)) {
+            echo "false";
+        } else {
+            echo "true";
+        }
+        exit;
+    }
+
+    /**
+     * This function used to check Unique AMC at the time of account's add and edit
+     * */
+    public function checkUniqueAMC($id = NULL) {
+        $where = ['action_matters_campaign' => trim($this->input->get('action_matters_campaign'))];
+        if (!is_null($id)) {
+            $id = base64_decode($id);
+            $where['id!='] = $id;
+        }
+        $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => $where], ['single' => true]);
+        if (!empty($account)) {
+            echo "false";
+        } else {
+            echo "true";
+        }
+        exit;
     }
 
 }

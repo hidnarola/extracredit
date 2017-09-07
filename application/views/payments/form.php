@@ -3,6 +3,7 @@
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+<script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <?php
 $edit = 0;
 $account_disabled = '';
@@ -99,6 +100,13 @@ if (isset($payment)) {
                                 ?>
                             </div>
                         </div>
+
+                        <div class="form-group" id="accoun_fund_div" <?php if (!isset($payment)) echo "style='display:none'" ?>>
+                            <label class="col-lg-2 control-label required" id="account_fund_label">Account Fund</label>
+                            <div class="col-lg-6">
+                                <input type="text" placeholder="Account Fund" class="form-control" name="account_fund" id="account_fund" value="<?php echo $account_fund ?>" disabled="disabled"/>
+                            </div>
+                        </div>
                         <fieldset class="content-group">
                             <legend class="text-bold">Payment Details</legend>
                             <div class="form-group">
@@ -114,9 +122,9 @@ if (isset($payment)) {
                                 </div>
                                 <label class="col-lg-2 control-label">Check Number <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="check_number" id="check_number" placeholder="Enter Check Number" class="form-control capitalize-text" required="required" value="<?php echo (isset($payment)) ? $payment['lastname'] : set_value('lastname'); ?>">
+                                    <input type="text" name="check_number" id="check_number" placeholder="Enter Check Number" class="form-control capitalize-text" required="required" value="<?php echo (isset($payment)) ? $payment['check_number'] : set_value('check_number'); ?>">
                                     <?php
-                                    echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('check_number') . '</label>';
+                                    echo '<label id="check_number-error" class="validation-error-label" for="check_number">' . form_error('check_number') . '</label>';
                                     ?>
                                 </div>
                             </div>
@@ -129,7 +137,6 @@ if (isset($payment)) {
                                     ?>
                                 </div>
                             </div>
-                            <input type="hidden" name="account_fund" id="account_fund" value="<?php echo isset($payment) ? $payment['total_fund'] : 0 ?>"/>
                         </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">
@@ -149,19 +156,6 @@ if (isset($payment)) {
     });
 
     $('.select2').select2(); //-- Initialize select 2
-    $(".switch").bootstrapSwitch(); //-- Initialize switch
-    //
-    //-- Payment Amount change eevent
-    $("#amount").on("keyup keydown change", function (event) {
-        if ($(this).val() != '' && Number($(this).val()) >= 0) {
-            admin_amt = (($(this).val()) * admin_donation) / 100;
-            admin_amt = admin_amt.toFixed(2);
-            account_amt = $(this).val() - admin_amt;
-
-            $('#admin_fund').val(admin_amt);
-            $('#account_fund').val(account_amt);
-        }
-    });
     //-- fund type change event
     $('#fund_type_id').change(function () {
         $.ajax({
@@ -180,22 +174,32 @@ if (isset($payment)) {
                     }
                     options += '</option>';
                 }
-                $("#account_fund").select2("val", '');
+                $('#account_id').empty().append(options);
+                $("#account_id").select2("val", '');
             }
         });
     });
     //-- Account id change
     $('#account_id').change(function () {
-        $.ajax({
-            url: '<?php echo site_url('payments/get_account_fund') ?>',
-            data: {id: btoa($(this).val())},
-            type: "POST",
-            dataType: 'json',
-            success: function (data) {
-                $('#account_id').empty().append(options);
-                $("#account_id").val(data.amount);
-            }
-        });
+        if ($(this).val() != null) {
+            $.ajax({
+                url: '<?php echo site_url('payments/get_account_fund') ?>',
+                data: {id: btoa($(this).val())},
+                type: "POST",
+                dataType: 'json',
+                success: function (data) {
+                    $('#accoun_fund_div').show();
+                    if (data.is_vendor == 1) {
+                        $("#account_fund_label").html('Admin Fund');
+                    } else {
+                        $("#account_fund_label").html('Account Fund');
+                    }
+                    $("#account_fund").val(data.amount);
+                    var amt = parseFloat(data.amount);
+                    $('#amount').rules("add", {max: amt});
+                }
+            });
+        }
     });
 
     $("#add_payment_form").validate({
@@ -252,11 +256,27 @@ if (isset($payment)) {
         rules: {
             amount: {
                 positiveNumber: true,
+                max:<?php echo $account_fund ?>,
             }
         },
         submitHandler: function (form) {
-            $('#payment_btn_submit').attr('disabled', true);
-            form.submit();
+            var amount_val = parseFloat($('#amount').val());
+            var account_fund = parseFloat($('#account_fund').val());
+            console.log('amount', amount_val);
+            console.log('account fund', account_fund);
+            if (amount_val > account_fund) {
+                swal({
+                    title: "Oops...",
+                    text: "You can not enter amount value more than account's fund!",
+                    confirmButtonColor: "#EF5350",
+                    type: "error"
+                });
+                return false;
+            } else {
+                $('#payment_btn_submit').attr('disabled', true);
+                form.submit();
+            }
+
         }
     });
     /*Validator method for positive number*/

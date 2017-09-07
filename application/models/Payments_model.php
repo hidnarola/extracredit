@@ -49,8 +49,8 @@ class Payments_model extends MY_Model {
      */
     public function get_payment_details($id) {
         $this->db->select('p.*,a.action_matters_campaign,a.vendor_name,a.fund_type_id,a.total_fund,f.is_vendor');
-        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id', 'left');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->where(['p.id' => $id, 'p.is_delete' => 0]);
         $query = $this->db->get(TBL_PAYMENTS . ' p');
         return $query->row_array();

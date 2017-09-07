@@ -176,6 +176,29 @@ class MY_Model extends CI_Model {
         }
     }
 
+    /**
+     * Common function to update admin fund
+     * @param float $amount
+     */
+    public function update_admin_fund($amount) {
+        $this->db->where(['id' => 1]);
+        $this->db->update(TBL_USERS, ['total_fund' => $amount]);
+    }
+
+    /**
+     * Custom Query
+     * $option = 1 if return result array
+     * $option = 2 if return row array
+     */
+    public function customQuery($query, $option) {
+        $result = $this->db->query($query);
+        if ($option == 1) {
+            return $result->result_array();
+        } else {
+            return $result->row_array();
+        }
+    }
+
 }
 
 /* End of file MY_Model.php */

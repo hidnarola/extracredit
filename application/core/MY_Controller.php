@@ -39,6 +39,8 @@ class MY_Controller extends CI_Controller {
                 redirect('home');
             }
         }
+        $fund = $this->users_model->sql_select(TBL_USERS, 'total_fund', ['where' => ['role' => 'admin']], ['single' => true]);
+        $this->admin_fund = $fund['total_fund'];
     }
 
     public function check_login($redirect = '') {

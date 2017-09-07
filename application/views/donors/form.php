@@ -186,7 +186,7 @@ if (isset($donor)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php echo (isset($donor)) ? date('d F,Y', strtotime($donor['date'])) : set_value('date'); ?>" required="required">
+                                        <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['date'])) : set_value('date'); ?>" required="required">
                                     </div>
                                     <?php
                                     echo '<label id="date-error" class="validation-error-label" for="date">' . form_error('date') . '</label>';
@@ -196,7 +196,7 @@ if (isset($donor)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php echo (isset($donor)) ? date('d F,Y', strtotime($donor['post_date'])) : set_value('post_date'); ?>" required="required">
+                                        <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['post_date'])) : set_value('post_date'); ?>" required="required">
                                     </div>
                                     <?php
                                     echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
