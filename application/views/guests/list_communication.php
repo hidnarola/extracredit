@@ -76,10 +76,30 @@
             </div>
 
             <div class="modal-body">
-                <h6 class="text-semibold">Note</h6>
+                <table class="table table-borderless table-xs content-group-sm">
+                    <tbody>
+                        <tr>
+                            <td><i class="icon-address-book3 position-left"></i> <b>Subject:</b></td>
+                            <td class="text-right"><span class="pull-right subject_value">Singular app</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="icon-alarm-add position-left"></i> <b>Communication date:</b></td>
+                            <td class="text-right communication_date">12 May, 2015</td>
+                        </tr>
+                        <tr>
+                            <td><i class="icon-alarm-check position-left"></i> <b>Follow Up date:</b></td>
+                            <td class="text-right follow_up_date">25 Feb, 2015</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
+                <h6 class="text-semibold">Note:</h6>
                 <p class="note"></p>
                 <hr>
-                <div class="media-logo"></div>
+                <div class="attached_media" style="display: none;">
+                    <h4>Attached Media</h4>
+                    <div class="media-logo"></div>
+                </div>
             </div>
 
             <div class="modal-footer">
@@ -196,6 +216,9 @@
             success: function (data) {
                 console.log(data);
                 $('.note').html(data.note);
+                $('.subject_value').html(data.subject);
+                $('.communication_date').html(data.communication_date);
+                $('.follow_up_date').html(data.follow_up_date);
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
                 
                 if (data.media != null) {
