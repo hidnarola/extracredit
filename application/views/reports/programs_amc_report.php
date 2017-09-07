@@ -4,13 +4,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-people"></i> <span class="text-semibold">Guests</span></h4>
+            <h4><i class="icon-calculator3"></i> <span class="text-semibold">Programs & AMCs</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Guests</li>
+            <li class="active">Programs & AMCs</li>
         </ul>
     </div>
 </div>
@@ -36,25 +36,21 @@
     <div class="panel panel-flat">
         <table class="table datatable-basic">
             <thead>
-                <tr>                    
-                    <th>Guest ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Company Name</th>
-                    <th>Invite Date</th>
-                    <th>Guest Date</th>
-                    <th>AIR Date</th>
-                    <th>AMC Created</th>
-                    <th>Campaign</th>
+                <tr>
+                    <th>#</th>
+                    <th>Active</th>
+                    <th>Program/AMC</th>
                     <th>Address</th>
                     <th>City</th>
                     <th>State</th>
                     <th>Zip</th>
+                    <th>Contact Name</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Assistant</th>
-                    <th>Assistant Phone</th>
-                    <th>Assistant Email</th>                                      
+                    <th>Tax ID</th>
+                    <th>Type</th>                    
+                    <th>Status</th>                    
+                    <th>Amount</th>                    
                 </tr>
             </thead>
         </table>
@@ -76,40 +72,25 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
-            ajax: site_url + 'reports/get_guests_reports',
+            ajax: site_url + 'reports/get_programs_amc_report',
             columns: [
                 {
                     data: "id",
                     visible: true,
                     sortable: false,
-                },               
-                {
-                    data: "firstname",
-                    visible: true
                 },
                 {
-                    data: "lastname",
-                    visible: true
-                },
-                {
-                    data: "companyname",
-                    visible: true
-                },
-                {
-                    data: "invite_date",
-                    visible: true
-                },
-                {
-                    data: "guest_date",
-                    visible: true
-                },
-                {
-                    data: "AIR_date",
-                    visible: true
-                },
-                {
-                    data: "AMC_created",
-                    visible: true
+                    data: "is_active",
+                    visible: true,
+                    searchable: false,
+                    sortable: false,
+                    render: function (data, type, full, meta) {
+                        var status = '<span class="label bg-success">Active</span>';
+                        if (full.is_active == 0) {
+                            status = '<span class="label bg-warning">Not Active</span>';
+                        }
+                        return status;
+                    }
                 },
                 {
                     data: "action_matters_campaign",
@@ -121,9 +102,13 @@
                             return data
                         }
                     }
-                },               
+                },
                 {
                     data: "address",
+                    visible: true,
+                },
+                {
+                    data: "city",
                     visible: true
                 },
                 {
@@ -131,15 +116,11 @@
                     visible: true
                 },
                 {
-                    data: "city",
-                    visible: true
-                },
-                {
                     data: "zip",
                     visible: true
                 },
                 {
-                    data: "email",
+                    data: "contact_name",
                     visible: true
                 },
                 {
@@ -147,19 +128,25 @@
                     visible: true
                 },
                 {
-                    data: "assistant",
+                    data: "email",
+                    visible: true
+                },                
+                {
+                    data: "tax_id",
+                    visible: true
+                },               
+                {
+                    data: "program_type",
                     visible: true
                 },
                 {
-                    data: "assistant_phone",
+                    data: "status",
                     visible: true
                 },
                 {
-                    data: "assistant_email",
+                    data: "total_fund",
                     visible: true
-                },
-                
-
+                }
             ]
         });
 

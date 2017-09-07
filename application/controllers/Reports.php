@@ -12,17 +12,18 @@ class Reports extends MY_Controller {
         parent::__construct();
         $this->load->model('guests_model');
         $this->load->model('donors_model');
+        $this->load->model('accounts_model');
     }
 
     /**
-     * Listing of All Guests
+     * Listing of All Guests for reports
      */
     public function donors_report() {
-        $data['title'] = 'Extracredit | Guests';
+        $data['title'] = 'Extracredit | Donors Report';
         $this->template->load('default', 'reports/donors_report', $data);
     }
-    
-     /**
+
+    /**
      * Get donors data for ajax table
      * */
     public function get_donors_reports() {
@@ -41,16 +42,17 @@ class Reports extends MY_Controller {
         $final['data'] = $donors;
         echo json_encode($final);
     }
+
     /**
-     * Listing of All Guests
+     * Listing of All Guests for reports
      */
     public function guests_report() {
-        $data['title'] = 'Extracredit | Guests';
+        $data['title'] = 'Extracredit | Guests Report';
         $this->template->load('default', 'reports/guests_report', $data);
     }
-    
-     /**
-     * Get donors data for ajax table
+
+    /**
+     * Get Guest data for ajax table
      * */
     public function get_guests_reports() {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_reports('count');
@@ -67,6 +69,83 @@ class Reports extends MY_Controller {
         }
 
         $final['data'] = $guests;
+        echo json_encode($final);
+    }
+
+    /**
+     * Listing of All Programs/amc for reports
+     */
+    public function programs_amc_report() {
+        $data['title'] = 'Extracredit | Program / AMC';
+        $this->template->load('default', 'reports/programs_amc_report', $data);
+    }
+
+    /**
+     * Get programs/amc data for ajax table
+     * */
+    public function get_programs_amc_report() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_programs_amc_report('count');
+        $final['redraw'] = 1;
+        $programs = $this->accounts_model->get_programs_amc_report('result');
+        $start = $this->input->get('start') + 1;
+
+        foreach ($programs as $key => $val) {
+            $programs[$key] = $val;
+            $programs[$key]['created'] = date('d M, Y', strtotime($val['created']));
+        }
+
+        $final['data'] = $programs;
+        echo json_encode($final);
+    }
+
+    /**
+     * Listing of All awards 90%(outgoing money) for reports
+     */
+    public function awards_report() {
+        $data['title'] = 'Extracredit | Awards';
+        $this->template->load('default', 'reports/awards_report', $data);
+    }
+
+    /**
+     * Get programs/awards 90% data for ajax table
+     * */
+    public function get_awards_report() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_awards_report('count');
+        $final['redraw'] = 1;
+        $awards = $this->accounts_model->get_awards_report('result');
+        $start = $this->input->get('start') + 1;
+
+        foreach ($awards as $key => $val) {
+            $awards[$key] = $val;
+            $awards[$key]['created'] = date('d M, Y', strtotime($val['created']));
+        }
+
+        $final['data'] = $awards;
+        echo json_encode($final);
+    }
+    /**
+     * Listing of All awards 90%(outgoing money) for reports
+     */
+    public function vendor_admin_report() {
+        $data['title'] = 'Extracredit | Awards';
+        $this->template->load('default', 'reports/vendor_admin_report', $data);
+    }
+
+    /**
+     * Get programs/awards 90% data for ajax table
+     * */
+    public function get_vendor_admin_report() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_vendor_admin_report('count');
+        $final['redraw'] = 1;
+        $vendor_admin = $this->accounts_model->get_vendor_admin_report('result');
+        $start = $this->input->get('start') + 1;
+
+        foreach ($vendor_admin as $key => $val) {
+            $vendor_admin[$key] = $val;
+            $vendor_admin[$key]['created'] = date('d M, Y', strtotime($val['created']));
+        }
+
+        $final['data'] = $vendor_admin;
         echo json_encode($final);
     }
 

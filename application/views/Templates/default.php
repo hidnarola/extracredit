@@ -127,6 +127,14 @@
                                         <ul class="hidden-ul" style="<?php echo ($this->controller == 'reports' || in_array($this->action, array('donors_report'))) ? 'display: block;' : ''; ?>">
                                             <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'donors_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/donors_report'); ?>"><i class="icon-coins"></i> <span>Donors Reports</span></a></li>
                                             <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'guests_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/guests_report'); ?>"><i class="icon-people"></i> <span>Guests Reports</span></a></li>
+                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'programs_amc_report')) ? 'active' : ''; ?>">
+                                                <a href="#"><i class="icon-calculator3"></i><span>Accounts Reports</span></a>
+                                                <ul class="hidden-ul" style="<?php echo ($this->controller == 'reports' || in_array($this->action, array('programs_amc_report'))) ? 'display: block;' : ''; ?>">
+                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'programs_amc_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/programs_amc_report'); ?>"><span>Programs & AMCs</span></a></li>
+                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'awards_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/awards_report'); ?>"><span>Awards 90%</span></a></li>
+                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'vendor_admin_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/vendor_admin_report'); ?>"><span>Vendors/Admin</span></a></li>
+                                                </ul>
+                                            </li>
                                         </ul>
                                     </li>
                                     <li class=""><a href="<?php echo site_url('logout') ?>"><i class="icon-switch2"></i> <span>Logout</span></a></li>

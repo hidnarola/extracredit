@@ -239,7 +239,7 @@ class Donors extends MY_Controller {
             show_404();
         }
     }
-    
+
     /**
      * Listing of All Donors Communication
      */
@@ -277,10 +277,11 @@ class Donors extends MY_Controller {
         $id = $this->input->post('id');
         $id = base64_decode($id);
         $donor_communication = $this->donors_model->get_donor_communication_details($id);
+        $donor_communication['follow_up_date'] = date('d M, Y', strtotime($donor_communication['follow_up_date']));
+        $donor_communication['communication_date'] = date('d M, Y', strtotime($donor_communication['communication_date']));
         echo json_encode($donor_communication);
     }
 
-    
     /**
      * Add Donors communication 
      * @param type $donor_id
@@ -288,7 +289,7 @@ class Donors extends MY_Controller {
      */
     public function add_communication($donor_id = null, $comm_id = null) {
         if (!is_null($donor_id))
-            $donor_id = base64_decode($donor_id);       
+            $donor_id = base64_decode($donor_id);
         $comm_id = base64_decode($comm_id);
         if (is_numeric($comm_id)) {
             $donor_communication = $this->donors_model->get_donor_communication_details($comm_id);
@@ -333,7 +334,7 @@ class Donors extends MY_Controller {
                     'type' => 1,
                     'media' => $media
                 );
-               
+
                 if (is_numeric($comm_id)) {
                     $dataArr['modified'] = date('Y-m-d H:i:s');
                     $this->donors_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
@@ -348,12 +349,12 @@ class Donors extends MY_Controller {
         }
         $this->template->load('default', 'donors/add_communication', $data);
     }
-    
-     /**
+
+    /**
      * Delete Donor Communication
      * @param int $id
      * */
-    public function delete_communication($donor_id=null,$id = NULL) {
+    public function delete_communication($donor_id = null, $id = NULL) {
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $donor_communication = $this->donors_model->get_donor_communication_details($id);
@@ -361,18 +362,17 @@ class Donors extends MY_Controller {
                 $update_array = array(
                     'is_delete' => 1
                 );
-                $this->donors_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id,'type'=>2]);
+                $this->donors_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id, 'type' => 2]);
                 $this->session->set_flashdata('success', 'Donor communication has been deleted successfully!');
             } else {
                 $this->session->set_flashdata('error', 'Invalid request. Please try again!');
             }
-           redirect('donors/communication/' . $donor_id);
+            redirect('donors/communication/' . $donor_id);
         } else {
             show_404();
         }
     }
 
-    
 }
 
 /* End of file Donors.php */
