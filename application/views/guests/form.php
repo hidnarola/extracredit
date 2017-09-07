@@ -229,7 +229,7 @@ if (isset($guest)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="invite_date" id="invite_date" placeholder="Enter Invite Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F,Y', strtotime($guest['invite_date'])) : set_value('invite_date'); ?>" required="required">
+                                        <input type="text" name="invite_date" id="invite_date" placeholder="Enter Invite Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F, Y', strtotime($guest['invite_date'])) : set_value('invite_date'); ?>" required="required">
                                     </div>
                                     <?php
                                     echo '<label id="invite_date-error" class="validation-error-label" for="invite_date">' . form_error('invite_date') . '</label>';
@@ -240,7 +240,7 @@ if (isset($guest)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F ,Y', strtotime($guest['guest_date'])) : set_value('guest_date'); ?>" required="required">
+                                        <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F, Y', strtotime($guest['guest_date'])) : set_value('guest_date'); ?>" required="required">
                                     </div>
                                     <?php
                                     echo '<label id="guest_date-error" class="validation-error-label" for="guest_date">' . form_error('guest_date') . '</label>';
@@ -252,7 +252,7 @@ if (isset($guest)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="AIR_date" id="post_date" placeholder="Enter AIR Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F ,Y', strtotime($guest['AIR_date'])) : set_value('AIR_date'); ?>" required="required">
+                                        <input type="text" name="AIR_date" id="post_date" placeholder="Enter AIR Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F, Y', strtotime($guest['AIR_date'])) : set_value('AIR_date'); ?>" required="required">
                                     </div>
                                     <?php
                                     echo '<label id="AIR_date-error" class="validation-error-label" for="AIR_date">' . form_error('AIR_date') . '</label>';

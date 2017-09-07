@@ -239,6 +239,8 @@ class Guests extends MY_Controller {
         $id = $this->input->post('id');
         $id = base64_decode($id);
         $guest_communication = $this->guests_model->get_guest_communication_details($id);
+        $guest_communication['follow_up_date'] = date('d F, Y', strtotime($guest_communication['follow_up_date']));
+        $guest_communication['communication_date'] = date('d F, Y', strtotime($guest_communication['communication_date']));
 //        $final['data'] = $guest_communication;
         echo json_encode($guest_communication);
     }
