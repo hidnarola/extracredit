@@ -38,7 +38,7 @@
             <div class="panel bg-pink-400">
                 <div class="panel-body">
                     <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white dash-icon"><i class="icon-grid6"></i></div>
+                        <div class="icon-object border-white text-white dash-icon"><i class="icon-calculator3"></i></div>
                     </div>
                     <a href="<?php echo site_url('accounts') ?>"  style="color: white">
                         <h3 class="no-margin"><?php echo $accounts; ?></h3>
@@ -51,7 +51,7 @@
 
         <div class="col-lg-3">
             <!-- Total Feedbacks -->
-            <div class="panel bg-slate-400">
+            <div class="panel bg-teal-400">
                 <div class="panel-body">
                     <div class="heading-elements icon-dasboard">
                         <div class="icon-object border-white text-white dash-icon"><i class="icon-coins"></i></div>
