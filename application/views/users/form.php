@@ -56,69 +56,96 @@ if (isset($user)) {
         <div class="col-md-12">
             <div class="panel panel-flat">
                 <div class="panel-body">
-                    <form class="form-horizontal form-validate-jquery" action="" id="add_user_form" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label class="control-label col-lg-2">Profile Image</label>
-                            <div class="col-lg-6">
-                                <div class="media no-margin-top">
-                                    <div class="media-left" id="image_preview_div">
-                                        <?php if (isset($user) && $user['profile_image'] != '') { ?>
-                                            <img src="<?php echo USER_IMAGES . $user['profile_image']; ?>" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
-                                        <?php } else {
-                                            ?>
-                                            <img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
-                                        <?php } ?>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend class="text-semibold"><i class="icon-user-tie position-left"></i> User's details</legend>
+                                <form class="form-horizontal form-validate-jquery" action="" id="add_user_form" method="post" enctype="multipart/form-data">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label">Fund Types <span class="text-danger">*</span></label>                                                
+                                                    <select name="role" id="role" class="select2" required="required" data-placeholder="Select Fund Type">
+                                                        <option value=""></option>
+                                                        <?php
+                                                        foreach ($roles as $type) {
+                                                            $selected = '';
+                                                            if (isset($user) && $user['role'] == $type['role'])
+                                                                $selected = 'selected';
+                                                            ?>
+                                                            <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['type'] ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                    <?php
+                                                    echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';
+                                                    ?>                                                                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class=control-label">First Name <span class="text-danger">*</span></label>
+                                                <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control" required="required" value="<?php echo (isset($user) && $user['firstname']) ? $user['firstname'] : set_value('firstname'); ?>">
+                                                <?php
+                                                echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label">Last Name </label>
+                                                <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control" value="<?php echo (isset($user) && $user['lastname']) ? $user['lastname'] : set_value('lastname'); ?>">
+                                                <?php
+                                                echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <?php
+                                        $disabled = '';
+                                        if (isset($user)) {
+                                            $disabled = 'disabled';
+                                        }
+                                        ?>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label">Email <span class="text-danger">*</span></label>
+                                                <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($user) && $user['email']) ? $user['email'] : set_value('email'); ?>" <?php echo $disabled ?>>
+                                                <?php
+                                                echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label">Profile Image</label>
+                                                <div class="media no-margin-top">
+                                                    <div class="media-left" id="image_preview_div">
+                                                        <?php if (isset($user) && $user['profile_image'] != '') { ?>
+                                                            <img src="<?php echo USER_IMAGES . $user['profile_image']; ?>" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
+                                                        <?php } else {
+                                                            ?>
+                                                            <img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
+                                                        <?php } ?>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <input type="file" name="profile_image" id="profile_image" class="file-styled" onchange="readURL(this);">
+                                                        <span class="help-block">Accepted formats: png, jpg. Max file size 2Mb</span>
+                                                    </div>
+                                                </div>
+                                                <?php
+                                                if (isset($profile_image_validation))
+                                                    echo '<label id="profile_image-error" class="validation-error-label" for="profile_image">' . $profile_image_validation . '</label>';
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-12">
+                                                <button class="btn btn-success" type="submit" id="update_profile">Save <i class="icon-arrow-right14 position-right"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="media-body">
-                                        <input type="file" name="profile_image" id="profile_image" class="file-styled" onchange="readURL(this);">
-                                        <span class="help-block">Accepted formats: png, jpg. Max file size 2Mb</span>
-                                    </div>
-                                </div>
-                                <?php
-                                if (isset($profile_image_validation))
-                                    echo '<label id="profile_image-error" class="validation-error-label" for="profile_image">' . $profile_image_validation . '</label>';
-                                ?>
-                            </div>
+                                </form>
+                            </fieldset>
                         </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">First Name <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control" required="required" value="<?php echo (isset($user) && $user['firstname']) ? $user['firstname'] : set_value('firstname'); ?>">
-                                <?php
-                                echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Last Name </label>
-                            <div class="col-lg-6">
-                                <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control" value="<?php echo (isset($user) && $user['lastname']) ? $user['lastname'] : set_value('lastname'); ?>">
-                                <?php
-                                echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <?php
-                        $disabled = '';
-                        if (isset($user)) {
-                            $disabled = 'disabled';
-                        }
-                        ?>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Email <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($user) && $user['email']) ? $user['email'] : set_value('email'); ?>" <?php echo $disabled ?>>
-                                <?php
-                                echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-lg-12">
-                                <button class="btn btn-success" type="submit" id="update_profile">Save <i class="icon-arrow-right14 position-right"></i></button>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -147,8 +174,7 @@ if (isset($user)) {
             if (element.parents('div').hasClass("checker") || element.parents('div').hasClass("choice") || element.parent().hasClass('bootstrap-switch-container')) {
                 if (element.parents('label').hasClass('checkbox-inline') || element.parents('label').hasClass('radio-inline')) {
                     error.appendTo(element.parent().parent().parent().parent());
-                }
-                else {
+                } else {
                     error.appendTo(element.parent().parent().parent().parent().parent());
                 }
             }
@@ -171,9 +197,7 @@ if (isset($user)) {
             // Input group, styled file input
             else if (element.parent().hasClass('uploader') || element.parents().hasClass('input-group')) {
                 error.appendTo(element.parent().parent());
-            }
-
-            else {
+            } else {
                 error.insertAfter(element);
             }
         },

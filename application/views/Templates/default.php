@@ -96,22 +96,9 @@
                             <div class="category-content no-padding">
                                 <ul class="navigation navigation-main navigation-accordion">
                                     <li class="<?php echo ($this->controller == 'home') ? 'active' : ''; ?>"><a href="<?php echo site_url('home'); ?>"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
-                                    <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
-                                        <li class="<?php echo ($this->controller == 'users') ? 'active' : ''; ?>"><a href="<?php echo site_url('users'); ?>"><i class="icon-users4"></i> <span>Users</span></a></li>
-                                    <?php } ?>
-                                    <li class="<?php echo ($this->controller == 'settings') ? 'active' : ''; ?>">
-                                        <a href="#" class="has-ul"><i class="icon-gear"></i><span>Settings</span></a>
-                                        <ul class="hidden-ul" style="<?php echo ($this->controller == 'settings' || in_array($this->action, array('fund_types', 'payment_types', 'program_types', 'program_status'))) ? 'display: block;' : ''; ?>">
-                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'index')) ? 'active' : ''; ?>"><a href="<?php echo site_url('settings'); ?>">Donation Split Settings</a></li>
-                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Fund/Account Types</a></li>
-                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'payment_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/payment_types'); ?>">Payment Types</a></li>
-                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_types'); ?>">Program/AMC Types</a></li>
-                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_status')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_status'); ?>">Program/AMC Stauts</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3"></i> <span>Accounts</span></a></li>
                                     <li class="<?php echo ($this->controller == 'donors') ? 'active' : ''; ?>"><a href="<?php echo site_url('donors'); ?>"><i class="icon-coins"></i> <span>Donors</span></a></li>
                                     <li class="<?php echo ($this->controller == 'guests') ? 'active' : ''; ?>"><a href="<?php echo site_url('guests'); ?>"><i class="icon-people"></i> <span>Guests</span></a></li>
+                                    <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3"></i> <span>Accounts</span></a></li>
                                     <li class="<?php echo ($this->controller == 'funds') ? 'active' : ''; ?>">
                                         <a href="#" class="has-ul"><i class="icon-cash4"></i><span>Funds</span></a>
                                         <ul class="hidden-ul" style="<?php echo ($this->controller == 'funds' || in_array($this->action, array('admin_fund', 'accounts', 'donors', 'payments'))) ? 'display: block;' : ''; ?>">
@@ -127,14 +114,27 @@
                                         <ul class="hidden-ul" style="<?php echo ($this->controller == 'reports' || in_array($this->action, array('donors_report'))) ? 'display: block;' : ''; ?>">
                                             <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'donors_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/donors_report'); ?>"><i class="icon-coins"></i> <span>Donors Reports</span></a></li>
                                             <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'guests_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/guests_report'); ?>"><i class="icon-people"></i> <span>Guests Reports</span></a></li>
-<!--                                            <li class="<?php echo ($this->controller == 'reports') && (in_array($this->action, array('programs_amc_report','awards_report','vendor_admin_report'))) ? 'active' : ''; ?>">
+                                            <li class="<?php echo ($this->controller == 'reports') && (in_array($this->action, array('programs_amc_report', 'awards_report', 'vendor_admin_report'))) ? 'active' : ''; ?>">
                                                 <a href="#"><i class="icon-calculator3"></i><span>Accounts Reports</span></a>
-                                                <ul class="hidden-ul" style="<?php echo (in_array($this->action, array('programs_amc_report','awards_report','vendor_admin_report'))) ? 'display: block;' : ''; ?>">
+                                                <ul class="hidden-ul" style="<?php echo (in_array($this->action, array('programs_amc_report', 'awards_report', 'vendor_admin_report'))) ? 'display: block;' : ''; ?>">
                                                     <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'programs_amc_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/programs_amc_report'); ?>"><span>Programs & AMCs</span></a></li>
                                                     <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'awards_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/awards_report'); ?>"><span>Awards 90%</span></a></li>
                                                     <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'vendor_admin_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/vendor_admin_report'); ?>"><span>Vendors/Admin</span></a></li>
                                                 </ul>
-                                            </li>-->
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="<?php echo ($this->controller == 'settings') ? 'active' : ''; ?>">
+                                        <a href="#" class="has-ul"><i class="icon-gear"></i><span>Settings</span></a>
+                                        <ul class="hidden-ul" style="<?php echo ($this->controller == 'settings' ||$this->controller == 'users' || in_array($this->action, array('fund_types', 'payment_types', 'program_types', 'program_status'))) ? 'display: block;' : ''; ?>">
+                                            <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
+                                                <li class="<?php echo ($this->controller == 'users') ? 'active' : ''; ?>"><a href="<?php echo site_url('users'); ?>"><span>Users</span><span class="label bg-warning-400"><?php echo $this->total_users; ?></span></a></li>
+                                            <?php } ?>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'index')) ? 'active' : ''; ?>"><a href="<?php echo site_url('settings'); ?>">Donation Split Settings</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Fund/Account Types</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'payment_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/payment_types'); ?>">Payment Types</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_types'); ?>">Program/AMC Types</a></li>
+                                            <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_status')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_status'); ?>">Program/AMC Stauts</a></li>
                                         </ul>
                                     </li>
                                     <li class=""><a href="<?php echo site_url('logout') ?>"><i class="icon-switch2"></i> <span>Logout</span></a></li>

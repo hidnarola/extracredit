@@ -16,8 +16,7 @@
     <div class="row dashboard_layout">
         <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
 
-            <div class="col-lg-3">
-                <!-- Total Users -->
+<!--            <div class="col-lg-3">                
                 <div class="panel bg-indigo-400">
                     <div class="panel-body">
                         <div class="heading-elements icon-dasboard">
@@ -28,30 +27,12 @@
                             Users
                         </a>
                     </div>
-                </div>
-                <!-- /Total Users -->
-            </div>
+                </div>                
+            </div>-->
         <?php } ?>
-
         <div class="col-lg-3">
-            <!-- Total Products -->
-            <div class="panel bg-pink-400">
-                <div class="panel-body">
-                    <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white dash-icon"><i class="icon-calculator3"></i></div>
-                    </div>
-                    <a href="<?php echo site_url('accounts') ?>"  style="color: white">
-                        <h3 class="no-margin"><?php echo $accounts; ?></h3>
-                        Accounts
-                    </a>
-                </div>
-            </div>
-            <!-- /Total Products -->
-        </div>
-
-        <div class="col-lg-3">
-            <!-- Total Feedbacks -->
-            <div class="panel bg-teal-400">
+            <!-- Total Donors -->
+            <div class="panel bg-indigo-400">
                 <div class="panel-body">
                     <div class="heading-elements icon-dasboard">
                         <div class="icon-object border-white text-white dash-icon"><i class="icon-coins"></i></div>
@@ -62,10 +43,11 @@
                     </a>
                 </div>
             </div>
-            <!-- /Total Feedbacks -->
+            <!-- /Total Donors -->
         </div>
+
         <div class="col-lg-3">
-            <!-- Total Feedbacks -->
+            <!-- Total Guests -->
             <div class="panel bg-warning-400">
                 <div class="panel-body">
                     <div class="heading-elements icon-dasboard">
@@ -77,8 +59,26 @@
                     </a>
                 </div>
             </div>
-            <!-- /Total Feedbacks -->
+            <!-- /Total Guests -->
         </div>
+        <div class="col-lg-3">
+            <!-- Total Accounts -->
+            <div class="panel bg-pink-400">
+                <div class="panel-body">
+                    <div class="heading-elements icon-dasboard">
+                        <div class="icon-object border-white text-white dash-icon"><i class="icon-calculator3"></i></div>
+                    </div>
+                    <a href="<?php echo site_url('accounts') ?>"  style="color: white">
+                        <h3 class="no-margin"><?php echo $accounts; ?></h3>
+                        Accounts
+                    </a>
+                </div>
+            </div>
+            <!-- /Total Accounts -->
+        </div>
+
+
+
     </div>
     <div class="row">               
         <div class="col-lg-4">
