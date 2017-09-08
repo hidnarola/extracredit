@@ -68,4 +68,35 @@ class Payments_model extends MY_Model {
         return $query->row_array();
     }
 
+    /**
+     * Get Payments Made report
+     * @param string $type - Either result or count
+     * @return array for result or int for count
+     */
+    public function get_payments_made_report($type = 'result') {
+        $columns = ['a.action_matters_campaign,a.vendor_name', 'p.amount', 'p.check_date', 'p.check_number'];
+        $keyword = $this->input->get('search');
+        $this->db->select('a.action_matters_campaign,a.vendor_name,p.amount,p.check_date,p.check_number,f.is_vendor');        
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id', 'left');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        
+        if (!empty($keyword['value'])) {
+            $this->db->where('(a.vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+        }
+        $this->db->where(['p.is_delete' => 0]);
+        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        if ($type == 'result') {
+            $this->db->limit($this->input->get('length'), $this->input->get('start'));
+            $query = $this->db->get(TBL_PAYMENTS . ' p');
+            return $query->result_array();
+        } else {
+            $query = $this->db->get(TBL_PAYMENTS . ' p');
+            return $query->num_rows();
+        }
+    }
+
 }

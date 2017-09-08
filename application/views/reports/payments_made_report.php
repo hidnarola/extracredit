@@ -3,13 +3,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-cash4"></i> <span class="text-semibold">Program/AMC Balances Report</span></h4>
+            <h4><i class="icon-cash4"></i> <span class="text-semibold">Payments Made Report</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Program/AMC Balances Report</li>
+            <li class="active">Payments Made Report</li>
         </ul>
     </div>
 </div>
@@ -37,12 +37,9 @@
             <thead>
                 <tr>
                     <th>Program Name</th>
-                    <th>Income</th>
-                    <th>No of Payments</th>                   
-                    <th>Payment Amount</th>                   
-                    <th>Balance Amount</th>                   
-                    <th>Last Deposit Date</th>                   
-                    <th>Last Payment Date</th>                   
+                    <th>Payment</th>
+                    <th>Check Date</th>                   
+                    <th>Payment Number</th>                   
                 </tr>
             </thead>
         </table>
@@ -63,7 +60,7 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
 //            order: [[7, "desc"]],
-            ajax: site_url + 'reports/get_amc_balance_report',
+            ajax: site_url + 'reports/get_payments_made_report',
             columns: [
                 {
                     data: "action_matters_campaign",
@@ -77,27 +74,15 @@
                     }
                 },
                 {
-                    data: "income",
-                    visible: true
-                },
-                {
-                    data: "no_of_payments",
-                    visible: true,
-                },
-                {
-                    data: "payment_amount",
-                    visible: true
-                },
-                {
-                    data: "balance_amount",
-                    visible: true
-                },
-                {
-                    data: "post_date",
+                    data: "amount",
                     visible: true
                 },
                 {
                     data: "check_date",
+                    visible: true,
+                },
+                {
+                    data: "check_number",
                     visible: true
                 },
             ]

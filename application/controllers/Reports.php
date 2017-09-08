@@ -10,9 +10,7 @@ class Reports extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model('guests_model');
-        $this->load->model('donors_model');
-        $this->load->model('accounts_model');
+        $this->load->model(['guests_model', 'donors_model', 'accounts_model', 'payments_model']);
     }
 
     /**
@@ -167,6 +165,26 @@ class Reports extends MY_Controller {
         $final['redraw'] = 1;
         $balance_report = $this->accounts_model->get_amc_balance_report('result');
         $final['data'] = $balance_report;
+        echo json_encode($final);
+    }
+
+    /**
+     * Display Payments Made Report
+     * @author KU
+     */
+    public function payments_made_report() {
+        $data['title'] = 'Extracredit | Payments Made Report';
+        $this->template->load('default', 'reports/payments_made_report', $data);
+    }
+
+    /**
+     * Get program/AMC Balance report
+     * */
+    public function get_payments_made_report() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->payments_model->get_payments_made_report('count');
+        $final['redraw'] = 1;
+        $payment_report = $this->payments_model->get_payments_made_report('result');
+        $final['data'] = $payment_report;
         echo json_encode($final);
     }
 

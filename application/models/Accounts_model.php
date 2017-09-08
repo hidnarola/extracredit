@@ -175,7 +175,9 @@ class Accounts_model extends MY_Model {
     public function get_amc_balance_report($type = 'result') {
         $columns = ['a.action_matters_campaign,a.vendor_name', 'inc.income', 'p.no_of_payments', 'p.payment_amount', 'a.total_fund', 'address', 'city', 'state', 'zip', 'total_fund'];
         $keyword = $this->input->get('search');
-        $this->db->select('a.action_matters_campaign,a.vendor_name,inc.income,f.type as fund_type,f.is_vendor,a.total_fund as balance_amount');
+        $select1 = '(SELECT post_date FROM ' . TBL_DONORS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) post_date';
+        $select2 = '(SELECT check_date FROM ' . TBL_PAYMENTS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) check_date';
+        $this->db->select('a.action_matters_campaign,a.vendor_name,inc.income,f.type as fund_type,f.is_vendor,a.total_fund as balance_amount,p.no_of_payments,p.payment_amount,' . $select1 . ',' . $select2);
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join('(SELECT sum(account_fund) income,account_id FROM ' . TBL_FUNDS . ' WHERE is_delete=0 group by account_id) inc', 'a.id=inc.account_id', 'left');
         $this->db->join('(SELECT sum(amount) payment_amount,count(id) no_of_payments,account_id FROM ' . TBL_PAYMENTS . ' WHERE is_delete=0 group by account_id) p', 'a.id=p.account_id', 'left');
@@ -188,8 +190,7 @@ class Accounts_model extends MY_Model {
                     ' OR p.payment_amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.total_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
-        $this->db->where(['p.is_delete' => 0]);
-        $this->db->where(['f.is_vendor' => 1]);
+        $this->db->where(['a.is_delete' => 0]);
         $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
