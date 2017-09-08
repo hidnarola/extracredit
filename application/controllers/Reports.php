@@ -123,6 +123,7 @@ class Reports extends MY_Controller {
         $final['data'] = $awards;
         echo json_encode($final);
     }
+
     /**
      * Listing of All awards 90%(outgoing money) for reports
      */
@@ -146,6 +147,26 @@ class Reports extends MY_Controller {
         }
 
         $final['data'] = $vendor_admin;
+        echo json_encode($final);
+    }
+
+    /**
+     * Display Program/AMC Balances Report
+     * @author KU
+     */
+    public function amc_balance_report() {
+        $data['title'] = 'Extracredit | Program/AMC Balances Report';
+        $this->template->load('default', 'reports/amc_balance_report', $data);
+    }
+
+    /**
+     * Get program/AMC Balance report
+     * */
+    public function get_amc_balance_report() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_amc_balance_report('count');
+        $final['redraw'] = 1;
+        $balance_report = $this->accounts_model->get_amc_balance_report('result');
+        $final['data'] = $balance_report;
         echo json_encode($final);
     }
 
