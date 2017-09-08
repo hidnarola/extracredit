@@ -122,11 +122,13 @@
                                                     <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'vendor_admin_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/vendor_admin_report'); ?>"><span>Vendors/Admin</span></a></li>
                                                 </ul>
                                             </li>
+                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'amc_balance_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/amc_balance_report'); ?>"><i class="icon-cash4"></i> <span>AMC Balances Reports</span></a></li>
+                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'amc_balance_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/payments_made_report'); ?>"><i class="icon-credit-card"></i> <span>Payments Made Reports</span></a></li>
                                         </ul>
                                     </li>
                                     <li class="<?php echo ($this->controller == 'settings') ? 'active' : ''; ?>">
                                         <a href="#" class="has-ul"><i class="icon-gear"></i><span>Settings</span></a>
-                                        <ul class="hidden-ul" style="<?php echo ($this->controller == 'settings' ||$this->controller == 'users' || in_array($this->action, array('fund_types', 'payment_types', 'program_types', 'program_status'))) ? 'display: block;' : ''; ?>">
+                                        <ul class="hidden-ul" style="<?php echo ($this->controller == 'settings' || $this->controller == 'users' || in_array($this->action, array('fund_types', 'payment_types', 'program_types', 'program_status'))) ? 'display: block;' : ''; ?>">
                                             <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
                                                 <li class="<?php echo ($this->controller == 'users') ? 'active' : ''; ?>"><a href="<?php echo site_url('users'); ?>"><span>Users</span><span class="label bg-warning-400"><?php echo $this->total_users; ?></span></a></li>
                                             <?php } ?>

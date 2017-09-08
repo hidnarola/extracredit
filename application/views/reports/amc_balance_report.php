@@ -1,16 +1,15 @@
 <script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
-<script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-coins"></i> <span class="text-semibold">Donors</span></h4>
+            <h4><i class="icon-calculator3"></i> <span class="text-semibold">Program/AMC Balances Report</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Donors</li>
+            <li class="active">Program/AMC Balances Report</li>
         </ul>
     </div>
 </div>
@@ -34,22 +33,16 @@
         </div>
     </div>
     <div class="panel panel-flat">
-        <div class="panel-heading text-right">
-            <a href="<?php echo site_url('donors/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Donor</a>
-        </div>
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Program/AMC</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Email</th>
-                    <th>City</th>
-                    <th>Payment Type</th>
-                    <th>Amount</th>
-                    <th>Added Date</th>
-                    <th>Action</th>
+                    <th>Program Name</th>
+                    <th>Income</th>
+                    <th>No of Payments</th>                   
+                    <th>Payment Amount</th>                   
+                    <th>Balance Amount</th>                   
+                    <th>Last Deposit Date</th>                   
+                    <th>Last Payment Date</th>                   
                 </tr>
             </thead>
         </table>
@@ -57,9 +50,9 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
-    var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
+            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
@@ -69,14 +62,9 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[8, "desc"]],
-            ajax: site_url + 'donors/get_donors',
+//            order: [[7, "desc"]],
+            ajax: site_url + 'reports/get_amc_balance_report',
             columns: [
-                {
-                    data: "id",
-                    visible: true,
-                    sortable: false,
-                },
                 {
                     data: "action_matters_campaign",
                     visible: true,
@@ -89,46 +77,29 @@
                     }
                 },
                 {
-                    data: "firstname",
-                    visible: true,
-                },
-                {
-                    data: "lastname",
-                    visible: true,
-                },
-                {
-                    data: "email",
+                    data: "income",
                     visible: true
                 },
                 {
-                    data: "city",
-                    visible: true
-                },
-                {
-                    data: "payment_type",
-                    visible: true
-                },
-                {
-                    data: "amount",
-                    visible: true
-                },
-                {
-                    data: "created",
+                    data: "no_of_payments",
                     visible: true,
                 },
                 {
-                    data: "is_delete",
-                    visible: true,
-                    searchable: false,
-                    sortable: false,
-                    render: function (data, type, full, meta) {
-                        var action = '';
-                        action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i></a>'
-                        return action;
-                    }
-                }
+                    data: "payment_amount",
+                    visible: true
+                },
+                {
+                    data: "balance_amount",
+                    visible: true
+                },
+                {
+                    data: "last_deposite_date",
+                    visible: true
+                },
+                {
+                    data: "last_payment_date",
+                    visible: true
+                },
             ]
         });
 
@@ -137,24 +108,4 @@
             width: 'auto'
         });
     });
-
-    function confirm_alert(e) {
-        swal({
-            title: "Are you sure?",
-            text: "You will not be able to recover this donor!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#FF7043",
-            confirmButtonText: "Yes, delete it!"
-        },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
-        return false;
-    }
 </script>
