@@ -123,7 +123,7 @@
                                                 </ul>
                                             </li>
                                             <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'amc_balance_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/amc_balance_report'); ?>"><i class="icon-cash4"></i> <span>AMC Balances Reports</span></a></li>
-                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'amc_balance_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/payments_made_report'); ?>"><i class="icon-credit-card"></i> <span>Payments Made Reports</span></a></li>
+                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'payments_made_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/payments_made_report'); ?>"><i class="icon-credit-card"></i> <span>Payments Made Reports</span></a></li>
                                         </ul>
                                     </li>
                                     <li class="<?php echo ($this->controller == 'settings') ? 'active' : ''; ?>">
