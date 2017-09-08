@@ -17,6 +17,8 @@ class Accounts extends MY_Controller {
      * Listing of All Accounts
      */
     public function index() {
+        checkPrivileges('accounts', 'view');
+        $data['perArr'] = checkPrivileges('donors');
         $data['title'] = 'Extracredit | Accounts';
         $this->template->load('default', 'accounts/list_accounts', $data);
     }

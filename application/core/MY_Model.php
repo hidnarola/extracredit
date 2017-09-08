@@ -199,6 +199,29 @@ class MY_Model extends CI_Model {
         }
     }
 
+    /**
+     * This function used to check Privileges for a particular user (page wise).
+     * @param String $page_name
+     * @param String $user_id
+     * @return Object 
+     * @author PAV
+     * */
+    public function checkPrivleges($page_name = '', $user_id = '') {
+        $this->db->select('up.*');
+        $this->db->from(TBL_USER_PERMISSION . ' as up');
+        $this->db->join(TBL_USERS . ' as u', 'up.user_id=u.id', 'left');
+        $this->db->join(TBL_PAGES . ' as p', 'up.page_id=p.id', 'left');
+        $this->db->where(
+                array(
+                    'p.page_name' => $page_name,
+                    'u.is_delete' => 0,
+                    'u.is_active' => 1,
+                    'up.user_id' => $user_id
+                )
+        );
+        return $this->db->get();
+    }
+
 }
 
 /* End of file MY_Model.php */

@@ -17,6 +17,8 @@ class Guests extends MY_Controller {
      * Listing of All Guests
      */
     public function index() {
+        checkPrivileges('donors', 'view');
+        $data['perArr'] = checkPrivileges('donors');
         $data['title'] = 'Extracredit | Guests';
         $this->template->load('default', 'guests/list_guests', $data);
     }

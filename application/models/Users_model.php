@@ -57,7 +57,7 @@ class Users_model extends MY_Model {
             $this->db->where('(firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR CONCAT(firstname , " " ,lastname) LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
 
-        $this->db->where(['role' => 'staff', 'is_delete' => 0]);
+        $this->db->where(['role!=' => 'admin', 'is_delete' => 0]);
         $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
@@ -81,4 +81,17 @@ class Users_model extends MY_Model {
         return $query->row_array();
     }
 
+    /**
+     * Get user privileges by its id
+     * @param int $user_id
+     */
+    public function get_user_privileges($user_id) {
+        $this->db->select('u.id as user_id,u.firstname, u.lastname,u.email,u.profile_image,up.*,p.page_name');
+        $this->db->from(TBL_USERS . ' u');
+        $this->db->join(TBL_USER_PERMISSION . ' up', 'u.id=up.user_id', 'left');
+        $this->db->join(TBL_PAGES . ' p', 'up.page_id=p.id', 'left');
+        $this->db->where(array('u.id' => $user_id));
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }

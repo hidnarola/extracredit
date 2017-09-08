@@ -102,6 +102,8 @@ define('TBL_PROGRAM_TYPES', 'program_types');
 define('TBL_SETTINGS', 'settings');
 define('TBL_STATES', 'states');
 define('TBL_USERS', 'users');
+define('TBL_PAGES', 'pages');
+define('TBL_USER_PERMISSION', 'user_permissions');
 /**
  * Contants for User Images
  */
