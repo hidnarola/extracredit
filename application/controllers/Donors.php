@@ -17,6 +17,8 @@ class Donors extends MY_Controller {
      * Listing of All Donors
      */
     public function index() {
+        checkPrivileges('donors', 'view');
+        $data['perArr'] = checkPrivileges('donors');
         $data['title'] = 'Extracredit | Donors';
         $this->template->load('default', 'donors/list_donors', $data);
     }
@@ -25,6 +27,8 @@ class Donors extends MY_Controller {
      * Get donors data for ajax table
      * */
     public function get_donors() {
+        checkPrivileges('donors', 'view');
+        $data['perArr'] = checkPrivileges('donors');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors('count');
         $final['redraw'] = 1;
         $donors = $this->donors_model->get_donors('result');
@@ -44,6 +48,8 @@ class Donors extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
+        checkPrivileges('donors', 'add');
+        $data['perArr'] = checkPrivileges('donors');
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -164,6 +170,8 @@ class Donors extends MY_Controller {
      * @param int $id
      * */
     public function edit($id) {
+        checkPrivileges('donors', 'edit');
+        $data['perArr'] = checkPrivileges('donors');
         $this->add($id);
     }
 
@@ -208,6 +216,8 @@ class Donors extends MY_Controller {
      * @param int $id
      * */
     public function delete($id = NULL) {
+        checkPrivileges('donors', 'delete');
+        $data['perArr'] = checkPrivileges('donors');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $donor = $this->donors_model->get_donor_details($id);
@@ -241,7 +251,9 @@ class Donors extends MY_Controller {
     /**
      * Listing of All Donors Communication
      */
-    public function communication($id = null) {
+    public function communication($id = null) {        
+        checkPrivileges('donors_communication', 'view');
+        $data['perArr'] = checkPrivileges('donors_communication');
         $data['title'] = 'Extracredit | Donors Communication';
         $data['id'] = $id;
         $this->template->load('default', 'donors/list_communication', $data);
@@ -251,8 +263,9 @@ class Donors extends MY_Controller {
      * Get Donors communication data for ajax table
      * */
     public function get_donors_communication($id) {
+         checkPrivileges('donors_communication', 'view');
+        $data['perArr'] = checkPrivileges('donors_communication');
         $id = base64_decode($id);
-
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_communication('count', $id);
         $final['redraw'] = 1;
         $donors = $this->donors_model->get_donors_communication('result', $id);
@@ -286,6 +299,8 @@ class Donors extends MY_Controller {
      * @param type $comm_id
      */
     public function add_communication($donor_id = null, $comm_id = null) {
+        checkPrivileges('donors_communication', 'add');
+        $data['perArr'] = checkPrivileges('donors_communication');
         if (!is_null($donor_id))
             $donor_id = base64_decode($donor_id);
         $comm_id = base64_decode($comm_id);
@@ -353,6 +368,8 @@ class Donors extends MY_Controller {
      * @param int $id
      * */
     public function delete_communication($donor_id = null, $id = NULL) {
+        checkPrivileges('donors_communication', 'delete');
+        $data['perArr'] = checkPrivileges('donors_communication');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $donor_communication = $this->donors_model->get_donor_communication_details($id);

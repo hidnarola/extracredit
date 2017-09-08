@@ -16,6 +16,8 @@ class Settings extends MY_Controller {
      * Donation split settings page
      */
     public function index() {
+        checkPrivileges('donation_split_settings', 'view');
+        $data['perArr'] = checkPrivileges('donation_split_settings');
         $data['title'] = 'Extracredit | Settings';
         $settings = $this->users_model->sql_select(TBL_SETTINGS);
         $settings_arr = [];
@@ -48,6 +50,8 @@ class Settings extends MY_Controller {
      * List all fund types added
      */
     public function fund_types() {
+        checkPrivileges('fund_types', 'view');
+        $data['perArr'] = checkPrivileges('fund_types');
         $data['title'] = 'Extracredit | Fund Types';
         $data['fund_types'] = $this->users_model->sql_select(TBL_FUND_TYPES, null, ['where' => ['is_delete' => 0]]);
         $this->form_validation->set_rules('fund_type', 'Fund Type', 'trim|required');
@@ -114,6 +118,8 @@ class Settings extends MY_Controller {
      * @param int $id
      */
     public function delete_fundtype($id = NULL) {
+        checkPrivileges('fund_types', 'delete');
+        $data['perArr'] = checkPrivileges('fund_types');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_FUND_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
@@ -142,6 +148,8 @@ class Settings extends MY_Controller {
      * List all payment types added and add/update payment type
      */
     public function payment_types() {
+        checkPrivileges('payment_types', 'view');
+        $data['perArr'] = checkPrivileges('payment_types');
         $data['title'] = 'Extracredit | Payment Types';
         $data['payment_types'] = $this->users_model->sql_select(TBL_PAYMENT_TYPES, null, ['where' => ['is_delete' => 0]]);
         $this->form_validation->set_rules('payment_type', 'Payment Type', 'trim|required');
@@ -178,6 +186,8 @@ class Settings extends MY_Controller {
      * @param int $id
      */
     public function delete_paymenttype($id = NULL) {
+        checkPrivileges('payment_types', 'delete');
+        $data['perArr'] = checkPrivileges('payment_types');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
@@ -235,6 +245,8 @@ class Settings extends MY_Controller {
      * List all program/AMC types added and add/update program type
      */
     public function program_types() {
+        checkPrivileges('program_types', 'view');
+        $data['perArr'] = checkPrivileges('program_types');
         $data['title'] = 'Extracredit | Prgram Types';
         $data['program_types'] = $this->users_model->sql_select(TBL_PROGRAM_TYPES, null, ['where' => ['is_delete' => 0]]);
         $this->form_validation->set_rules('program_type', 'Program Type', 'trim|required');
@@ -271,6 +283,8 @@ class Settings extends MY_Controller {
      * @param int $id
      */
     public function delete_programtype($id = NULL) {
+        checkPrivileges('program_types', 'delete');
+        $data['perArr'] = checkPrivileges('program_types');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PROGRAM_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
@@ -327,6 +341,8 @@ class Settings extends MY_Controller {
      * List all program/AMC satus added and add/update program status
      */
     public function program_status() {
+        checkPrivileges('program_status', 'view');
+        $data['perArr'] = checkPrivileges('program_status');
         $data['title'] = 'Extracredit | Prgram Status';
         $data['program_status'] = $this->users_model->sql_select(TBL_PROGRAM_STATUS, null, ['where' => ['is_delete' => 0]]);
         $this->form_validation->set_rules('program_status', 'Program Status', 'trim|required');
@@ -363,6 +379,8 @@ class Settings extends MY_Controller {
      * @param int $id
      */
     public function delete_programstatus($id = NULL) {
+        checkPrivileges('program_status', 'delete');
+        $data['perArr'] = checkPrivileges('program_status');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PROGRAM_STATUS, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);

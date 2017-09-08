@@ -18,7 +18,7 @@ class Accounts extends MY_Controller {
      */
     public function index() {
         checkPrivileges('accounts', 'view');
-        $data['perArr'] = checkPrivileges('donors');
+        $data['perArr'] = checkPrivileges('accounts');
         $data['title'] = 'Extracredit | Accounts';
         $this->template->load('default', 'accounts/list_accounts', $data);
     }
@@ -27,6 +27,8 @@ class Accounts extends MY_Controller {
      * Get accounts data for ajax table
      * */
     public function get_accounts() {
+        checkPrivileges('accounts', 'view');
+        $data['perArr'] = checkPrivileges('accounts');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_accounts('count');
         $final['redraw'] = 1;
         $accounts = $this->accounts_model->get_accounts('result');
@@ -47,6 +49,8 @@ class Accounts extends MY_Controller {
      * @param type $id
      */
     public function add($id = NULL) {
+        checkPrivileges('accounts', 'add');
+        $data['perArr'] = checkPrivileges('accounts');
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -139,6 +143,8 @@ class Accounts extends MY_Controller {
      * @param int $id
      * */
     public function edit($id) {
+        checkPrivileges('accounts', 'edit');
+        $data['perArr'] = checkPrivileges('accounts');
         $this->add($id);
     }
 
@@ -183,6 +189,8 @@ class Accounts extends MY_Controller {
      * @param int $id
      * */
     public function delete($id = NULL) {
+        checkPrivileges('accounts', 'delete');
+        $data['perArr'] = checkPrivileges('accounts');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['id' => $id]], ['single' => true]);

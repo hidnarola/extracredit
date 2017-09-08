@@ -267,7 +267,10 @@ function crop_image($source_x, $source_y, $width, $height, $image_name) {
 function checkPrivileges($page_name = '', $permission = '', $flag = 0) {
     $CI = & get_instance();
     $CI->load->model('users_model');
-    $user_id = $CI->session->userdata('user_id');
+    $user_id = $CI->session->userdata('extracredit_user')['id'];
+    $user_role = $CI->session->userdata('extracredit_user')['role'];
+    if ($user_role == 'admin')
+        return true;
     $prevArr = $CI->users_model->checkPrivleges($page_name, $user_id)->row_array();
     $columns = $CI->db->query("SHOW COLUMNS FROM " . TBL_USER_PERMISSION . " LIKE 'pg_%'")->result();
     $actions = array();
@@ -277,7 +280,7 @@ function checkPrivileges($page_name = '', $permission = '', $flag = 0) {
         } else {
             if ($flag == 0) {
                 $CI->session->set_flashdata('error', 'You are not authorized to access this page!');
-                redirect('dashboard');
+                redirect('home');
             } else {
                 return false;
             }

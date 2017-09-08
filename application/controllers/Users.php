@@ -17,6 +17,8 @@ class Users extends MY_Controller {
     }
 
     public function index() {
+         checkPrivileges('users', 'view');
+        $data['perArr'] = checkPrivileges('users');
         $data['title'] = 'Extracredit | Users';
         $this->template->load('default', 'users/list_users', $data);
     }
@@ -25,6 +27,8 @@ class Users extends MY_Controller {
      * This function used to get users data for ajax table
      * */
     public function get_users() {
+        checkPrivileges('users', 'view');
+        $data['perArr'] = checkPrivileges('users');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->users_model->get_users('count');
         $final['redraw'] = 1;
         $users = $this->users_model->get_users('result');
@@ -45,6 +49,8 @@ class Users extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
+        checkPrivileges('users', 'add');
+        $data['perArr'] = checkPrivileges('users');
         if (!is_null($id))
             $id = base64_decode($id);
         $condition = array();
@@ -126,6 +132,8 @@ class Users extends MY_Controller {
      * @param int $id
      * */
     public function edit($id) {
+        checkPrivileges('users', 'edit');
+        $data['perArr'] = checkPrivileges('users');
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -238,6 +246,8 @@ class Users extends MY_Controller {
      * @param int $id
      * */
     public function delete($id = NULL) {
+        checkPrivileges('users', 'delete');
+        $data['perArr'] = checkPrivileges('users');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $user = $this->users_model->get_user_detail(['id' => $id], 'id,firstname');

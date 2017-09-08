@@ -17,8 +17,8 @@ class Guests extends MY_Controller {
      * Listing of All Guests
      */
     public function index() {
-        checkPrivileges('donors', 'view');
-        $data['perArr'] = checkPrivileges('donors');
+        checkPrivileges('guest', 'view');
+        $data['perArr'] = checkPrivileges('guest');
         $data['title'] = 'Extracredit | Guests';
         $this->template->load('default', 'guests/list_guests', $data);
     }
@@ -27,6 +27,8 @@ class Guests extends MY_Controller {
      * Get guests data for ajax table
      * */
     public function get_guests() {
+        checkPrivileges('guest', 'view');
+        $data['perArr'] = checkPrivileges('guest');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests('count');
         $final['redraw'] = 1;
         $guests = $this->guests_model->get_guests('result');
@@ -47,6 +49,8 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
+        checkPrivileges('guest', 'add');
+        $data['perArr'] = checkPrivileges('guest');
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -154,6 +158,8 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function edit($id) {
+        checkPrivileges('guest', 'edit');
+        $data['perArr'] = checkPrivileges('guest');
         $this->add($id);
     }
 
@@ -162,6 +168,8 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function delete($id = NULL) {
+        checkPrivileges('guest', 'delete');
+        $data['perArr'] = checkPrivileges('guest');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $guest = $this->guests_model->get_guest_details($id);
@@ -211,6 +219,8 @@ class Guests extends MY_Controller {
      * Listing of All Guests
      */
     public function communication($id = null) {
+        checkPrivileges('guests_communication', 'view');
+        $data['perArr'] = checkPrivileges('guests_communication');
         $data['title'] = 'Extracredit | Guests Communication';
         $data['id'] = $id;
         $this->template->load('default', 'guests/list_communication', $data);
@@ -220,6 +230,8 @@ class Guests extends MY_Controller {
      * Get guests communication data for ajax table
      * */
     public function get_guests_communication($id) {
+        checkPrivileges('guests_communication', 'view');
+        $data['perArr'] = checkPrivileges('guests_communication');
         $id = base64_decode($id);
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_communication('count', $id);
         $final['redraw'] = 1;
@@ -248,6 +260,8 @@ class Guests extends MY_Controller {
     }
 
     public function add_communication($guest_id = null, $comm_id = null) {
+        checkPrivileges('guests_communication', 'add');
+        $data['perArr'] = checkPrivileges('guests_communication');
         if (!is_null($guest_id))
             $guest_id = base64_decode($guest_id);
         $comm_id = base64_decode($comm_id);
@@ -315,6 +329,8 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function delete_communication($guest_id = null, $id = NULL) {
+        checkPrivileges('guests_communication', 'delete');
+        $data['perArr'] = checkPrivileges('guests_communication');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $guest_communication = $this->guests_model->get_guest_communication_details($id);
