@@ -272,6 +272,7 @@
         });
         return false;
     }
+    
     $(".styled, .multiselect-container input").uniform({
         radioClass: 'choice'
     });

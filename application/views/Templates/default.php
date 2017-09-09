@@ -9,17 +9,6 @@
             //-- Set common javascript vairable
             var site_url = "<?php echo site_url() ?>";
             var base_url = "<?php echo base_url() ?>";
-
-            /*
-             $(document).ready(function () {
-             //--Hide the alert message 
-             window.setTimeout(function () {
-             $(".hide-msg").fadeTo(500, 0).slideUp(500, function () {
-             $(this).remove();
-             });
-             }, 7000);
-             });
-             */
         </script>
         <noscript>
         <META HTTP-EQUIV="Refresh" CONTENT="0;URL=js_disabled">
@@ -90,7 +79,6 @@
                             </div>
                         </div>
                         <!-- /user menu -->
-
                         <!-- Main navigation -->
                         <div class="sidebar-category sidebar-category-visible">
                             <div class="category-content no-padding">
