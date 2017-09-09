@@ -67,7 +67,7 @@ class Donors_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_donors_communication($type = 'result', $id) {
-        $columns = ['id','c.subject','c.communication_date','c.follow_up_date', 'c.note', 'c.media', 'c.created'];
+        $columns = ['id', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
         $this->db->select('c.*');
 
@@ -106,7 +106,7 @@ class Donors_model extends MY_Model {
      * @return type
      */
     public function get_donors_reports($type = 'result') {
-        $columns = ['fund_type', 'action_matters_campaign,vendor_name','d.date','d.post_date','id', 'd.firstname', 'd.lastname','d.address', 'city','state','d.zip','d.email','d.amount', 'd.refund', 'p.type','d.payment_number', 'd.memo'];
+        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'd.date', 'd.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'city', 'state', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'd.payment_number', 'd.memo'];
         $keyword = $this->input->get('search');
         $this->db->select('d.*,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.type as fund_type,c.name as city,s.name as state,f.is_vendor,p.type as payment_type');
 
@@ -139,5 +139,16 @@ class Donors_model extends MY_Model {
             return $query->num_rows();
         }
     }
-    
+
+    /**
+     * Get all accounts 
+     */
+    public function get_all_accounts() {
+        $this->db->select('f.type as fund_type,a.id,a.fund_type_id,a.action_matters_campaign,a.vendor_name,f.is_vendor');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->where(['a.is_delete' => 0]);
+        $query = $this->db->get(TBL_ACCOUNTS . ' a');
+        return $query->result_array();
+    }
+
 }

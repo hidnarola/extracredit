@@ -163,7 +163,7 @@ if (isset($user)) {
                                     <legend class="text-semibold"><i class="icon-shield-check position-left"></i> User's Permissions details</legend>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <div class="table-responsive custom_scrollbar" style="max-height:390px">
+                                            <div class="table-responsive custom_scrollbar" style="max-height:406px">
                                                 <table class="table table-bordered table-hover table-fixed">
                                                     <thead>
                                                         <tr>
@@ -176,31 +176,31 @@ if (isset($user)) {
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td style="padding:0px 15px;text-align: center">#
+                                                            <td style="padding:5px 15px;text-align: center">#
                                                             </td>
-                                                            <td style="padding:0px 20px">SELECT ALL</td>
-                                                            <td style="padding:0px 20px;padding-left:4%">
+                                                            <td style="padding:5px 20px">SELECT ALL</td>
+                                                            <td style="padding:5px 20px;padding-left:4%">
                                                                 <div class="checkbox">
                                                                     <label>
                                                                         <input type="checkbox" class="styled checkbox select_all_checkbox" id="view_checkbox">
                                                                     </label>
                                                                 </div>
                                                             </td>
-                                                            <td style="padding:0px 20px;padding-left:4%">
+                                                            <td style="padding:5px 20px;padding-left:4%">
                                                                 <div class="checkbox">
                                                                     <label>
                                                                         <input type="checkbox" class="styled checkbox select_all_checkbox" id="add_checkbox">
                                                                     </label>
                                                                 </div>
                                                             </td>
-                                                            <td style="padding:0px 20px;padding-left:4%">
+                                                            <td style="padding:5px 20px;padding-left:4%">
                                                                 <div class="checkbox">
                                                                     <label>
                                                                         <input type="checkbox" class="styled checkbox select_all_checkbox" id="edit_checkbox">
                                                                     </label>
                                                                 </div>
                                                             </td>
-                                                            <td style="padding:0px 20px;padding-left:4%">
+                                                            <td style="padding:5px 20px;padding-left:4%">
                                                                 <div class="checkbox">
                                                                     <label>
                                                                         <input type="checkbox" class="styled checkbox select_all_checkbox" id="delete_checkbox">
@@ -210,14 +210,14 @@ if (isset($user)) {
                                                         </tr>
                                                         <?php foreach ($pageArr as $k => $v) { ?>
                                                             <tr>
-                                                                <td style="padding:0px 20px"><?= $k + 1 ?></td>
-                                                                <td style="padding:0px 20px;"><?= strtoupper(str_replace('_', ' ', $v->page_name)) ?></td>
+                                                                <td style="padding:5px 20px"><?= $k + 1 ?></td>
+                                                                <td style="padding:5px 20px;"><?= strtoupper(str_replace('_', ' ', $v->page_name)) ?></td>
                                                                 <?php
                                                                 if (array_key_exists($v->id, $priv_action)) {
                                                                     foreach ($actions as $k1 => $v1) {
                                                                         $class = strtolower($v1) . '_checkbox';
                                                                         ?>
-                                                                        <td style="padding:0px 20px;padding-left:4%">
+                                                                        <td style="padding:5px 20px;padding-left:4%">
                                                                             <div class="checkbox">
                                                                                 <label>
                                                                                     <input type="checkbox" class="styled checkbox priv_checkbox <?php echo $class ?>" name="<?php echo $v->page_name . '[]'; ?>" value="<?php echo $k1 ?>" data-priv="<?php echo $class; ?>" <?php
@@ -236,7 +236,7 @@ if (isset($user)) {
                                                                     foreach ($actions as $k1 => $v1) {
                                                                         $class = strtolower($v1) . '_checkbox';
                                                                         ?>
-                                                                        <td style="padding:0px 20px;padding-left:4%">
+                                                                        <td style="padding:5px 20px;padding-left:4%">
                                                                             <div class="checkbox">
                                                                                 <label>
                                                                                     <input type="checkbox" class="styled checkbox priv_checkbox <?php echo $class ?>" name="<?php echo $v->page_name . '[]'; ?>" value="<?php echo $k1 ?>" data-priv="<?php echo $class; ?>">

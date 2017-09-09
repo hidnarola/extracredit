@@ -251,7 +251,7 @@ class Donors extends MY_Controller {
     /**
      * Listing of All Donors Communication
      */
-    public function communication($id = null) {        
+    public function communication($id = null) {
         checkPrivileges('donors_communication', 'view');
         $data['perArr'] = checkPrivileges('donors_communication');
         $data['title'] = 'Extracredit | Donors Communication';
@@ -263,7 +263,7 @@ class Donors extends MY_Controller {
      * Get Donors communication data for ajax table
      * */
     public function get_donors_communication($id) {
-         checkPrivileges('donors_communication', 'view');
+        checkPrivileges('donors_communication', 'view');
         $data['perArr'] = checkPrivileges('donors_communication');
         $id = base64_decode($id);
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_communication('count', $id);
@@ -390,31 +390,24 @@ class Donors extends MY_Controller {
 
     /**
      * Import donor data from CSV file
+     * @author KU
      */
     public function import_donor() {
-        $condition = array();
-        $sku_arr = array();
-        $this->data['product_details'] = $this->product_model->get_all_details('shopsy_seller_product', $condition)->result_array();
-        for ($sku_cnt = 0; $sku_cnt < sizeof($this->data['product_details']); $sku_cnt++) {
-            array_push($sku_arr, $this->data['product_details'][$sku_cnt]['sku']);
-        }
-
-        header('Content-Type: text/html; charset=UTF-8');
-
-        $file = $this->input->post('upload_csv');
-        $fileDirectory = './images/csv';
-        if (!is_dir($fileDirectory)) {
-            mkdir($fileDirectory, 0777);
-        }
+//        p($_FILES, 1);
+        $accounts = $this->donors_model->get_all_accounts();
+        $fileDirectory = DONORS_CSV;
+        $file = $this->input->post('import_donor');
         $config['overwrite'] = FALSE;
         $config['remove_spaces'] = TRUE;
         $config['upload_path'] = $fileDirectory;
-        $config['allowed_types'] = '*';
+        $config['allowed_types'] = 'csv|CSV';
         $this->load->library('upload', $config);
-        $file_element_name = 'upload_csv';
-        if ($this->upload->do_upload('upload_csv')) {
-            $fileDetails = $this->upload->data();
+        $file_element_name = 'import_donor';
 
+        if ($this->upload->do_upload('import_donor')) {
+            echo 'uploaded';
+            exit;
+            $fileDetails = $this->upload->data();
 
             $coun = 0;
             $row = 1;
@@ -886,8 +879,9 @@ class Donors extends MY_Controller {
             $this->setErrorMessage('error', 'The coloumns in this csv file does not match to the database');
             redirect('upload-products');
         } else {
-            $this->setErrorMessage('error', strip_tags($this->upload->display_errors()));
-            redirect(base_url() . 'upload-products-csv');
+            echo 'error';
+            $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
+            redirect('donors');
         }
     }
 
