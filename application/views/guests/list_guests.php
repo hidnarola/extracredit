@@ -9,7 +9,7 @@
     });
 </script>
 <style>.fancybox-close:after {display: none;}
-.fancybox-nav span:after {display: none;}
+    .fancybox-nav span:after {display: none;}
 </style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
@@ -68,6 +68,7 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
+    var permissions = <?php echo json_encode($perArr); ?>;
     var logo_img_url = '<?php echo base_url() . GUEST_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
@@ -148,9 +149,15 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
-                        action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest"><i class="icon-pencil3"></i></a>';
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest"><i class="icon-trash"></i></a>'
+                        if ($.inArray('edit', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest"><i class="icon-pencil3"></i></a>';
+                        }
+                        if ($.inArray('guests_communication', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
+                        }
+                        if ($.inArray('delete', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest"><i class="icon-trash"></i></a>'
+                        }
                         return action;
                     }
                 }

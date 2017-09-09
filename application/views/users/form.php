@@ -3,6 +3,9 @@
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <style>
     .disable_checkbox{ opacity: 0.3;color: darkred !important;border: 2px solid darkred !important;}
+    .custom_scrollbar::-webkit-scrollbar { width: 0.4em; }
+.custom_scrollbar::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); }
+.custom_scrollbar::-webkit-scrollbar-thumb { background-color: #26A69A; outline: 1px solid slategrey; }
 </style>
 <?php
 $edit = 0;
@@ -67,7 +70,7 @@ if (isset($user)) {
                                     <div class="row">
                                         <div class="form-group">
                                             <div class="col-md-12">
-                                                <label class="control-label">User Role <span class="text-danger">*</span></label>                                                
+                                                <label class="control-label">User Role <span class="text-danger">*</span></label>
                                                 <select name="role" id="role" class="select2" required="required" data-placeholder="Select User Role">
                                                     <option value=""></option>
                                                     <option value="staff" <?php
@@ -81,13 +84,13 @@ if (isset($user)) {
                                                         echo 'selected';
                                                     else
                                                         echo '';
-                                                    ?>>Financier</option>                                              
+                                                    ?>>Financier</option>
 
 
                                                 </select>
                                                 <?php
                                                 echo '<label id="role-error" class="validation-error-label" for="role">' . form_error('role') . '</label>';
-                                                ?>   
+                                                ?>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -155,7 +158,7 @@ if (isset($user)) {
 
                                 </fieldset>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-7" style="margin-left: 50px;">
                                 <fieldset>
                                     <legend class="text-semibold"><i class="icon-shield-check position-left"></i> User's Permissions details</legend>
                                     <div class="row">
@@ -165,7 +168,7 @@ if (isset($user)) {
                                                     <thead>
                                                         <tr>
                                                             <th style="width:5%">#</th>
-                                                            <th>Page Name</th>
+                                                            <th style="width: 40%;text-align: center">Page Name</th>
                                                             <?php foreach ($actions as $k => $v) { ?>
                                                                 <th style="width: 10%;text-align: center"><?= $v ?></th>
                                                             <?php } ?>

@@ -9,7 +9,7 @@
     });
 </script>
 <style>.fancybox-close:after {display: none;}
-.fancybox-nav span:after {display: none;}
+    .fancybox-nav span:after {display: none;}
 </style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
@@ -65,6 +65,8 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
+    var permissions = <?php echo json_encode($perArr); ?>;
+    console.log(permissions);
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
@@ -136,12 +138,16 @@
                     render: function (data, type, full, meta) {
                         var action = '';
                         if (full.is_active == 1) {
-                            action += '<a href="' + site_url + 'users/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit User"><i class="icon-pencil3"></i></a>';
+                            if ($.inArray('edit', permissions) !== -1) {
+                                action += '<a href="' + site_url + 'users/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit User"><i class="icon-pencil3"></i></a>';
+                            }
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'users/block/' + btoa(full.id) + '" class="btn border-slate text-slate-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return block_alert(this,\'block\')" title="Block User"><i class="icon-user-block"></i></a>'
                         } else {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'users/block/' + btoa(full.id) + '" class="btn border-success text-success-600 btn-flat btn-icon btn-rounded btn-xs" title="Unblock User" onclick="return block_alert(this,\'unblock\')" ><i class="icon-user-check"></i></a>'
                         }
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'users/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete User"><i class="icon-trash"></i></a>'
+                        if ($.inArray('delete', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'users/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete User"><i class="icon-trash"></i></a>'
+                        }
                         return action;
                     }
                 }
@@ -163,15 +169,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            }
-            else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
     function block_alert(e, type) {
@@ -183,15 +188,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, " + type + " it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            }
-            else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 </script>

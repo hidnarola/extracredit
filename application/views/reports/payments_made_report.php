@@ -47,6 +47,7 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
+    var permissions = <?php echo json_encode($perArr); ?>;
     $(function () {
         $('.datatable-basic').dataTable({
             scrollX: true,
