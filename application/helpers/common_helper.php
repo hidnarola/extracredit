@@ -266,15 +266,15 @@ function crop_image($source_x, $source_y, $width, $height, $image_name) {
 
 function checkPrivileges($page_name = '', $permission = '', $flag = 0) {
     $CI = & get_instance();
-    $CI->load->model('users_model');
     $user_id = $CI->session->userdata('extracredit_user')['id'];
     $user_role = $CI->session->userdata('extracredit_user')['role'];
-    if ($user_role == 'admin')
-        return true;
     $prevArr = $CI->users_model->checkPrivleges($page_name, $user_id)->row_array();
     $columns = $CI->db->query("SHOW COLUMNS FROM " . TBL_USER_PERMISSION . " LIKE 'pg_%'")->result();
     $actions = array();
     if ($permission != '') {
+        if ($user_role == 'admin') {
+            return true;
+        }
         if ($prevArr['pg_' . $permission] == 1) {
             return true;
         } else {
@@ -286,11 +286,11 @@ function checkPrivileges($page_name = '', $permission = '', $flag = 0) {
             }
         }
     } else if ($permission == '') {
-        if ($CI->session->userdata('userrole') == 2) {
+        if ($user_role == 'admin') {
             foreach ($columns as $k => $v) {
                 $actions[] = strtolower(substr($v->Field, 3));
             }
-        } else if ($CI->session->userdata('userrole') == 5) {
+        } else {
             foreach ($columns as $k => $v) {
                 if (array_key_exists($v->Field, $prevArr) && $prevArr[$v->Field] == 1) {
                     $actions[] = strtolower(substr($v->Field, 3));
