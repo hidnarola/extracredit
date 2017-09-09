@@ -53,6 +53,7 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
+    var permissions = <?php echo json_encode($perArr); ?>;
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({

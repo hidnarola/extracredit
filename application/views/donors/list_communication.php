@@ -108,6 +108,7 @@
     </div>
 </div>
 <script>
+    var permissions = <?php echo json_encode($perArr); ?>;
     var logo_img_url = '<?php echo base_url() . COMMUNICATION_IMAGES ?>';
     var guest_id = '<?php echo $id; ?>';
     $(function () {
@@ -166,7 +167,11 @@
                     render: function (data, type, full, meta) {
                         var note = '';
                         if (full.note.length > 20) {
-                            note = '<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation">' + full.note.substr(0, 20) + '...</a>';
+                            if ($.inArray('view', permissions) !== -1) {
+                                note = '<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation">' + full.note.substr(0, 20) + '...</a>';
+                            } else {
+                                note = '<a href="javascript:void(0)" data-id=' + btoa(full.id) + 'title="View Conversation">' + full.note.substr(0, 20) + '...</a>';
+                            }
                         } else {
                             note = full.note;
                         }
@@ -185,9 +190,15 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
-                        action += '<a href="' + site_url + 'donors/add_communication/' + btoa(full.donor_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor Communication"><i class="icon-pencil3"></i></a>';
-                        action += '&nbsp;&nbsp;<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation"><i class="icon-eye"></i></a>'
-                        action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete_communication/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donors Communication"><i class="icon-trash"></i></a>'
+                        if ($.inArray('edit', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'donors/add_communication/' + btoa(full.donor_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor Communication"><i class="icon-pencil3"></i></a>';
+                        }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation"><i class="icon-eye"></i></a>'
+                        }
+                        if ($.inArray('delete', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete_communication/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donors Communication"><i class="icon-trash"></i></a>'
+                        }
                         return action;
                     }
                 }
