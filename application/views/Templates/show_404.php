@@ -22,12 +22,9 @@
         <script type="text/javascript" src="assets/js/core/libraries/bootstrap.min.js"></script>
         <script type="text/javascript" src="assets/js/plugins/loaders/blockui.min.js"></script>
         <!-- /core JS files -->
-
-
         <!-- Theme JS files -->
         <script type="text/javascript" src="assets/js/core/app.js"></script>
         <!-- /theme JS files -->
-
     </head>
 
     <body class="login-container">
@@ -65,28 +62,20 @@
             </div>
         </div>
         <!-- /main navbar -->
-
-
         <!-- Page container -->
         <div class="page-container">
-
             <!-- Page content -->
             <div class="page-content">
-
                 <!-- Main content -->
                 <div class="content-wrapper">
-
                     <!-- Content area -->
                     <div class="content">
-
                         <!-- Error title -->
                         <div class="text-center content-group">
                             <h1 class="error-title">404</h1>
                             <h5>Oops, an error has occurred. Page not found!</h5>
                         </div>
                         <!-- /error title -->
-
-
                         <!-- Error content -->
                         <div class="row">
                             <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3">
@@ -100,25 +89,18 @@
                             </div>
                         </div>
                         <!-- /error wrapper -->
-
-
                         <!-- Footer -->
                         <div class="footer text-muted text-center">
                             &copy; 2017. <a href="#">Extra Credit Show</a>, All Rights Reserved
                         </div>
                         <!-- /footer -->
-
                     </div>
                     <!-- /content area -->
-
                 </div>
                 <!-- /main content -->
-
             </div>
             <!-- /page content -->
-
         </div>
         <!-- /page container -->
-
     </body>
 </html>

@@ -366,6 +366,7 @@ if (isset($user)) {
             reader.readAsDataURL(input.files[0]);
         }
     }
+    
     function check_checkboxes_selection(id) {
         if ($('.' + id).length == $('.' + id + ':checked').length) {
             $("#" + id).attr("checked", "checked");

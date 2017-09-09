@@ -39,7 +39,6 @@ class Users extends MY_Controller {
             $users[$key]['sr_no'] = $start++;
             $users[$key]['created'] = date('d,M Y', strtotime($val['created']));
         }
-
         $final['data'] = $users;
         echo json_encode($final);
     }
@@ -60,6 +59,7 @@ class Users extends MY_Controller {
         $profile_image = NULL;
         $data['title'] = 'Extracredit | Add User';
         $data['heading'] = 'Add User';
+        //-- get all pages from database
         $data['pageArr'] = $pageArr = $this->users_model->get_all_details(TBL_PAGES, $condition)->result();
         $columns = $this->db->query("SHOW COLUMNS FROM " . TBL_USER_PERMISSION . " LIKE 'pg_%'")->result();
         $actions = array();
@@ -140,6 +140,7 @@ class Users extends MY_Controller {
             $user = $this->users_model->get_user_detail(['id' => $id, 'is_delete' => 0, 'is_active' => 1]);
             $condition = array();
             $privArr = $rest_batchArr = $batchArr = $pages = $actions = $priv_action = array();
+            //-- get all pages from database
             $data['pageArr'] = $pageArr = $this->users_model->get_all_details(TBL_PAGES, $condition)->result();
             if ($user) {
 //                p($user,1);
@@ -150,7 +151,7 @@ class Users extends MY_Controller {
                 $profile_image = $user['profile_image'];
 
                 $privArr = $rest_batchArr = $batchArr = $pages = $actions = array();
-
+                //--- get permissions by user id
                 $priv_Arr = $this->users_model->get_user_privileges($id);
                 if (!empty($priv_Arr)) {
                     $columns = $this->db->query("SHOW COLUMNS FROM user_permissions LIKE 'pg_%'")->result();
@@ -212,7 +213,6 @@ class Users extends MY_Controller {
                             }
                             $batchArr[] = $temp_arr;
                         }
-                        //p($batchArr,1);
                         $this->users_model->batch_insert_update('update', TBL_USER_PERMISSION, $batchArr, 'page_id', array('user_id' => $id));
                          redirect('users');
                     }
