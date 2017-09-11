@@ -27,6 +27,7 @@ class Reports extends MY_Controller {
     public function get_donors_reports() {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_reports('count');
         $final['redraw'] = 1;
+//        p($this->input->get('post_date_filter'),1);
         $donors = $this->donors_model->get_donors_reports('result');
         $start = $this->input->get('start') + 1;
 

@@ -1,6 +1,14 @@
 <script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/ui/moment/moment.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/daterangepicker.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/anytime.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.time.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/legacy.js"></script>
+<script type="text/javascript" src="assets/js/pages/picker_date.js"></script>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -34,6 +42,17 @@
         </div>
     </div>
     <div class="panel panel-flat">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Post date filter: </label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="icon-calendar22"></i></span>
+                        <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo date('Y-m-d'); ?>"> 
+                    </div>
+                </div>
+            </div>
+        </div>
         <table class="table datatable-basic">
             <thead>
                 <tr>
@@ -63,12 +82,23 @@
 </div>
 <script>
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
+    var data_table = post_date_filter = '';
     $(function () {
-        $('.datatable-basic').dataTable({
+        bind();
+        $('.dataTables_length select').select2({
+            minimumResultsForSearch: Infinity,
+            width: 'auto'
+        });
+        // $('.created_date').val('');
+    });
+
+    function bind() {
+        data_table = $('.datatable-basic').dataTable({
             scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
+            "bPaginate": true,
             language: {
                 search: '<span>Filter:</span> _INPUT_',
                 lengthMenu: '<span>Show:</span> _MENU_',
@@ -76,13 +106,14 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
-            ajax: site_url + 'reports/get_donors_reports',
+//            ajax: site_url + 'reports/get_donors_reports',
+            ajax: {
+                url: site_url + 'reports/get_donors_reports',
+                data: {
+                    post_date_filter: post_date_filter
+                },
+            },
             columns: [
-//                {
-//                    data: "id",
-//                    visible: true,
-//                    sortable: false,
-//                },
                 {
                     data: "fund_type",
                     visible: true,
@@ -159,13 +190,20 @@
                     data: "memo",
                     visible: true,
                 }
-
             ]
         });
-
         $('.dataTables_length select').select2({
             minimumResultsForSearch: Infinity,
             width: 'auto'
         });
+    }
+    //--- daterange change event and call bind function
+    $('#post_date_filter').on('apply.daterangepicker', function (ev, picker) {
+        post_date_filter = $(this).val();
+//        console.log(post_date_filter);
+//        $(".datatable-basic").dataTable().fnDestroy();
+        data_table.fnDestroy();
+        bind();
+
     });
 </script>

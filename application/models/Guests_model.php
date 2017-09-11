@@ -156,6 +156,14 @@ class Guests_model extends MY_Model {
                     ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
 
+        $post_date_filter = $this->input->get('post_date_filter');
+        if ($post_date_filter != '') {
+            $dates = explode('-', $post_date_filter);
+            $startdate = date('Y-m-d', strtotime($dates[0]));
+            $enddate = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where('g.guest_date >=', $startdate);
+            $this->db->where('g.guest_date <=', $enddate);
+        }
         $this->db->where(['a.is_delete' => 0, 'g.is_delete' => 0]);
         $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         if ($type == 'result') {
