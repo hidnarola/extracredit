@@ -393,8 +393,13 @@ class Donors extends MY_Controller {
      * @author KU
      */
     public function import_donor() {
-//        p($_FILES, 1);
         $accounts = $this->donors_model->get_all_accounts();
+        $account_name_arr = array_column($accounts, 'action_matters_campaign');
+        $vendor_name_arr = array_column($accounts, 'vendor_name');
+        p($account_name_arr);
+        p($vendor_name_arr, 1);
+
+
         $fileDirectory = DONORS_CSV;
         $file = $this->input->post('import_donor');
         $config['overwrite'] = FALSE;
@@ -404,69 +409,72 @@ class Donors extends MY_Controller {
         $this->load->library('upload', $config);
         $file_element_name = 'import_donor';
 
+        //-- Upload csv file
         if ($this->upload->do_upload('import_donor')) {
-            echo 'uploaded';
-            exit;
             $fileDetails = $this->upload->data();
+
+            $accounts = $this->donors_model->get_all_accounts();
+            $account_name_arr = array_column($accounts, 'action_matters_campaign');
+            $vendor_name_arr = array_column($accounts, 'vendor_name');
+
+            $cities = $this->donors_model->sql_select(TBL_CITIES);
+            $payment_types = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'type', ['where' => ['is_delete' => 0]]);
+            $donor_emails = $this->donors_model->sql_select(TBL_DONORS, 'email', ['where' => ['is_delete' => 0]]);
+            $donor_emails = array_column($donor_emails, 'email');
 
             $coun = 0;
             $row = 1;
             $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-            if (($data2 = fgetcsv($handle, 10000, ",")) !== FALSE) {
-                $data_format2 = array('type', 'product_condition', 'when_did_you_make_it', 'category', 'name', 'arabic_name', 'description', 'arabic_description', 'image', 'price', 'quantity', 'country', 'ship_cost', 'ship_cost_with_other', 'weight', 'processing_time', 'sku', 'brand', 'model', 'width', 'height', 'depth', 'product_type', 'condition', 'warranty', 'country_origin', 'variation1', 'value1', 'variation2', 'value2', 'offer', 'deal_date', 'deal_date_to', 'deal_time_from', 'deal_time_to', 'discount');
-                #print_r($data_format2); echo "<br>"; print_r($data2);die;
+            $error = [];
+            if (($data2 = fgetcsv($handle)) !== FALSE) {
+                $data_format2 = array('program/amc', 'firstname', 'lastname', 'email', 'address', 'city', 'zip', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
+
                 if ($data_format2 == $data2) {
                     fclose($handle);
                     $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-                    $name_test = array();
-                    $seourl_test = array();
-                    $sku_test = array();
-                    while (($col_data = fgetcsv($handle, 10000, ",")) !== FALSE) {
-                        if ($row == 1) {
-                            $row++;
-                            continue;
-                        }
-                        if ($col_data[3] == '' || $col_data[4] == '' || $col_data[6] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[14] == '' || $col_data[15] == '' || $col_data[16] == '' || $col_data[17] == '' || $col_data[19] == '' || $col_data[20] == '' || $col_data[21] == '') {
+                    $email_test = $account_name = array();
+                    while (($col_data = fgetcsv($handle)) !== FALSE) {
+                        if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[4] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '') {
                             fclose($handle);
-                            $this->setErrorMessage('error', 'Some fields are missing in Row No. ' . $row);
-                            redirect('upload-products-csv', 'refresh');
+                            $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
+                            redirect('donors');
                         }
-                        $sku_test[] = $col_data[16];
+                        $email_test[] = $col_data[3];
                         $row++;
                     }
 
-                    if (count(array_unique($sku_test)) != count($sku_test)) {
+                    if (count(array_unique($email_test)) != count($email_test)) {
                         fclose($handle);
-                        $this->setErrorMessage('error', 'Duplicate value in sku column.');
-                        redirect('upload-products-csv', 'refresh');
+                        $this->session->set_flashdata('error', 'Duplicate value in email column.');
+                        redirect('donors');
                     }
 
                     $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
                     $coun = 0;
                     $row = 1;
-                    $this->data['sku_error_row'] = array();
-                    while (($col_data = fgetcsv($handle, 10000, ",")) !== FALSE) {
+                    $email_error_row = array();
+                    while (($col_data = fgetcsv($handle)) !== FALSE) {
                         if ($row == 1) {
                             $row++;
                             continue;
                         }
-                        if (in_array($col_data[16], $sku_arr)) {
-                            array_push($this->data['sku_error_row'], $col_data[16]);
+                        if (in_array($col_data[3], $donor_emails)) {
+                            array_push($email_error_row, $col_data[3]);
                         }
                         $row++;
                     }
 
-                    if (!empty($this->data['sku_error_row'])) {
+                    if (!empty($email_error_row)) {
                         fclose($handle);
-                        $this->setErrorMessage('error', 'SKU Already Exists');
-                        redirect('upload-products-csv', $this->data);
+                        $this->session->set_flashdata('error', 'Donor email already exist!');
+                        redirect('donors');
                     } else {
                         fclose($handle);
                     }
                 } else {
                     fclose($handle);
-                    $this->setErrorMessage('error', 'The columns in this csv file does not match to the database');
-                    redirect('upload-products-csv', 'refresh');
+                    $this->session->set_flashdata('error', 'The columns in this csv file does not match to the database');
+                    redirect('donors');
                 }
             }
             fclose($handle);
@@ -474,126 +482,33 @@ class Donors extends MY_Controller {
             $coun = 0;
             $row = 1;
             $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-            if (($data1 = fgetcsv($handle, 10000, ",")) !== FALSE) {
-                $data_format = array('type', 'product_condition', 'when_did_you_make_it', 'category', 'name', 'arabic_name', 'description', 'arabic_description', 'image', 'price', 'quantity', 'country', 'ship_cost', 'ship_cost_with_other', 'weight', 'processing_time', 'sku', 'brand', 'model', 'width', 'height', 'depth', 'product_type', 'condition', 'warranty', 'country_origin', 'variation1', 'value1', 'variation2', 'value2', 'offer', 'deal_date', 'deal_date_to', 'deal_time_from', 'deal_time_to', 'discount');
+            if (($data1 = fgetcsv($handle)) !== FALSE) {
+                $data_format2 = array('program/amc', 'firstname', 'lastname', 'email', 'address', 'city', 'zip', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
                 if ($data_format == $data1) {
                     fclose($handle);
                     $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-                    while (($data = fgetcsv($handle, 10000, ",")) !== FALSE) {
+                    while (($data = fgetcsv($handle)) !== FALSE) {
                         if ($row == 1) {
                             $row++;
                             continue;
                         }
                         $finalImgArr = array();
 
-                        $who_made_it = $data[0];
-                        $what_is_it = $data[1];
-                        $when_did_you_make_it = $data[2];
-                        $category = $data[3];
-                        $name = $data[4];
-                        $arabic_name = $data[5];
-                        $description = $data[6];
-                        $arabic_description = $data[7];
-                        $image = $data[8];
-                        $price = $data[9];
-                        $quantity = $data[10];
-                        $country = $data[11];
-                        $ship_cost = $data[12];
-                        $ship_cost_with_other = $data[13];
-                        $weight = $data[14];
-                        $processing_time = $data[15];
-                        $sku = $data[16];
-                        $brand = $data[17];
-                        $model = $data[18];
-                        $width = $data[19];
-                        $height = $data[20];
-                        $depth = $data[21];
-                        $product_type = $data[22];
-                        $condition = $data[23];
-                        $warranty = $data[24];
-                        $country_origin = $data[25];
-                        $variation1 = $data[26];
-                        $value1 = $data[27];
-                        $variation2 = $data[28];
-                        $value2 = $data[29];
-                        $offer = strtolower($data[30]);
-                        $deal_date = $data[31];
-                        $deal_date_to = $data[32];
-                        $deal_time_from = $data[33];
-                        $deal_time_to = $data[34];
-                        $discount = $data[35];
+                        $program_amc = $data[0];
+                        $firstname = $data[1];
+                        $lastname = $data[2];
+                        $email = $data[3];
+                        $address = $data[4];
+                        $city = $data[5];
+                        $zip = $data[6];
+                        $date = $data[7];
+                        $post_date = $data[8];
+                        $amount = $data[9];
+                        $payment_type = $data[10];
+                        $payment_number = $data[11];
+                        $memo = $data[12];
 
-                        $price_range = 0;
-                        if ($sale_price > 0 && $sale_price < 21)
-                            $price_range = '1-20';
-                        else if ($sale_price > 20 && $sale_price < 101)
-                            $price_range = '21-100';
-                        else if ($sale_price > 100 && $sale_price < 201)
-                            $price_range = '101-200';
-                        else if ($sale_price > 200 && $sale_price < 501)
-                            $price_range = '201-500';
-                        else if ($sale_price > 500)
-                            $price_range = '501+';
-
-                        if ($who_made_it == 'handmade') {
-                            $made_by = 1;
-                        } else if ($who_made_it == 'vintage') {
-                            $made_by = 2;
-                        } else if ($who_made_it == 'craft supply') {
-                            $made_by = 3;
-                        } else {
-                            $made_by = '';
-                        }
-
-                        if ($what_is_it == 'finished') {
-                            $product_condition = 1;
-                        } else if ($what_is_it == 'unfinished') {
-                            $product_condition = 2;
-                        } else {
-                            $product_condition = '';
-                        }
-
-                        $maked_on = str_replace('-', ',', $when_did_you_make_it);
-
-                        $variation_value1 = explode('|', $value1);
-                        $variation_value2 = explode('|', $value2);
-                        if (count($variation_value1) > 0) {
-                            $variation = 'yes';
-                        } else {
-                            $variation = 'no';
-                        }
-
-                        // Default Value
-                        if ($quantity == '') {
-                            $quantity = 1;
-                        }
-                        if ($warranty == '' || ($warranty != "doesn't apply" && $warranty != "3 months" && $warranty != "6 months" && $warranty != "12 months" && $warranty != "2 years" && $warranty != "3 years" && $warranty != "4 years" && $warranty != "5 years")) {
-                            $warranty = "doesn't apply";
-                        }
-
-                        if ($sku == '') {
-                            $sku = $this->input->post('seller_list') . time();
-                        }
-                        if ($weight == '') {
-                            $weight = 5;
-                        }
-                        if ($width == '' || $height == '' || $depth == '') {
-                            $width = 1;
-                            $height = 1;
-                            $depth = 1;
-                        }
-                        if ($processing_time == '') {
-                            $processing_time = "1-3 business day";
-                        }
-                        if ($country == '') {
-                            $country = 'UAE';
-                        }
-                        if ($product_type == '') {
-                            $product_type = 'New';
-                        }
-                        if ($product_type == 'New') {
-                            $condition = '';
-                        }
+                        $donor_arr = [];
 
                         $db_product_name = $this->product_model->get_all_details(PRODUCT, array('product_name' => $name))->result_array();
 
@@ -604,52 +519,6 @@ class Donors extends MY_Controller {
                             $checkId = $this->check_product_id($seller_product_id);
                         }
 
-                        /*                         * **----------Move image to server-------------*** */
-
-                        $image_url = $image;
-                        $image = rtrim($image, ",");
-                        $imageurlArr = @explode(',', $image);
-                        foreach ($imageurlArr as $image_url) {
-
-                            // echo $image_url;
-                            // die;
-                            $img = @getimagesize($image_url);
-                            if ($img) {
-                                $image_url = $image_url;
-                            } else {
-                                $image_url = base_url() . "images/dummyProductImage.jpg";
-                            }
-                            //echo $image_url;
-                            $img_data = file_get_contents($image_url);
-                            $image_url = urldecode($image_url);
-                            $img_full_name = substr($image_url, strrpos($image_url, '/') + 1);
-                            $img_name_arr = explode('.', $img_full_name);
-                            $img_name = $img_name_arr[0];
-                            $ext = $img_name_arr[1];
-                            $ext_arr = explode('?', $ext);
-                            $ext = $ext_arr[0];
-                            if (!$ext)
-                                $ext = 'jpg';
-                            $new_name = str_replace(array(',', '$', '(', ')', '~', '&', '%20'), '', $img_name . mktime() . '.' . $ext);
-                            $new_img = 'images/product/temp_img/' . $new_name;
-                            file_put_contents($new_img, $img_data);
-
-                            /*                             * **----------Move image to server-------------*** */
-
-                            $image_name = $new_name;
-                            #$this->imageResizeWithSpace(600, 600, $image_name, './images/product/');
-
-                            @copy('./images/product/temp_img/' . $image_name, './images/product/org-image/' . $image_name);
-                            @copy('./images/product/temp_img/' . $image_name, './images/product/' . $image_name);
-                            $this->ImageResizeWithCrop(550, 350, $image_name, './images/product/');
-                            @copy('./images/product/' . $image_name, './images/product/thumb/' . $image_name);
-                            $this->ImageResizeWithCrop(141, 181, $image_name, './images/product/thumb/');
-                            @copy('./images/product/temp_img/' . $image_name, './images/product/list-image/' . $image_name);
-                            $this->ImageResizeWithCrop(75, 75, $image_name, './images/product/list-image/');
-
-
-                            $finalImgArr[] = $image_name;
-                        }
 
                         $finalimage_name = implode(',', $finalImgArr);
                         $category_Arr = explode(':-:', $category);
@@ -750,41 +619,12 @@ class Donors extends MY_Controller {
                             'deal_time_to' => $deal_time_to,
                             'discount' => $discount
                         );
-                        //echo "<pre>";
-                        //var_dump($insertdata1);
-                        // echo "<pre>";
-                        // var_dump($insertdata2);
-                        //die;	
+
                         if (count($db_product_name)) {
                             $insertdata2['product_id'] = $db_product_name[0]['id'];
                         } else {
                             $this->product_model->simple_insert(PRODUCT, $insertdata1);
                             $idArr = $this->product_model->get_last_insert_id();
-
-                            /*                             * ** Image Upload **** */
-                            // $cstrong = '';
-                            // $random_string = bin2hex( openssl_random_pseudo_bytes(15, $cstrong));
-                            // $root_folder = 'images_new/products';
-                            // if (!file_exists($root_folder)){mkdir($root_folder,0777,true);}
-                            // $folder_name = $root_folder.'/'.$idArr;
-                            // if (!file_exists($folder_name)){mkdir($folder_name);}
-                            // $img_str = '';
-                            // /****** 1st Image ********/
-                            // $finalimage_name = rtrim($finalimage_name,',');
-                            // $images = explode(',',$finalimage_name);
-                            // for($i=0;$i<count($images);$i++){
-                            //     $cnt = $i;
-                            //     $ext = trim(pathinfo($images[$i], PATHINFO_EXTENSION));
-                            //     $folder_name2 = $folder_name.'/'.$cnt;
-                            //     if (!file_exists($folder_name2)){mkdir($folder_name2);}
-                            //     $this->aws_product_image_upload($folder_name2,$images[$i],$random_string,'products',$idArr,$cnt,AWS_REAL_PATH,AWS_BUCKET);
-                            //     $img_str = $img_str.$random_string.'.'.$ext.',';
-                            // }
-                            // $img_str = rtrim($img_str,',');
-                            // $img_dataArr = array('image'=>$img_str,'is_cdn_uploaded'=>1);
-                            // $condition = array('id'=>$idArr);
-                            // $this->product_model->insert_update('update','shopsy_product',$img_dataArr,$condition);
-
                             $insertdata2['product_id'] = $idArr;
                         }
 
@@ -879,7 +719,6 @@ class Donors extends MY_Controller {
             $this->setErrorMessage('error', 'The coloumns in this csv file does not match to the database');
             redirect('upload-products');
         } else {
-            echo 'error';
             $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
             redirect('donors');
         }
