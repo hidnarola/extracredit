@@ -66,7 +66,6 @@
                     <h6 class="modal-title">Import Donor</h6>
                 </div>
                 <div class="modal-body">
-                    <!--                    <h6 class="text-semibold">Upload File</h6>-->
                     <div class="form-group">
                         <div class="col-md-12">
                             <label class="control-label">Upload File</label>
@@ -74,6 +73,7 @@
                                 <div class="media-body">
                                     <input type="file" name="import_donor" id="import_donor" class="file-styled">
                                     <span class="help-block">Accepted formats: CSV. Max file size 2Mb</span>
+                                    <span class="help-block"><code>File should be in this format <a href="<?php echo base_url(DEMO_CSV . 'donor_demo.csv') ?>">Download Demo File</a></code></span>
                                 </div>
                             </div>
                         </div>
