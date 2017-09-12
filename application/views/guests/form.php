@@ -102,7 +102,7 @@ if (isset($guest)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">First Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($guest)) ? $guest['firstname'] : set_value('firstname'); ?>">
+                                    <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($guest)) ? $guest['firstname'] : set_value('firstname'); ?>">
                                     <?php
                                     echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
                                     ?>
@@ -110,7 +110,7 @@ if (isset($guest)) {
 
                                 <label class="col-lg-1 control-label">Last Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($guest)) ? $guest['lastname'] : set_value('lastname'); ?>">
+                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($guest)) ? $guest['lastname'] : set_value('lastname'); ?>">
                                     <?php
                                     echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
                                     ?>
@@ -119,7 +119,7 @@ if (isset($guest)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Address <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control capitalize-text" required="required"><?php echo (isset($guest)) ? $guest['address'] : set_value('address'); ?></textarea>
+                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" required="required"><?php echo (isset($guest)) ? $guest['address'] : set_value('address'); ?></textarea>
                                     <?php
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
@@ -188,7 +188,7 @@ if (isset($guest)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Company Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="companyname" id="companyname" placeholder="Enter Company Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($guest)) ? $guest['companyname'] : set_value('companyname'); ?>">
+                                    <input type="text" name="companyname" id="companyname" placeholder="Enter Company Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($guest)) ? $guest['companyname'] : set_value('companyname'); ?>">
                                     <?php
                                     echo '<label id="companyname-error" class="validation-error-label" for="companyname">' . form_error('companyname') . '</label>';
                                     ?>
@@ -199,9 +199,9 @@ if (isset($guest)) {
                                     <div class="media no-margin-top">
                                         <div class="media-left" id="image_preview_div">
                                             <?php
-                                            $required='required';
+                                            $required = 'required';
                                             if (isset($guest) && $guest['logo'] != '') {
-                                                $required ='';
+                                                $required = '';
                                                 ?>
                                                 <img src="<?php echo GUEST_IMAGES . $guest['logo']; ?>" style="width: 58px; height: 58px; border-radius: 2px;" alt="">
                                             <?php } else {
@@ -211,7 +211,7 @@ if (isset($guest)) {
                                         </div>
 
                                         <div class="media-body">
-                                            <input type="file" name="logo" id="logo" class="file-styled" onchange="readURL(this);" <?php echo $required;?>>
+                                            <input type="file" name="logo" id="logo" class="file-styled" onchange="readURL(this);" <?php echo $required; ?>>
                                             <span class="help-block">Accepted formats: png, jpg. Max file size 2Mb</span>
                                         </div>
                                     </div>

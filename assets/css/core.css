@@ -6323,5 +6323,4 @@ h6.panel-title,
   border-left-color: inherit;
 }
 /*30-8-17 (KU)*/
-.capitalize-text{text-transform: capitalize;}
 .required:after {content: " *";color:#F44336;}
