@@ -19,6 +19,7 @@ class Guests extends MY_Controller {
     public function index() {
         checkPrivileges('guest', 'view');
         $data['perArr'] = checkPrivileges('guest');
+        $data['comperArr'] = checkPrivileges('guests_communication');
         $data['title'] = 'Extracredit | Guests';
         $this->template->load('default', 'guests/list_guests', $data);
     }
@@ -29,7 +30,7 @@ class Guests extends MY_Controller {
     public function get_guests() {
         checkPrivileges('guest', 'view');
         $data['perArr'] = checkPrivileges('guest');
-        $data['comperArr'] = checkPrivileges('donors_communication');
+        $data['comperArr'] = checkPrivileges('guests_communication');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests('count');
         $final['redraw'] = 1;
         $guests = $this->guests_model->get_guests('result');
@@ -55,7 +56,6 @@ class Guests extends MY_Controller {
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
-
             $guest = $this->guests_model->get_guest_details($id);
             if ($guest) {
                 $data['guest'] = $guest;
@@ -136,8 +136,6 @@ class Guests extends MY_Controller {
                     'assistant_phone' => $this->input->post('assistant_phone'),
                     'assistant_email' => $this->input->post('assistant_email'),
                 );
-
-//                p($dataArr,1);
 
                 if (is_numeric($id)) {
                     $dataArr['modified'] = date('Y-m-d H:i:s');
@@ -256,7 +254,6 @@ class Guests extends MY_Controller {
         $guest_communication = $this->guests_model->get_guest_communication_details($id);
         $guest_communication['follow_up_date'] = date('d F, Y', strtotime($guest_communication['follow_up_date']));
         $guest_communication['communication_date'] = date('d F, Y', strtotime($guest_communication['communication_date']));
-//        $final['data'] = $guest_communication;
         echo json_encode($guest_communication);
     }
 

@@ -6,6 +6,7 @@
     .custom_scrollbar::-webkit-scrollbar { width: 0.4em; }
 .custom_scrollbar::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); }
 .custom_scrollbar::-webkit-scrollbar-thumb { background-color: #26A69A; outline: 1px solid slategrey; }
+@media (min-width:801px) {.user_permissions_div{margin-left: 45px;}}
 </style>
 <?php
 $edit = 0;
@@ -158,7 +159,7 @@ if (isset($user)) {
 
                                 </fieldset>
                             </div>
-                            <div class="col-md-7" style="margin-left: 50px;">
+                            <div class="col-md-7 user_permissions_div">
                                 <fieldset>
                                     <legend class="text-semibold"><i class="icon-shield-check position-left"></i> User's Permissions details</legend>
                                     <div class="row">
