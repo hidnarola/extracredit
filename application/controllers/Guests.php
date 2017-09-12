@@ -29,6 +29,7 @@ class Guests extends MY_Controller {
     public function get_guests() {
         checkPrivileges('guest', 'view');
         $data['perArr'] = checkPrivileges('guest');
+        $data['comperArr'] = checkPrivileges('donors_communication');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests('count');
         $final['redraw'] = 1;
         $guests = $this->guests_model->get_guests('result');

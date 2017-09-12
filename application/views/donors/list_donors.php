@@ -92,6 +92,8 @@
         fileButtonClass: 'action btn bg-blue'
     });
     var permissions = <?php echo json_encode($perArr); ?>;
+    var compermissions = <?php echo json_encode($comperArr); ?>;
+    console.log(permissions);
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
@@ -161,7 +163,7 @@
                         if ($.inArray('edit', permissions) !== -1) {
                             action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
                         }
-                        if ($.inArray('view', permissions) !== -1) {
+                        if ($.inArray('view', compermissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
                         }
                         if ($.inArray('delete', permissions) !== -1) {

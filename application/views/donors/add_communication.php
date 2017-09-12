@@ -89,7 +89,7 @@ if (isset($donor_communication)) {
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Subject <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
-                                <input type="text" name="subject" id="subject" placeholder="Enter Subject" class="form-control" required="required" value="<?php echo (isset($donor_communication) && $donor_communication['subject']) ? $guest_communication['subject'] : set_value('subject'); ?>">
+                                <input type="text" name="subject" id="subject" placeholder="Enter Subject" class="form-control" required="required" value="<?php echo (isset($donor_communication) && $donor_communication['subject']) ? $donor_communication['subject'] : set_value('subject'); ?>">
                                 <?php
                                 echo '<label id="subject-error" class="validation-error-label" for="subject">' . form_error('subject') . '</label>';
                                 ?>

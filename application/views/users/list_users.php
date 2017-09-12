@@ -64,6 +64,19 @@
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
+<!-- View modal -->
+<div id="user_permission_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" style="overflow-y: initial !important">
+        <div class="modal-content">
+            <div class="modal-header bg-teal-400 custom_modal_header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title text-center">User's Details</h6>
+            </div>
+            <div class="modal-body panel-body custom_scrollbar" id="user_permissions_view_body" style="height: 600px;overflow-y: auto;">
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     var permissions = <?php echo json_encode($perArr); ?>;
     console.log(permissions);
@@ -140,6 +153,8 @@
                         if (full.is_active == 1) {
                             if ($.inArray('edit', permissions) !== -1) {
                                 action += '<a href="' + site_url + 'users/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit User"><i class="icon-pencil3"></i></a>';
+                                action += '&nbsp;&nbsp;<a href="javascript:void(0)"  class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs privilege_view_btn" id="' + btoa(full.id) + '" data-id=' + btoa(full.id) + ' title="View User"><i class="icon-eye"></i></a>';
+
                             }
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'users/block/' + btoa(full.id) + '" class="btn border-slate text-slate-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return block_alert(this,\'block\')" title="Block User"><i class="icon-user-block"></i></a>'
                         } else {
@@ -198,4 +213,17 @@
                 });
         return false;
     }
+
+
+    $(document).on('click', '.privilege_view_btn', function () {
+        $.ajax({
+            url: site_url + 'users/view_user',
+            type: "POST",
+            data: {id: this.id},
+            success: function (response) {
+                $('#user_permissions_view_body').html(response);
+                $('#user_permission_modal').modal('show');
+            }
+        });
+    });
 </script>

@@ -198,6 +198,15 @@ class MY_Model extends CI_Model {
             return $result->row_array();
         }
     }
+    
+    /**
+     * Custom Query
+     * @author REP
+     */
+    public function custom_Query($query) {
+        $result = $this->db->query($query);
+        return $result;
+    }
 
     /**
      * This function used to check Privileges for a particular user (page wise).

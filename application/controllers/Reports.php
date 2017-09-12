@@ -124,7 +124,7 @@ class Reports extends MY_Controller {
     }
 
     /**
-     * Listing of All awards 90%(outgoing money) for reports
+     * Listing of VENDOR ADMIN(10%) for reports
      */
     public function vendor_admin_report() {
         $data['title'] = 'Extracredit | Awards';

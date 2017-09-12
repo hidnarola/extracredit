@@ -17,7 +17,7 @@ class Users extends MY_Controller {
     }
 
     public function index() {
-         checkPrivileges('users', 'view');
+        checkPrivileges('users', 'view');
         $data['perArr'] = checkPrivileges('users');
         $data['title'] = 'Extracredit | Users';
         $this->template->load('default', 'users/list_users', $data);
@@ -214,7 +214,7 @@ class Users extends MY_Controller {
                             $batchArr[] = $temp_arr;
                         }
                         $this->users_model->batch_insert_update('update', TBL_USER_PERMISSION, $batchArr, 'page_id', array('user_id' => $id));
-                         redirect('users');
+                        redirect('users');
                     }
                 } else {
                     show_404();
@@ -308,6 +308,27 @@ class Users extends MY_Controller {
             echo "true";
         }
         exit;
+    }
+
+    /**
+     * View user
+     * @param  : ---
+     * @return : Partial View
+     * @author : REP
+     */
+    public function view_user() {
+        $user_id = base64_decode($this->input->post('id'));
+        $user = $this->users_model->get_user_detail(['id' => $user_id]);
+        if ($user) {
+            $columns = $this->users_model->custom_Query("SHOW COLUMNS FROM user_permissions LIKE 'pg_%'")->result_array();
+            $data['columns'] = $columns;
+            $permissions = $this->users_model->get_user_privileges($user_id);
+            $data['user_details'] = $user;
+            $data['permissions'] = $permissions;
+            return $this->load->view('users/view_users_permissions', $data);
+        } else {
+            show_404();
+        }
     }
 
 }
