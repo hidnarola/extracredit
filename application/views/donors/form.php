@@ -104,14 +104,14 @@ if (isset($donor)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">First Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($donor)) ? $donor['firstname'] : set_value('firstname'); ?>">
+                                    <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($donor)) ? $donor['firstname'] : set_value('firstname'); ?>">
                                     <?php
                                     echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
                                     ?>
                                 </div>
                                 <label class="col-lg-1 control-label">Last Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($donor)) ? $donor['lastname'] : set_value('lastname'); ?>">
+                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($donor)) ? $donor['lastname'] : set_value('lastname'); ?>">
                                     <?php
                                     echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
                                     ?>
@@ -120,7 +120,7 @@ if (isset($donor)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Address <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control capitalize-text" required="required"><?php echo (isset($donor)) ? $donor['address'] : set_value('address'); ?></textarea>
+                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" required="required"><?php echo (isset($donor)) ? $donor['address'] : set_value('address'); ?></textarea>
                                     <?php
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
@@ -251,7 +251,7 @@ if (isset($donor)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Memo </label>
                                 <div class="col-lg-4">
-                                    <textarea name="memo" id="memo" placeholder="Enter Memo" class="form-control capitalize-text"><?php echo (isset($donor)) ? $donor['memo'] : set_value('memo'); ?></textarea>
+                                    <textarea name="memo" id="memo" placeholder="Enter Memo" class="form-control"><?php echo (isset($donor)) ? $donor['memo'] : set_value('memo'); ?></textarea>
                                     <?php
                                     echo '<label id="memo-error" class="validation-error-label" for="memo">' . form_error('memo') . '</label>';
                                     ?>

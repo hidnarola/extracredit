@@ -19,6 +19,7 @@ class Donors extends MY_Controller {
     public function index() {
         checkPrivileges('donors', 'view');
         $data['perArr'] = checkPrivileges('donors');
+        $data['comperArr'] = checkPrivileges('donors_communication');
         $data['title'] = 'Extracredit | Donors';
         $this->template->load('default', 'donors/list_donors', $data);
     }
@@ -396,8 +397,13 @@ class Donors extends MY_Controller {
         $accounts = $this->donors_model->get_all_accounts();
         $account_name_arr = array_column($accounts, 'action_matters_campaign');
         $vendor_name_arr = array_column($accounts, 'vendor_name');
-        p($account_name_arr);
-        p($vendor_name_arr, 1);
+
+        //-- Remove blank values from Account name and vendor name array
+        $account_name_arr = array_filter($account_name_arr);
+        $vendor_name_arr = array_filter($vendor_name_arr);
+
+        $cities = $this->donors_model->sql_select(TBL_CITIES);
+        $cities_arr = array_column($cities, 'name');
 
 
         $fileDirectory = DONORS_CSV;
@@ -419,6 +425,7 @@ class Donors extends MY_Controller {
 
             $cities = $this->donors_model->sql_select(TBL_CITIES);
             $payment_types = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'type', ['where' => ['is_delete' => 0]]);
+            $donor_emails = $this->donors_model->sql_select(TBL_DONORS, 'email', ['where' => ['is_delete' => 0]]);
             $donor_emails = $this->donors_model->sql_select(TBL_DONORS, 'email', ['where' => ['is_delete' => 0]]);
             $donor_emails = array_column($donor_emails, 'email');
 

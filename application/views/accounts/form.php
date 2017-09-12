@@ -91,7 +91,7 @@ if (isset($account)) {
                         <div class="form-group program_div" <?php echo $program_div_style ?>>
                             <label class="col-lg-2 control-label">Action Matters Campaign <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
-                                <input type="text" name="action_matters_campaign" id="action_matters_campaign" placeholder="Enter Action Matters Campaign" class="form-control capitalize-text" value="<?php echo (isset($account)) ? $account['action_matters_campaign'] : set_value('action_matters_campaign'); ?>" <?php echo $program_required ?>>
+                                <input type="text" name="action_matters_campaign" id="action_matters_campaign" placeholder="Enter Action Matters Campaign" class="form-control text-capitalize" value="<?php echo (isset($account)) ? $account['action_matters_campaign'] : set_value('action_matters_campaign'); ?>" <?php echo $program_required ?>>
                                 <?php
                                 echo '<label id="action_matters_campaign-error" class="validation-error-label" for="action_matters_campaign">' . form_error('action_matters_campaign') . '</label>';
                                 ?>
@@ -100,7 +100,7 @@ if (isset($account)) {
                         <div class="form-group vendor_div" <?php echo $vendor_div_style ?>>
                             <label class="col-lg-2 control-label">Vendor Name <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
-                                <input type="text" name="vendor_name" id="vendor_name" placeholder="Enter Vendor Name" class="form-control capitalize-text" value="<?php echo (isset($account)) ? $account['vendor_name'] : set_value('vendor_name'); ?>"  <?php echo $vendor_required ?>>
+                                <input type="text" name="vendor_name" id="vendor_name" placeholder="Enter Vendor Name" class="form-control text-capitalize" value="<?php echo (isset($account)) ? $account['vendor_name'] : set_value('vendor_name'); ?>"  <?php echo $vendor_required ?>>
                                 <?php
                                 echo '<label id="vendor_name-error" class="validation-error-label" for="vendor_name">' . form_error('vendor_name') . '</label>';
                                 ?>
@@ -109,7 +109,7 @@ if (isset($account)) {
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Contact Name <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
-                                <input type="text" name="contact_name" id="contact_name" placeholder="Enter Contact Name" class="form-control capitalize-text" required="required" value="<?php echo (isset($account)) ? $account['contact_name'] : set_value('contact_name'); ?>">
+                                <input type="text" name="contact_name" id="contact_name" placeholder="Enter Contact Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($account)) ? $account['contact_name'] : set_value('contact_name'); ?>">
                                 <?php
                                 echo '<label id="contact_name-error" class="validation-error-label" for="contact_name">' . form_error('contact_name') . '</label>';
                                 ?>
@@ -118,7 +118,7 @@ if (isset($account)) {
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Address <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
-                                <textarea name="address" id="address" placeholder="Enter Address" class="form-control capitalize-text" required="required"><?php echo (isset($account)) ? $account['address'] : set_value('address'); ?></textarea>
+                                <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" required="required"><?php echo (isset($account)) ? $account['address'] : set_value('address'); ?></textarea>
                                 <?php
                                 echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                 ?>
