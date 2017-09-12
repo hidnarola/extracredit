@@ -394,18 +394,6 @@ class Donors extends MY_Controller {
      * @author KU
      */
     public function import_donor() {
-        $accounts = $this->donors_model->get_all_accounts();
-        $account_name_arr = array_column($accounts, 'action_matters_campaign');
-        $vendor_name_arr = array_column($accounts, 'vendor_name');
-
-        //-- Remove blank values from Account name and vendor name array
-        $account_name_arr = array_filter($account_name_arr);
-        $vendor_name_arr = array_filter($vendor_name_arr);
-
-        $cities = $this->donors_model->sql_select(TBL_CITIES);
-        $cities_arr = array_column($cities, 'name');
-
-
         $fileDirectory = DONORS_CSV;
         $file = $this->input->post('import_donor');
         $config['overwrite'] = FALSE;
@@ -415,42 +403,119 @@ class Donors extends MY_Controller {
         $this->load->library('upload', $config);
         $file_element_name = 'import_donor';
 
+        $accounts = $this->donors_model->get_all_accounts();
+
         //-- Upload csv file
         if ($this->upload->do_upload('import_donor')) {
             $fileDetails = $this->upload->data();
 
             $accounts = $this->donors_model->get_all_accounts();
-            $account_name_arr = array_column($accounts, 'action_matters_campaign');
-            $vendor_name_arr = array_column($accounts, 'vendor_name');
+            $account_name_arr = $cities_arr = $states_arr = [];
+            foreach ($accounts as $account) {
+                if (!empty($account['action_matters_campaign'])) {
+                    $account_name_arr[$account['id']] = $account['action_matters_campaign'];
+                } else {
+                    $account_name_arr[$account['id']] = $account['vendor_name'];
+                }
+            }
 
+            //-- Get cities array
             $cities = $this->donors_model->sql_select(TBL_CITIES);
+            foreach ($cities as $city) {
+                $cities_arr[$city['id']] = $city['name'];
+                $states_arr[$city['id']] = $city['state_id'];
+            }
+
+            //-- Get donor emails
+            $donor_emails = $this->donors_model->sql_select(TBL_DONORS, 'email', ['where' => ['is_delete' => 0]]);
+            $donor_emails_arr = array_column($donor_emails, 'email');
+
             $payment_types = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'type', ['where' => ['is_delete' => 0]]);
-            $donor_emails = $this->donors_model->sql_select(TBL_DONORS, 'email', ['where' => ['is_delete' => 0]]);
-            $donor_emails = $this->donors_model->sql_select(TBL_DONORS, 'email', ['where' => ['is_delete' => 0]]);
-            $donor_emails = array_column($donor_emails, 'email');
+            $payments_type_arr = array_column($payment_types, 'type');
+
+            $email_test = $account_name = array();
 
             $coun = 0;
             $row = 1;
             $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-            $error = [];
+            $donor_data = $check_account = $check_date = $check_postdate = $check_email = $check_city = $check_amount = [];
             if (($data2 = fgetcsv($handle)) !== FALSE) {
                 $data_format2 = array('program/amc', 'firstname', 'lastname', 'email', 'address', 'city', 'zip', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
 
+                //-- check if first colums is according to predefined row
                 if ($data_format2 == $data2) {
-                    fclose($handle);
                     $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-                    $email_test = $account_name = array();
                     while (($col_data = fgetcsv($handle)) !== FALSE) {
+                        $donor = [];
                         if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[4] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '') {
                             fclose($handle);
                             $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
                             redirect('donors');
+                        } else {
+                            //-- Check if program/amc name is valid or not if not then add it into array
+                            if (array_search(strtolower($col_data[0]), array_map('strtolower', $account_name_arr)) != FALSE) {
+                                $donor['account_id'] = array_search(strtolower($col_data[0]), array_map('strtolower', $account_name_arr));
+                            } else {
+                                $check_account[] = $row;
+                            }
+
+                            //--check email is unique or not
+                            if (array_search(strtolower($col_data[3]), array_map('strtolower', $donor_emails_arr)) != FALSE) {
+                                $donor['email'] = $col_data[3];
+                            } else {
+                                $check_email[] = $row;
+                            }
+
+                            $imported_emails[] = $col_data[3];
+
+                            //--check city is valid or not
+                            if (array_search(strtolower($col_data[5]), array_map('strtolower', $cities_arr)) != FALSE) {
+                                $donor['city_id'] = array_search(strtolower($col_data[5]), array_map('strtolower', $cities_arr));
+                                $donor['state_id'] = $states_arr[$donor['city_id']];
+                            } else {
+                                $check_city[] = $row;
+                            }
+
+                            $donor['firstname'] = $col_data[1];
+                            $donor['lastname'] = $col_data[2];
+                            $donor['address'] = $col_data[4];
+                            $donor['zip'] = $col_data[6];
+
+                            //-- Date and post date validation 
+                            //-- Check date is valid or not
+                            $date_arr = explode('-', $col_data[7]);
+                            if (count($date_arr) == 3) {
+                                list($y, $m, $d) = explode('-', $col_data[7]);
+                                if (!checkdate($m, $d, $y)) {
+                                    $check_date[] = $row;
+                                } else {
+                                    $donor['date'] = $col_data[7];
+                                }
+                            } else {
+                                $check_date[] = $row;
+                            }
+
+                            //-- Check post date is valid or not
+                            $date_arr = explode('-', $col_data[8]);
+                            if (count($date_arr) == 3) {
+                                list($y, $m, $d) = explode('-', $col_data[8]);
+                                if (!checkdate($m, $d, $y)) {
+                                    $check_postdate[] = $row;
+                                } else {
+                                    $donor['post_date'] = $col_data[8];
+                                }
+                            } else {
+                                $check_postdate[] = $row;
+                            }
+                            //-- Check amount is valid or not
+                            if(is_numeric($col_data[9])){
+                                
+                            }
+                            $row++;
                         }
-                        $email_test[] = $col_data[3];
-                        $row++;
                     }
 
-                    if (count(array_unique($email_test)) != count($email_test)) {
+                    if (count(array_unique($imported_emails)) != count($imported_emails)) {
                         fclose($handle);
                         $this->session->set_flashdata('error', 'Duplicate value in email column.');
                         redirect('donors');
