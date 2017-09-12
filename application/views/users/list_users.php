@@ -79,7 +79,7 @@
 </div>
 <script>
     var permissions = <?php echo json_encode($perArr); ?>;
-    console.log(permissions);
+//    console.log(permissions);
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({

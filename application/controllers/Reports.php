@@ -144,7 +144,6 @@ class Reports extends MY_Controller {
             $vendor_admin[$key] = $val;
             $vendor_admin[$key]['created'] = date('d M, Y', strtotime($val['created']));
         }
-
         $final['data'] = $vendor_admin;
         echo json_encode($final);
     }

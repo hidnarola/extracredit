@@ -312,7 +312,6 @@ class Users extends MY_Controller {
 
     /**
      * View user
-     * @param  : ---
      * @return : Partial View
      * @author : REP
      */

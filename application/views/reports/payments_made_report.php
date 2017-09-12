@@ -127,11 +127,9 @@
             width: 'auto'
         });
     }
-     //--- daterange change event and call bind function
+    //--- daterange change event and call bind function
     $('#post_date_filter').on('apply.daterangepicker', function (ev, picker) {
         post_date_filter = $(this).val();
-//        console.log(post_date_filter);
-//        $(".datatable-basic").dataTable().fnDestroy();
         data_table.fnDestroy();
         bind();
 
