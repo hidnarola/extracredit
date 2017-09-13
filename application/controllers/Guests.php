@@ -347,6 +347,25 @@ class Guests extends MY_Controller {
         }
     }
 
+    /**
+     * View user
+     * @return : Partial View
+     * @author : REP
+     */
+    public function view_guest() {
+        $guest_id = base64_decode($this->input->post('id'));
+        $guest = $this->guests_model->get_guest_details_view($guest_id);
+        if ($guest) {            
+//            p($guest,1);
+            $guest['invite_date'] = date('d F, Y', strtotime($guest['invite_date']));
+            $guest['guest_date'] = date('d F, Y', strtotime($guest['guest_date']));
+            $guest['AIR_date'] = date('d F, Y', strtotime($guest['AIR_date']));
+            $data['guest_details'] = $guest;    
+            return $this->load->view('guests/guest_view', $data);
+        } else {
+            show_404();
+        }
+    }
 }
 
 /* End of file Guests.php */

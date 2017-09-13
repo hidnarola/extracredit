@@ -67,6 +67,20 @@
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
+
+<div id="guest_view_modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-teal-400 custom_modal_header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title text-center">Guest's Details</h6>
+            </div>
+            <div class="modal-body panel-body custom_scrollbar" id="guest_view_body" style="height: 600px;overflow-y: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     var permissions = <?php echo json_encode($perArr); ?>;
     var compermissions = <?php echo json_encode($comperArr); ?>;
@@ -153,6 +167,9 @@
                         if ($.inArray('edit', permissions) !== -1) {
                             action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest"><i class="icon-pencil3"></i></a>';
                         }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs guest_view_btn" id=' + btoa(full.id) + ' title="View Conversation"><i class="icon-eye"></i></a>';
+                        }
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
                         }
@@ -190,4 +207,15 @@
                 });
         return false;
     }
+    $(document).on('click', '.guest_view_btn', function () {
+        $.ajax({
+            url: site_url + 'guests/view_guest',
+            type: "POST",
+            data: {id: this.id},
+            success: function (response) {
+                $('#guest_view_body').html(response);
+                $('#guest_view_modal').modal('show');
+            }
+        });
+    });
 </script>

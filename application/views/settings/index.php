@@ -59,9 +59,15 @@
                 </fieldset>
                 <div class="form-group">
                     <div class="col-lg-12">
+                        <button type="submit" name="save" class="btn bg-teal custom_save_button" id="settings_submit_btn">Save<i class="icon-arrow-right14 position-right"></i></button>
+                        <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
+                    </div>
+                </div>  
+<!--                <div class="form-group">
+                    <div class="col-lg-12">
                         <button class="btn btn-success" type="submit" id="settings_submit_btn">Save <i class="icon-arrow-right14 position-right"></i></button>
                     </div>
-                </div>
+                </div>-->
             </form>
         </div>
     </div>
@@ -109,8 +115,7 @@
             if (element.parents('div').hasClass("checker") || element.parents('div').hasClass("choice") || element.parent().hasClass('bootstrap-switch-container')) {
                 if (element.parents('label').hasClass('checkbox-inline') || element.parents('label').hasClass('radio-inline')) {
                     error.appendTo(element.parent().parent().parent().parent());
-                }
-                else {
+                } else {
                     error.appendTo(element.parent().parent().parent().parent().parent());
                 }
             }
@@ -133,9 +138,7 @@
             // Input group, styled file input
             else if (element.parent().hasClass('uploader') || element.parents().hasClass('input-group')) {
                 error.appendTo(element.parent().parent());
-            }
-
-            else {
+            } else {
                 error.insertAfter(element);
             }
         },

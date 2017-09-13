@@ -1,0 +1,13 @@
+.custom_save_button {
+    width: 90px;
+    display: inline-block;
+    float: left;
+    margin-right: 15px;
+    border: none;
+    padding: 8px 12px;
+}
+.custom_cancel_button {
+    width: 90px;
+    display: inline-block;
+    float: left;
+}
