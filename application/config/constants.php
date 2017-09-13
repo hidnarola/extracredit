@@ -110,8 +110,8 @@ define('TBL_USER_PERMISSION', 'user_permissions');
 define('USER_IMAGES', 'uploads/user_images/');
 define('GUEST_IMAGES', 'uploads/guest_images/');
 define('COMMUNICATION_IMAGES', 'uploads/communication_images/');
-define('DONORS_CSV', 'uploads/csv/donors/');
-define('GUEST_CSV', 'uploads/csv/guest/');
+define('DONORS_CSV', 'uploads/csv/donors');
+define('GUEST_CSV', 'uploads/csv/guest');
 define('DEMO_CSV', 'uploads/demo_csv/');
 
 define('REMEMBER_ME_COOKIE_NAME', 'ecs908f7d89f');

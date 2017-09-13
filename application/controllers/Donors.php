@@ -395,22 +395,18 @@ class Donors extends MY_Controller {
      */
     public function import_donor() {
         $fileDirectory = DONORS_CSV;
-        $file = $this->input->post('import_donor');
         $config['overwrite'] = FALSE;
         $config['remove_spaces'] = TRUE;
-        $config['upload_path'] = $fileDirectory;
+        $config['upload_path'] = DONORS_CSV;
         $config['allowed_types'] = 'csv|CSV';
         $this->load->library('upload', $config);
-        $file_element_name = 'import_donor';
-
-        $accounts = $this->donors_model->get_all_accounts();
 
         //-- Upload csv file
         if ($this->upload->do_upload('import_donor')) {
             $fileDetails = $this->upload->data();
 
             $accounts = $this->donors_model->get_all_accounts();
-            $account_name_arr = $cities_arr = $states_arr = [];
+            $account_name_arr = $cities_arr = $states_arr = $payments_type_arr = [];
             foreach ($accounts as $account) {
                 if (!empty($account['action_matters_campaign'])) {
                     $account_name_arr[$account['id']] = $account['action_matters_campaign'];
@@ -430,17 +426,16 @@ class Donors extends MY_Controller {
             $donor_emails = $this->donors_model->sql_select(TBL_DONORS, 'email', ['where' => ['is_delete' => 0]]);
             $donor_emails_arr = array_column($donor_emails, 'email');
 
-            $payment_types = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'type', ['where' => ['is_delete' => 0]]);
-            $payments_type_arr = array_column($payment_types, 'type');
+            $payment_types = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
+            foreach ($payment_types as $payment_type) {
+                $payments_type_arr[$payment_type['id']] = $payment_type['type'];
+            }
 
-            $email_test = $account_name = array();
-
-            $coun = 0;
             $row = 1;
             $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-            $donor_data = $check_account = $check_date = $check_postdate = $check_email = $check_city = $check_amount = [];
+            $donor_data = $check_account = $check_email = $check_city = $check_date = $check_postdate = $check_amount = $check_payment = $imported_emails = [];
             if (($data2 = fgetcsv($handle)) !== FALSE) {
-                $data_format2 = array('program/amc', 'firstname', 'lastname', 'email', 'address', 'city', 'zip', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
+                $data_format2 = array('amc', 'firstname', 'lastname', 'email', 'address', 'city', 'zip', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
 
                 //-- check if first colums is according to predefined row
                 if ($data_format2 == $data2) {
@@ -452,6 +447,7 @@ class Donors extends MY_Controller {
                             $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
                             redirect('donors');
                         } else {
+                            $row++;
                             //-- Check if program/amc name is valid or not if not then add it into array
                             if (array_search(strtolower($col_data[0]), array_map('strtolower', $account_name_arr)) != FALSE) {
                                 $donor['account_id'] = array_search(strtolower($col_data[0]), array_map('strtolower', $account_name_arr));
@@ -508,288 +504,104 @@ class Donors extends MY_Controller {
                                 $check_postdate[] = $row;
                             }
                             //-- Check amount is valid or not
-                            if(is_numeric($col_data[9])){
-                                
+                            if (is_numeric($col_data[9]) && $col_data[9] != 0) {
+                                $donor['amount'] = $col_data[9];
+                            } else {
+                                $check_amount[] = $row;
                             }
-                            $row++;
+
+                            //-- Check payment type is valid or not
+                            if (array_search(strtolower($col_data[10]), array_map('strtolower', $payments_type_arr)) != FALSE) {
+                                $donor['payment_type_id'] = array_search(strtolower($col_data[10]), array_map('strtolower', $payments_type_arr));
+                            } else {
+                                $check_payment[] = $row;
+                            }
+                            $donor['payment_number'] = $col_data[11];
+                            $donor['memo'] = $col_data[12];
+                            $donor['created'] = date('Y-m-d H:i:s');
+
+
+                            $donor_data[] = $donor;
                         }
                     }
 
+                    //-- check email in column are unique or not
                     if (count(array_unique($imported_emails)) != count($imported_emails)) {
                         fclose($handle);
-                        $this->session->set_flashdata('error', 'Duplicate value in email column.');
-                        redirect('donors');
-                    }
-
-                    $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-                    $coun = 0;
-                    $row = 1;
-                    $email_error_row = array();
-                    while (($col_data = fgetcsv($handle)) !== FALSE) {
-                        if ($row == 1) {
-                            $row++;
-                            continue;
-                        }
-                        if (in_array($col_data[3], $donor_emails)) {
-                            array_push($email_error_row, $col_data[3]);
-                        }
-                        $row++;
-                    }
-
-                    if (!empty($email_error_row)) {
-                        fclose($handle);
-                        $this->session->set_flashdata('error', 'Donor email already exist!');
-                        redirect('donors');
+                        $this->session->set_flashdata('error', "Duplicate value in email column.");
+                    } else if (!empty($check_account)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_account);
+                        $this->session->set_flashdata('error', "Account/Program doesn't exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_city)) { //-- check city in column are unique or not
+                        $rows = implode(',', $check_city);
+                        $this->session->set_flashdata('error', "City doesn't exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_date)) {  //-- check dates in column are valid or not
+                        $rows = implode(',', $check_date);
+                        $this->session->set_flashdata('error', "Invalid date in date column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_postdate)) {   //-- check post dates in column are valid or not
+                        $rows = implode(',', $check_postdate);
+                        $this->session->set_flashdata('error', "Invalid post date in post_date column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_amount)) { //-- check amount in column is valid or not
+                        $rows = implode(',', $check_amount);
+                        $this->session->set_flashdata('error', "Invalid amount in amount column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_payment)) { //-- check payment in column is valid or not
+                        $rows = implode(',', $check_payment);
+                        $this->session->set_flashdata('error', "Payment type doesn't exist. Please check entries at row number - " . $rows);
                     } else {
-                        fclose($handle);
+
+                        if (!empty($donor_data)) {
+
+                            //-- Insert dnonor details into database
+                            $settings = $this->donors_model->sql_select(TBL_SETTINGS);
+                            $settings_arr = [];
+                            foreach ($settings as $val) {
+                                $settings_arr[$val['setting_key']] = $val['setting_value'];
+                            }
+                            foreach ($donor_data as $val) {
+                                $amount = $val['amount'];
+                                $account_id = $val['account_id'];
+
+                                $admin_amount = ($settings_arr['admin-donation-percent'] * $amount) / 100;
+                                $admin_amount = round($admin_amount, 2);
+                                $account_amount = $amount - $admin_amount;
+
+                                $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
+                                $total_fund = $account['total_fund'];
+                                $admin_fund = $account['admin_fund'];
+
+                                $this->db->trans_begin();
+
+                                $donor_id = $this->donors_model->common_insert_update('insert', TBL_DONORS, $val);
+
+                                $fund_array = array(
+                                    'account_id' => $account_id,
+                                    'donor_id' => $donor_id,
+                                    'admin_fund' => $admin_amount,
+                                    'account_fund' => $account_amount,
+                                    'created' => date('Y-m-d H:i:s')
+                                );
+
+                                $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
+
+                                $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
+                                $this->donors_model->update_admin_fund($this->admin_fund + $admin_amount);
+
+                                $this->db->trans_complete();
+                            }
+                            $this->session->set_flashdata('success', "CSV file imported successfully!Donor data added successfully");
+                        } else {
+                            $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
+                        }
                     }
                 } else {
                     fclose($handle);
                     $this->session->set_flashdata('error', 'The columns in this csv file does not match to the database');
-                    redirect('donors');
                 }
+            } else {
+                $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
             }
             fclose($handle);
-
-            $coun = 0;
-            $row = 1;
-            $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-            if (($data1 = fgetcsv($handle)) !== FALSE) {
-                $data_format2 = array('program/amc', 'firstname', 'lastname', 'email', 'address', 'city', 'zip', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
-                if ($data_format == $data1) {
-                    fclose($handle);
-                    $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-                    while (($data = fgetcsv($handle)) !== FALSE) {
-                        if ($row == 1) {
-                            $row++;
-                            continue;
-                        }
-                        $finalImgArr = array();
-
-                        $program_amc = $data[0];
-                        $firstname = $data[1];
-                        $lastname = $data[2];
-                        $email = $data[3];
-                        $address = $data[4];
-                        $city = $data[5];
-                        $zip = $data[6];
-                        $date = $data[7];
-                        $post_date = $data[8];
-                        $amount = $data[9];
-                        $payment_type = $data[10];
-                        $payment_number = $data[11];
-                        $memo = $data[12];
-
-                        $donor_arr = [];
-
-                        $db_product_name = $this->product_model->get_all_details(PRODUCT, array('product_name' => $name))->result_array();
-
-                        $seller_product_id = mktime();
-                        $checkId = $this->check_product_id($seller_product_id);
-                        while ($checkId->num_rows() > 0) {
-                            $seller_product_id = mktime();
-                            $checkId = $this->check_product_id($seller_product_id);
-                        }
-
-
-                        $finalimage_name = implode(',', $finalImgArr);
-                        $category_Arr = explode(':-:', $category);
-                        foreach ($category_Arr as $category) {
-                            if (is_numeric($category)) {
-                                $where_condition = array('id' => $category);
-                            } else {
-                                $where_condition = array('cat_name' => $category);
-                            }
-                            $catArr = $this->product_model->get_all_details(CATEGORY, $where_condition);
-                            if ($catArr->num_rows() > 0) {
-                                $category_id_arr = array($catArr->row()->id);
-                                while ($catArr->row()->rootID > 0) {
-                                    $catArr = $this->product_model->get_all_details(CATEGORY, array('id' => $catArr->row()->rootID));
-                                    if ($catArr->num_rows() > 0) {
-                                        $category_id_arr[] = $catArr->row()->id;
-                                    } else {
-                                        break;
-                                    }
-                                }
-                                $category_id = implode(',', array_reverse($category_id_arr));
-                            } else {
-                                $catArr = $this->product_model->get_all_details(CATEGORY, array('cat_name' => 'Miscellaneous'));
-                                $category_id = $catArr->row()->id;
-                            }
-                        }
-
-                        $seourlBase = $seourl = url_title($name, '-', TRUE);
-                        $seourl_check = '0';
-                        $duplicate_url = $this->product_model->get_all_details(PRODUCT, array('seourl' => $seourl));
-                        if ($duplicate_url->num_rows() > 0) {
-                            $seourl = $seourlBase . '-' . $duplicate_url->num_rows();
-                        } else {
-                            $seourl_check = '1';
-                        }
-                        $urlCount = $duplicate_url->num_rows();
-                        while ($seourl_check == '0') {
-                            $urlCount++;
-                            $duplicate_url = $this->product_model->get_all_details(PRODUCT, array('seourl' => $seourl));
-                            if ($duplicate_url->num_rows() > 0) {
-                                $seourl = $seourlBase . '-' . $urlCount;
-                            } else {
-                                $seourl_check = '1';
-                            }
-                        }
-                        $modifyDate = '';
-                        if ($this->checkLogin('U') == 1) {
-                            $status = 'Publish';
-                            $pay_status = 'Paid';
-                        } else {
-                            $status = 'UnPublish';
-                            $pay_status = 'paid';
-                        }
-
-                        $ship_duration = '';
-                        $insertdata1 = array(
-                            'seller_product_id' => $seller_product_id,
-                            'modified' => $modifyDate,
-                            'product_name' => $name,
-                            'product_name_ar' => $arabic_name,
-                            'arabic_description' => $arabic_description,
-                            'weight' => $weight,
-                            'description' => $description,
-                            'image' => $finalimage_name,
-                            'category_id' => $category_id,
-                            'status' => $status,
-                            'seourl' => $seourl,
-                            'brand' => $brand,
-                            'model' => $model,
-                            'width' => $width,
-                            'height' => $height,
-                            'depth' => $depth
-                        );
-
-                        $insertdata2 = array(
-                            'made_by' => $made_by,
-                            'product_condition' => $product_condition,
-                            'modified' => $modifyDate,
-                            'maked_on' => $maked_on,
-                            'ship_duration' => $processing_time,
-                            'price' => $price,
-                            'base_price' => $price,
-                            'quantity' => $quantity,
-                            'status' => 'UnPublish',
-                            'pay_status' => $pay_status,
-                            'ship_from' => $country,
-                            'user_id' => $this->input->post('seller_list'),
-                            'sku' => $sku,
-                            'type' => $product_type,
-                            'condition' => $condition,
-                            'warranty' => $warranty,
-                            'country_origin' => $country_origin,
-                            'variation' => $variation,
-                            'offer' => $offer,
-                            'deal_date' => $deal_date,
-                            'deal_date_to' => $deal_date_to,
-                            'deal_time_from' => $deal_time_from,
-                            'deal_time_to' => $deal_time_to,
-                            'discount' => $discount
-                        );
-
-                        if (count($db_product_name)) {
-                            $insertdata2['product_id'] = $db_product_name[0]['id'];
-                        } else {
-                            $this->product_model->simple_insert(PRODUCT, $insertdata1);
-                            $idArr = $this->product_model->get_last_insert_id();
-                            $insertdata2['product_id'] = $idArr;
-                        }
-
-                        $this->product_model->simple_insert('shopsy_seller_product', $insertdata2);
-                        $sp_id = $this->product_model->get_last_insert_id();
-                        if ($variation == 'yes') {
-                            if ($variation_value1[0] != '') {
-                                for ($i = 0; $i < count($variation_value1); $i++) {
-                                    $variation_attr = explode(':', $variation_value1[$i]);
-                                    $attr_data_arr = array(
-                                        'attr_name' => $variation1,
-                                        'attr_value' => $variation_attr[0],
-                                        'pricing' => $variation_attr[1],
-                                        'stock_status' => '1',
-                                        'product_id' => $sp_id
-                                    );
-                                    $this->product_model->add_subproduct_insert($attr_data_arr);
-                                }
-                            }
-
-                            if ($variation_value2[0] != '') {
-                                for ($i = 0; $i < count($variation_value2); $i++) {
-                                    $variation_attr = explode(':', $variation_value2[$i]);
-                                    $attr_data_arr = array(
-                                        'attr_name' => $variation2,
-                                        'attr_value' => $variation_attr[0],
-                                        'pricing' => $variation_attr[1],
-                                        'stock_status' => '1',
-                                        'product_id' => $sp_id
-                                    );
-                                    $this->product_model->add_subproduct_insert($attr_data_arr);
-                                }
-                            }
-                        }
-                        //echo $this->db->last_query();die;
-                        $ship_to = $this->input->post('shipping_to');
-                        $ship_to_id = $this->input->post('ship_to_id');
-
-                        $cost_individual = $ship_cost;
-                        $cost_with_another = $ship_cost_with_other;
-                        $shipName = $country;
-
-                        $countryInfo = $this->product_model->get_all_details(COUNTRY_LIST, array('name' => $country));
-                        $shipId = $countryInfo->row()->id;
-
-                        $seourlBase = $seourl = url_title($shipName, '-', TRUE);
-                        $seourl_check = '0';
-                        $duplicate_url = $this->product_model->get_all_details(SUB_SHIPPING, array('ship_seourl' => $seourl));
-                        if ($duplicate_url->num_rows() > 0) {
-                            $seourl = $seourlBase . '-' . $duplicate_url->num_rows();
-                        } else {
-                            $seourl_check = '1';
-                        }
-                        $urlCount = $duplicate_url->num_rows();
-                        while ($seourl_check == '0') {
-                            $urlCount++;
-                            $duplicate_url = $this->product_model->get_all_details(SUB_SHIPPING, array('ship_seourl' => $seourl));
-                            if ($duplicate_url->num_rows() > 0) {
-                                $seourl = $seourlBase . '-' . $urlCount;
-                            } else {
-                                $seourl_check = '1';
-                            }
-                        }
-
-                        $dataArrShip = array('product_id' => $sp_id,
-                            'ship_id' => $shipId,
-                            'ship_name' => $shipName,
-                            'ship_cost' => $cost_individual,
-                            'ship_seourl' => $seourl,
-                            'ship_other_cost' => $cost_with_another
-                        );
-                        $this->product_model->simple_insert(SUB_SHIPPING, $dataArrShip);
-
-                        $usrdetails = $this->product_model->get_all_details(USERS, array('id' => $this->checkLogin('U')));
-                        if ($usrdetails->num_rows() > 0) {
-                            $prodCount = $usrdetails->row()->products;
-                            $prodCount = $prodCount + 1;
-                            $this->product_model->update_details(USERS, array('products' => $prodCount), array('id' => $this->checkLogin('U')));
-                        }
-                        $row++;
-                    }
-                    fclose($handle);
-                    $this->setErrorMessage('success', 'Your csv file is uploaded and the product details are added');
-                    redirect(base_url() . 'upload-products-csv');
-                } else {
-                    fclose($handle);
-                    $this->setErrorMessage('error', 'The coloumns in this csv file does not match to the database');
-                    redirect('upload-products-csv');
-                }
-            }
-            fclose($handle);
-            $this->setErrorMessage('error', 'The coloumns in this csv file does not match to the database');
-            redirect('upload-products');
+            redirect('donors');
         } else {
             $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
             redirect('donors');
