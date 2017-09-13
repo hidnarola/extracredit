@@ -58,12 +58,12 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-lg-12">
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-success custom_save_button" id="programstatus_submit_btn">Save</button>
-                                    <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
+                                    <button type="submit" name="save" class="btn bg-teal custom_save_button" id="programstatus_submit_btn">Save<i class="icon-arrow-right14 position-right"></i></button>
+                                    <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
-                            </div>
+                            </div> 
                         </div>
                     </div>
                 </div>
@@ -137,8 +137,7 @@
             if (element.parents('div').hasClass("checker") || element.parents('div').hasClass("choice") || element.parent().hasClass('bootstrap-switch-container')) {
                 if (element.parents('label').hasClass('checkbox-inline') || element.parents('label').hasClass('radio-inline')) {
                     error.appendTo(element.parent().parent().parent().parent());
-                }
-                else {
+                } else {
                     error.appendTo(element.parent().parent().parent().parent().parent());
                 }
             }
@@ -161,9 +160,7 @@
             // Input group, styled file input
             else if (element.parent().hasClass('uploader') || element.parents().hasClass('input-group')) {
                 error.appendTo(element.parent().parent());
-            }
-
-            else {
+            } else {
                 error.insertAfter(element);
             }
         },
@@ -244,14 +241,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 </script>

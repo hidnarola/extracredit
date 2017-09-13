@@ -4,9 +4,9 @@
 <style>
     .disable_checkbox{ opacity: 0.3;color: darkred !important;border: 2px solid darkred !important;}
     .custom_scrollbar::-webkit-scrollbar { width: 0.4em; }
-.custom_scrollbar::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); }
-.custom_scrollbar::-webkit-scrollbar-thumb { background-color: #26A69A; outline: 1px solid slategrey; }
-@media (min-width:801px) {.user_permissions_div{margin-left: 45px;}}
+    .custom_scrollbar::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); }
+    .custom_scrollbar::-webkit-scrollbar-thumb { background-color: #26A69A; outline: 1px solid slategrey; }
+    @media (min-width:801px) {.user_permissions_div{margin-left: 45px;}}
 </style>
 <?php
 $edit = 0;
@@ -152,10 +152,16 @@ if (isset($user)) {
                                         </div>
                                         <div class="form-group">
                                             <div class="col-lg-12">
-                                                <button class="btn btn-success" type="submit" id="update_profile">Save <i class="icon-arrow-right14 position-right"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                <button type="submit" name="save" class="btn bg-teal custom_save_button" id="update_profile">Save<i class="icon-arrow-right14 position-right"></i></button>
+                                                <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
+                                            </div>           
+                                        </div>  
+                                        <!--                                        <div class="form-group">
+                                                                                    <div class="col-lg-12">
+                                                                                        <button class="btn btn-success" type="submit" id="update_profile">Save <i class="icon-arrow-right14 position-right"></i></button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>-->
 
                                 </fieldset>
                             </div>
@@ -367,7 +373,7 @@ if (isset($user)) {
             reader.readAsDataURL(input.files[0]);
         }
     }
-    
+
     function check_checkboxes_selection(id) {
         if ($('.' + id).length == $('.' + id + ':checked').length) {
             $("#" + id).attr("checked", "checked");

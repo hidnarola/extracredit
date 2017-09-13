@@ -58,12 +58,18 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <button type="submit" name="save" class="btn bg-teal custom_save_button" id="programtype_submit_btn">Save<i class="icon-arrow-right14 position-right"></i></button>
+                                    <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="cancel_click()">Cancel</button>
+                                </div>
+                            </div>  
+<!--                            <div class="col-md-12">
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-success custom_save_button" id="programtype_submit_btn">Save</button>
                                     <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>

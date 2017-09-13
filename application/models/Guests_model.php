@@ -175,5 +175,19 @@ class Guests_model extends MY_Model {
             return $query->num_rows();
         }
     }
+    /**
+     * Get guest details of particular id
+     * @param int $id
+     */
+    public function get_guest_details_view($id) {
+        $this->db->select('g.*,a.fund_type_id,f.type,a.action_matters_campaign,a.vendor_name,c.name as cityname, s.name as statename');
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'f.id=a.fund_type_id', 'left');
+         $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left'); 
+        $this->db->where(['g.id' => $id, 'g.is_delete' => 0]);
+        $query = $this->db->get(TBL_GUESTS . ' g');
+        return $query->row_array();
+    }
 
 }

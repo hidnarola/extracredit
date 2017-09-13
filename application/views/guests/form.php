@@ -301,9 +301,10 @@ if (isset($guest)) {
                         </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">
-                                <button class="btn btn-success" type="submit" id="guest_btn_submit">Save <i class="icon-arrow-right14 position-right"></i></button>
+                                <button type="submit" name="save" class="btn bg-teal custom_save_button" id="guest_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
+                                <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
                             </div>
-                        </div>
+                        </div>                          
                     </form>
                 </div>
             </div>
