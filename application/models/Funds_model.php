@@ -18,7 +18,7 @@ class Funds_model extends MY_Model {
     public function get_adminfund($type = 'result') {
         $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.type', 'd.payment_number', 'd.memo', 'f.admin_fund', 'd.amount', 'a.total_fund'];
         $keyword = $this->input->get('search');
-        $this->db->select('d.date,d.post_date,ft.type as fund_type,a.action_matters_campaign,a.vendor_name,p.type as payment_type,d.payment_number,d.memo,f.admin_fund,d.amount,a.total_fund as balance,ft.is_vendor');
+        $this->db->select('d.date,d.post_date,ft.name as fund_type,a.action_matters_campaign,a.vendor_name,p.type as payment_type,d.payment_number,d.memo,f.admin_fund,d.amount,a.total_fund as balance,ft.type');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id AND a.is_delete=0', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as ft', 'a.fund_type_id=ft.id AND ft.is_delete=0', 'left');
@@ -58,7 +58,7 @@ class Funds_model extends MY_Model {
     public function get_accountfund($type = 'result') {
         $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.type', 'd.payment_number', 'd.memo', 'f.account_fund', 'd.amount', 'a.total_fund'];
         $keyword = $this->input->get('search');
-        $this->db->select('d.date,d.post_date,ft.type as fund_type,a.action_matters_campaign,a.vendor_name,p.type as payment_type,d.payment_number,d.memo,f.account_fund,d.amount,a.total_fund as balance,ft.is_vendor');
+        $this->db->select('d.date,d.post_date,ft.name as fund_type,a.action_matters_campaign,a.vendor_name,p.type as payment_type,d.payment_number,d.memo,f.account_fund,d.amount,a.total_fund as balance,ft.type');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id AND a.is_delete=0', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as ft', 'a.fund_type_id=ft.id AND ft.is_delete=0', 'left');
@@ -98,8 +98,8 @@ class Funds_model extends MY_Model {
     public function get_donorfund($type = 'result') {
         $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'd.id', 'd.lastname', 'd.firstname', 'p.type', 'd.payment_number', 'd.memo', 'f.account_fund', 'd.amount', 'a.total_fund'];
         $keyword = $this->input->get('search');
-        $this->db->select('d.date,d.post_date,ft.type as fund_type,a.action_matters_campaign,a.vendor_name,d.id,d.lastname,d.firstname,'
-                . 'p.type as payment_type,d.payment_number,d.memo,f.account_fund,d.amount,a.total_fund as balance,ft.is_vendor');
+        $this->db->select('d.date,d.post_date,ft.name as fund_type,a.action_matters_campaign,a.vendor_name,d.id,d.lastname,d.firstname,'
+                . 'p.type as payment_type,d.payment_number,d.memo,f.account_fund,d.amount,a.total_fund as balance,ft.type');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id AND a.is_delete=0', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as ft', 'a.fund_type_id=ft.id AND ft.is_delete=0', 'left');
@@ -142,8 +142,8 @@ class Funds_model extends MY_Model {
     public function get_paymentfund($type = 'result') {
         $columns = ['ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.check_date', 'p.check_number', 'p.amount', 'a.total_fund'];
         $keyword = $this->input->get('search');
-        $this->db->select('ft.type as fund_type,a.action_matters_campaign,a.vendor_name,p.check_date,p.check_number,p.amount,'
-                . 'a.total_fund as balance,ft.is_vendor');
+        $this->db->select('ft.name as fund_type,a.action_matters_campaign,a.vendor_name,p.check_date,p.check_number,p.amount,'
+                . 'a.total_fund as balance,ft.type');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id AND a.is_delete=0', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as ft', 'a.fund_type_id=ft.id AND ft.is_delete=0', 'left');

@@ -18,7 +18,7 @@ class Donors_model extends MY_Model {
     public function get_donors($type = 'result') {
         $columns = ['id', 'action_matters_campaign,vendor_name', 'd.firstname', 'd.lastname', 'd.email', 'c.name', 'p.type', 'd.amount', 'd.created', 'd.is_active'];
         $keyword = $this->input->get('search');
-        $this->db->select('d.*,a.action_matters_campaign,a.vendor_name,f.type as fund_type,c.name as city,f.is_vendor,p.type as payment_type');
+        $this->db->select('d.*,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,f.type,p.type as payment_type');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
@@ -108,7 +108,7 @@ class Donors_model extends MY_Model {
     public function get_donors_reports($type = 'result') {
         $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'd.date', 'd.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'city', 'state', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'd.payment_number', 'd.memo'];
         $keyword = $this->input->get('search');
-        $this->db->select('d.*,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.type as fund_type,c.name as city,s.name as state,f.is_vendor,p.type as payment_type');
+        $this->db->select('d.*,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,s.name as state,f.type,p.type as payment_type');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
@@ -153,7 +153,7 @@ class Donors_model extends MY_Model {
      * Get all accounts 
      */
     public function get_all_accounts() {
-        $this->db->select('f.type as fund_type,a.id,a.fund_type_id,a.action_matters_campaign,a.vendor_name,f.is_vendor');
+        $this->db->select('f.name as fund_type,a.id,a.fund_type_id,a.action_matters_campaign,a.vendor_name,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->where(['a.is_delete' => 0]);
         $query = $this->db->get(TBL_ACCOUNTS . ' a');

@@ -21,7 +21,7 @@ class Home extends MY_Controller {
         $data['accounts'] = $this->users_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['donors'] = $this->users_model->sql_select(TBL_DONORS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['guests'] = $this->users_model->sql_select(TBL_GUESTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
-        $sql = 'SELECT sum(admin_fund) total_admin,sum(pymt.amount) total_payment,(sum(admin_fund) - sum(pymt.amount)) as final FROM ' . TBL_FUNDS . ',(SELECT amount FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND is_vendor=1 AND p.created >= "' . date('Y-m-d') . '") pymt WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . date('Y-m-d') . '"';
+        $sql = 'SELECT sum(admin_fund) total_admin,sum(pymt.amount) total_payment,(sum(admin_fund) - sum(pymt.amount)) as final FROM ' . TBL_FUNDS . ',(SELECT amount FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . date('Y-m-d') . '") pymt WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . date('Y-m-d') . '"';
         $total = $this->users_model->customQuery($sql, 2);
         $data['today_admin_fund'] = $total['final'];
         $monday = strtotime("last monday");
@@ -29,7 +29,7 @@ class Home extends MY_Controller {
         $sunday = strtotime(date("Y-m-d", $monday) . " +6 days");
         $this_week_sd = date("Y-m-d", $monday);
         $this_week_ed = date("Y-m-d", $sunday);
-        $sql = 'SELECT sum(admin_fund) total_admin,sum(pymt.amount) total_payment,(sum(admin_fund) - sum(pymt.amount)) as final FROM ' . TBL_FUNDS . ',(SELECT amount FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND is_vendor=1 AND p.created >= "' . $this_week_sd . '" AND p.created <= "' . $this_week_ed . '") pymt WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . $this_week_sd . '"  AND ' . TBL_FUNDS . '.created <= "' . $this_week_ed . '"';
+        $sql = 'SELECT sum(admin_fund) total_admin,sum(pymt.amount) total_payment,(sum(admin_fund) - sum(pymt.amount)) as final FROM ' . TBL_FUNDS . ',(SELECT amount FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . $this_week_sd . '" AND p.created <= "' . $this_week_ed . '") pymt WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . $this_week_sd . '"  AND ' . TBL_FUNDS . '.created <= "' . $this_week_ed . '"';
         $total = $this->users_model->customQuery($sql, 2);
         $data['week_admin_fund'] = $total['final'];
         $this->template->load('default', 'dashboard', $data);

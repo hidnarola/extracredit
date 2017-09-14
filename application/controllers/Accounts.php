@@ -68,7 +68,7 @@ class Accounts extends MY_Controller {
             $data['heading'] = 'Add Account';
             $data['cities'] = [];
         }
-        $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,type,is_vendor', ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0]]);
         $data['program_types'] = $this->accounts_model->sql_select(TBL_PROGRAM_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['program_status'] = $this->accounts_model->sql_select(TBL_PROGRAM_STATUS, 'id,status', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->accounts_model->sql_select(TBL_STATES, NULL);
@@ -84,8 +84,8 @@ class Accounts extends MY_Controller {
         $this->form_validation->set_rules('website', 'Website', 'trim|required');
 
         if ($this->input->post('fund_type_id') != '') {
-            $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'is_vendor', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
-            if ($fund_type['is_vendor'] == 1) {
+            $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
+            if ($fund_type['type'] == 1) {
                 $this->form_validation->set_rules('vendor_name', 'Vendor Name', 'trim|required');
             } else {
                 $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
@@ -110,8 +110,8 @@ class Accounts extends MY_Controller {
                 'phone' => $this->input->post('phone'),
                 'website' => $this->input->post('website'),
             );
-            $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'is_vendor', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
-            if ($fund_type['is_vendor'] == 1) {
+            $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
+            if ($fund_type['type'] == 1) {
                 $dataArr['vendor_name'] = $this->input->post('vendor_name');
                 $dataArr['action_matters_campaign'] = NULL;
                 $dataArr['tax_id'] = NULL;
@@ -153,7 +153,7 @@ class Accounts extends MY_Controller {
      */
     public function get_fund_type() {
         $id = base64_decode($this->input->post('id'));
-        $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type,is_vendor', ['where' => ['is_delete' => 0, 'id' => $id]], ['single' => true]);
+        $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type,name', ['where' => ['is_delete' => 0, 'id' => $id]], ['single' => true]);
         echo json_encode($fund_type);
     }
 
