@@ -48,23 +48,46 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group form-group-material has-feedback">
-                                    <label class="required">Fund Type </label>
-                                    <input type="text" class="form-control" name="fund_type" id="fund_type" required="required">
+                                    <label class="required">Fund Name </label>
+                                    <input type="text" class="form-control" name="name" id="name" required="required">
                                     <?php
-                                    echo '<label id="fund_type-error" class="validation-error-label" for="fund_type">' . form_error('fund_type') . '</label>';
+                                    echo '<label id="name-error" class="validation-error-label" for="name">' . form_error('name') . '</label>';
                                     ?>
                                     <input type="hidden" name="fund_type_id" id="fund_type_id">
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <div class="form-group form-group-material has-feedback">
-                                    <label class="checkbox-inline checkbox-right">
-                                        <input type="checkbox" class="styled" name="is_vendor" id="is_vendor" value="1">
-                                        Is Vendor?
+                            <div class="col-md-6">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="type" id="type1" class="control-warning" value="0">
+                                        Normal
+                                    </label>
+                                </div>
+
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="type" id="type2" class="control-info" value="1">
+                                        Vendor
+                                    </label>
+                                </div>
+
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="type" id="type3" class="control-custom" value="2">
+                                        ECS Admin
                                     </label>
                                 </div>
                             </div>
+                            <!--                            <div class="col-md-12">
+                                                            <div class="form-group form-group-material has-feedback">
+                                                                <label class="checkbox-inline checkbox-right">
+                                                                    <input type="checkbox" class="styled" name="is_vendor" id="is_vendor" value="1">
+                                                                    Is Vendor?
+                                                                </label>
+                                                            </div>
+                                                        </div>-->
                         </div>
+                        <br>
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
@@ -72,12 +95,6 @@
                                     <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
                             </div>  
-<!--                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-success custom_save_button" id="fundtype_submit_btn">Save</button>
-                                    <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
-                                </div>
-                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -102,8 +119,15 @@
                         <?php foreach ($fund_types as $key => $val) { ?>
                             <tr>
                                 <td><?php echo $key + 1; ?></td>
-                                <td><?php echo $val['type']; ?></td>
-                                <td><?php echo ($val['is_vendor'] == 1) ? 'Yes' : 'No'; ?></td>
+                                <td><?php echo $val['name']; ?></td>
+                                <td><?php
+                                    if ($val['type'] == 0)
+                                        echo 'Normal';
+                                    else if ($val['type'] == 1)
+                                        echo 'Vendor';
+                                    else
+                                        echo 'Admin';
+                                    ?></td>
                                 <td><?php echo date('d,M Y', strtotime($val['created'])); ?></td>
                                 <td>
                                     <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Fund Type"><i class="icon-pencil3"></i></a>
@@ -120,6 +144,7 @@
 </div>
 <script type="text/javascript">
     $(function () {
+        $('#type1').closest("span").addClass('checked');
         $('.datatable-basic').dataTable({
             autoWidth: false,
             processing: true,
@@ -185,13 +210,13 @@
             label.addClass("validation-valid-label")
         },
         rules: {
-            fund_type: {
+            name: {
                 required: true,
                 remote: site_url + "settings/check_fund_type/",
             },
         },
         messages: {
-            fund_type: {
+            name: {
                 remote: $.validator.format("This fund type already exist!")
             }
         },
@@ -214,25 +239,37 @@
             dataType: 'JSON',
             data: {id: id},
             success: function (data) {
-                $('#fund_type').val(data.type);
+                $('#name').val(data.name);
                 $('#fund_type_id').val(data.id);
-                if (data.is_vendor == 1) {
-                    $('#is_vendor').prop('checked', true);
-                } else {
-                    $('#is_vendor').prop('checked', false);
+                var type = $('#type1');
+                var type1 = $('#type2');
+                var type2 = $('#type3');
+                if (data.type == 0) {
+                    $(type1).closest("span").removeClass('checked');
+                    $(type2).closest("span").removeClass('checked');
+                    $(type).closest("span").addClass('checked');
+                } else if (data.type == 1) {
+                    $(type).closest("span").removeClass('checked');
+                    $(type2).closest("span").removeClass('checked');
+                    $(type1).closest("span").addClass('checked');
+                } else if (data.type == 2) {
+                    $(type).closest("span").removeClass('checked');
+                    $(type1).closest("span").removeClass('checked');
+                    $(type2).closest("span").addClass('checked');
+
                 }
-                $.uniform.update('#is_vendor');
-                $("#fund_type").rules("add", {
+//                $.uniform.update('#is_vendor');
+                $("#name").rules("add", {
                     remote: site_url + "settings/check_fund_type/" + data.id,
                     messages: {
                         remote: $.validator.format("This fund type already exist!")
                     }
                 });
                 $("#add_fundtype_form").validate().resetForm();
-                $('html, body').animate({scrollTop: 0}, 500);
-                setTimeout(function () {
-                    $('body').css('overflow', 'hidden');
-                }, 500);
+//                $('html, body').animate({scrollTop: 0}, 500);
+//                setTimeout(function () {
+//                    $('body').css('overflow', 'hidden');
+//                }, 500);
             }
         });
     });
@@ -241,18 +278,21 @@
         $('#custom_loading').addClass('hide');
         $('#custom_loading img').removeClass('hide');
         $('#fund_type_row').css('z-index', '0');
-        $('#fund_type').val('');
+        $('#name').val('');
         $('#fund_type_id').val('');
         $('#is_vendor').prop('checked', false);
         $.uniform.update('#is_vendor');
-        $("#fund_type").rules("add", {
+        $("#name").rules("add", {
             remote: site_url + "settings/check_fund_type/",
             messages: {
                 remote: $.validator.format("This fund type already exist!")
             }
         });
-        $('#fund_type').valid();
+        $('#name').valid();
         $("#add_fundtype_form").validate().resetForm();
+        $('#type2').closest("span").removeClass('checked');
+        $('#type3').closest("span").removeClass('checked');
+        $('#type1').closest("span").addClass('checked');
         $('body').css('overflow', 'auto');
     }
     //-- Confirmation alert for delete fund type
@@ -278,5 +318,22 @@
 
     $(".styled, .multiselect-container input").uniform({
         radioClass: 'choice'
+    });
+    // Warning
+    $(".control-warning").uniform({
+        radioClass: 'choice',
+        wrapperClass: 'border-warning-600 text-warning-800'
+    });
+
+    // Info
+    $(".control-info").uniform({
+        radioClass: 'choice',
+        wrapperClass: 'border-info-600 text-info-800'
+    });
+
+    // Custom color
+    $(".control-custom").uniform({
+        radioClass: 'choice',
+        wrapperClass: 'border-indigo-600 text-indigo-800'
     });
 </script>

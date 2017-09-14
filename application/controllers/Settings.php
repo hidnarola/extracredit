@@ -54,7 +54,7 @@ class Settings extends MY_Controller {
         $data['perArr'] = checkPrivileges('fund_types');
         $data['title'] = 'Extracredit | Fund Types';
         $data['fund_types'] = $this->users_model->sql_select(TBL_FUND_TYPES, null, ['where' => ['is_delete' => 0]]);
-        $this->form_validation->set_rules('fund_type', 'Fund Type', 'trim|required');
+        $this->form_validation->set_rules('name', 'Fund Type', 'trim|required');
         if ($this->form_validation->run() == TRUE) {
             $id = $this->input->post('fund_type_id');
             //-- If id is not blank then update fund type else insert new fund type
@@ -62,8 +62,8 @@ class Settings extends MY_Controller {
                 $result = $this->users_model->sql_select(TBL_FUND_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
                 if (!empty($result)) {
                     $update_array = array(
-                        'type' => trim($this->input->post('fund_type')),
-                        'is_vendor' => ($this->input->post('is_vendor')) ? 1 : 0,
+                        'type' => trim($this->input->post('type')),
+                        'name' => $this->input->post('name'),
                         'modified' => date('Y-m-d H:i:s')
                     );
                     $this->users_model->common_insert_update('update', TBL_FUND_TYPES, $update_array, ['id' => $id]);
@@ -73,8 +73,8 @@ class Settings extends MY_Controller {
                 }
             } else {
                 $update_array = array(
-                    'type' => trim($this->input->post('fund_type')),
-                    'is_vendor' => ($this->input->post('is_vendor')) ? 1 : 0,
+                    'type' => trim($this->input->post('type')),
+                        'name' => $this->input->post('name'),
                     'created' => date('Y-m-d H:i:s')
                 );
                 $this->users_model->common_insert_update('insert', TBL_FUND_TYPES, $update_array);
@@ -99,8 +99,8 @@ class Settings extends MY_Controller {
      * @param int $id If Id is passed then do not consider that id to check fund type
      */
     public function check_fund_type($id = NULL) {
-        $fund_type = trim($this->input->get('fund_type'));
-        $where = ['is_delete' => 0, 'type' => $fund_type];
+        $name = trim($this->input->get('name'));
+        $where = ['is_delete' => 0, 'name' => $name];
         if (!is_null($id)) {
             $where = array_merge($where, ['id!=' => $id]);
         }
@@ -134,7 +134,7 @@ class Settings extends MY_Controller {
                     'is_delete' => 1
                 );
                 $this->users_model->common_insert_update('update', TBL_FUND_TYPES, $update_array, ['id' => $id]);
-                $this->session->set_flashdata('success', $result['type'] . ' deleted successfully');
+                $this->session->set_flashdata('success', $result['name'] . ' deleted successfully');
             } else {
                 $this->session->set_flashdata('error', 'Invalid request! Please try again later');
             }
