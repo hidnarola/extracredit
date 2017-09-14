@@ -65,8 +65,8 @@
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Address</th>
-                    <th>City</th>
                     <th>State</th>
+                    <th>City</th>
                     <th>Zip</th>
                     <th>Email</th>
                     <th>Amount</th>

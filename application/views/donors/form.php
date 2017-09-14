@@ -179,30 +179,30 @@ if (isset($donor)) {
                                 </div>
                             </div>
                         </fieldset>
+                        <?php
+                        $split_settings_style = 'style="display: none;"';
+                        $split_checkbox = '';
+                        if (isset($donor)) {
+                            $split_settings_style = '';
+                            $split_checkbox = 'checked';
+                        }
+                        ?>
                         <fieldset class="content-group">
                             <legend class="text-bold">Donation Split Settings&nbsp;&nbsp;
-                                <!--<div class="form-group form-group-material has-feedback">-->
-                                <!--<label class="checkbox-inline checkbox-right">-->
-                                <input type="checkbox" class="styled" id="change_donation_split">
-                                <!--</label>-->
-                                <!--</div>-->
+                                <input type="checkbox" class="styled" id="change_donation_split" <?php echo $split_checkbox ?>>
                             </legend>
-
-<!--<a href="javascript:void(0)"id="change_donation_split" class="btn btn-info btn-labeled btn-xs"><b><i class="icon-compose"></i></b>Change Donation Split</a>-->
-                            <div class="content-group split_div" style="display: none;">
+                            <div class="content-group split_div" <?php echo $split_settings_style ?>>
                                 <div class="form-group">
                                     <label class="col-lg-1 control-label">Admin Donation(%)<span class="text-danger">*</span></label>
                                     <div class="col-lg-4">
-                                        <input type="number" name="admin_percent" id="admin-donation-percent" placeholder="Enter Admin Donation(%)" class="form-control" value="<?php echo ($settings) ? $settings['admin-donation-percent'] : set_value('admin-donation-percent'); ?>" required="required"/>
+                                        <input type="number" name="admin_percent" id="admin-donation-percent" placeholder="Enter Admin Donation(%)" class="form-control" value="<?php echo (isset($donor)) ? $donor['admin_percent'] : $settings['admin-donation-percent']; ?>" required="required"/>
                                         <?php
                                         echo '<label id="admin_percent-error" class="validation-error-label" for="admin_percent">' . form_error('admin_percent') . '</label>';
                                         ?>
                                     </div>
-                                    <!--                                </div>
-                                                                    <div class="form-group">-->
                                     <label class="col-lg-1 control-label">Program/AMC Donation(%)<span class="text-danger">*</span></label>
                                     <div class="col-lg-4">
-                                        <input type="number" name="account_percent" id="program-donation-percent" placeholder="Enter Program Donation(%)" class="form-control" value="<?php echo ($settings) ? $settings['program-donation-percent'] : set_value('program-donation-percent'); ?>" required="required" readonly/>
+                                        <input type="number" name="account_percent" id="program-donation-percent" placeholder="Enter Program Donation(%)" class="form-control" value="<?php echo (isset($donor)) ? $donor['account_percent'] : $settings['program-donation-percent']; ?>" required="required" readonly/>
                                         <?php
                                         echo '<label id="account_percent-error" class="validation-error-label" for="account_percent">' . form_error('account_percent') . '</label>';
                                         ?>
@@ -306,8 +306,7 @@ if (isset($donor)) {
     $(".styled, .multiselect-container input").uniform({
         radioClass: 'choice'
     });
-    admin_donation = <?php echo $settings['admin-donation-percent'] ?>;
-    account_donation = <?php echo $settings['program-donation-percent'] ?>;
+
     $('.pickadate').pickadate({
         max: new Date()
     });
@@ -333,6 +332,16 @@ if (isset($donor)) {
         if ($(this).val() != '' && Number($(this).val()) >= 0 && Number($(this).val()) <= 100) {
             var p_amount = 100 - $(this).val();
             $('#program-donation-percent').val(p_amount);
+
+            //-- If donation percentage is changed then also change amount
+            if ($('#amount').val() != '' && Number($('#amount').val()) >= 0) {
+                admin_donation = $('#admin-donation-percent').val();
+                admin_amt = (($('#amount').val()) * admin_donation) / 100;
+                admin_amt = admin_amt.toFixed(2);
+                account_amt = $('#amount').val() - admin_amt;
+                $('#admin_fund').val(admin_amt);
+                $('#account_fund').val(account_amt);
+            }
         }
     });
 
@@ -340,6 +349,7 @@ if (isset($donor)) {
     //-- Donor Amount change eevent
     $("#amount").on("keyup keydown change", function (event) {
         if ($(this).val() != '' && Number($(this).val()) >= 0) {
+            admin_donation = $('#admin-donation-percent').val();
             admin_amt = (($(this).val()) * admin_donation) / 100;
             admin_amt = admin_amt.toFixed(2);
             account_amt = $(this).val() - admin_amt;
