@@ -58,7 +58,7 @@ class Payments extends MY_Controller {
                 $data['payment'] = $payment;
                 $data['title'] = 'Extracredit | Edit Payment';
                 $data['heading'] = 'Edit Payment';
-                if ($payment['is_vendor'] == 1) {
+                if ($payment['type'] == 1) {
                     $data['account_fund'] = $this->admin_fund + $payment['amount'];
                 } else {
                     $data['account_fund'] = $payment['total_fund'] + $payment['amount'];
@@ -95,7 +95,7 @@ class Payments extends MY_Controller {
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 //-- If account is vendor then update admin fund amount
                 $is_valid = 1;
-                if ($payment['is_vendor'] == 1) {
+                if ($payment['type'] == 1) {
                     $admin_fund = $this->admin_fund + $payment['amount'];
                     $dataArr['account_fund'] = $admin_fund;
                     if ($admin_fund >= $this->input->post('amount')) {
@@ -128,7 +128,7 @@ class Payments extends MY_Controller {
 
                 $account_details = $this->payments_model->get_account_fund($account_id);
                 $is_valid = 1;
-                if ($account_details['is_vendor'] == 1) {
+                if ($account_details['type'] == 1) {
                     $admin_fund = $this->admin_fund;
                     $dataArr['account_fund'] = $admin_fund;
 
@@ -189,11 +189,11 @@ class Payments extends MY_Controller {
         $id = base64_decode($this->input->post('id'));
         $account_details = $this->payments_model->get_account_fund($id);
         //-- If not vendor then return accounts fund else return admin fund
-        if ($account_details['is_vendor'] == 0) {
-            $data = ['amount' => $account_details['total_fund'], 'is_vendor' => 0];
+        if ($account_details['type'] == 0) {
+            $data = ['amount' => $account_details['total_fund'], 'type' => 0];
         } else {
             $store_admin_fund = $this->payments_model->sql_select(TBL_USERS, 'total_fund,id', ['where' => ['role' => 'admin']], ['single' => true]);
-            $data = ['amount' => $store_admin_fund['total_fund'], 'is_vendor' => 1];
+            $data = ['amount' => $store_admin_fund['total_fund'], 'type' => 1];
         }
         echo json_encode($data);
     }
@@ -216,7 +216,7 @@ class Payments extends MY_Controller {
                 $this->db->trans_begin();
                 $this->payments_model->common_insert_update('update', TBL_PAYMENTS, $update_array, ['id' => $id]);
 
-                if ($payment['is_vendor'] == 1) {
+                if ($payment['type'] == 1) {
                     $admin_fund = $this->admin_fund + $payment['amount'];
                     $this->payments_model->update_admin_fund($admin_fund);
                 } else {

@@ -81,7 +81,7 @@ if (isset($account)) {
                         $vendor_div_style = 'style="display:none"';
                         $program_required = 'required="required"';
                         $vendor_required = '';
-                        if (isset($account) && $account['is_vendor'] == 1) {
+                        if (isset($account) && $account['type'] == 1) {
                             $program_div_style = 'style="display:none"';
                             $vendor_div_style = '';
                             $program_required = '';
@@ -303,7 +303,7 @@ if (isset($account)) {
             type: "POST",
             dataType: 'json',
             success: function (data) {
-                if (data.is_vendor == 1) {
+                if (data.type == 1) {
                     $('.vendor_div').show();
                     $('.program_div').hide();
                     $("#vendor_name").rules("add", "required");

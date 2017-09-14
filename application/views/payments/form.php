@@ -190,7 +190,7 @@ if (isset($payment)) {
                 dataType: 'json',
                 success: function (data) {
                     $('#accoun_fund_div').show();
-                    if (data.is_vendor == 1) {
+                    if (data.type == 1) {
                         $("#account_fund_label").html('Admin Fund');
                     } else {
                         $("#account_fund_label").html('Account Fund');

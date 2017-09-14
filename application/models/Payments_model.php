@@ -18,7 +18,7 @@ class Payments_model extends MY_Model {
     public function get_payments($type = 'result') {
         $columns = ['p.id', 'f.type', 'a.action_matters_campaign,a.vendor_name', 'p.check_date', 'p.check_number', 'p.amount', 'p.created', 'p.is_delete'];
         $keyword = $this->input->get('search');
-        $this->db->select('p.*,a.action_matters_campaign,a.vendor_name,f.type as fund_type,f.is_vendor');
+        $this->db->select('p.*,a.action_matters_campaign,a.vendor_name,f.name as fund_type,f.type');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
 
@@ -48,7 +48,7 @@ class Payments_model extends MY_Model {
      * @param int $id
      */
     public function get_payment_details($id) {
-        $this->db->select('p.*,a.action_matters_campaign,a.vendor_name,a.fund_type_id,a.total_fund,f.is_vendor');
+        $this->db->select('p.*,a.action_matters_campaign,a.vendor_name,a.fund_type_id,a.total_fund,f.type');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->where(['p.id' => $id, 'p.is_delete' => 0]);
@@ -57,11 +57,11 @@ class Payments_model extends MY_Model {
     }
 
     /**
-     * Get account fund with is_vendor field of particular id
+     * Get account fund with fund type[is_vendor or not] field of particular id
      * @param int $id Account Id
      */
     public function get_account_fund($id) {
-        $this->db->select('a.total_fund,f.is_vendor');
+        $this->db->select('a.total_fund,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->where(['a.id' => $id, 'a.is_delete' => 0]);
         $query = $this->db->get(TBL_ACCOUNTS . ' a');
@@ -76,7 +76,7 @@ class Payments_model extends MY_Model {
     public function get_payments_made_report($type = 'result') {
         $columns = ['a.action_matters_campaign,a.vendor_name', 'p.amount', 'p.check_date', 'p.check_number'];
         $keyword = $this->input->get('search');
-        $this->db->select('a.action_matters_campaign,a.vendor_name,p.amount,p.check_date,p.check_number,f.is_vendor');        
+        $this->db->select('a.action_matters_campaign,a.vendor_name,p.amount,p.check_date,p.check_number,f.type');        
         $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         

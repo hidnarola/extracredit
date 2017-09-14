@@ -88,7 +88,7 @@
                     data: "action_matters_campaign",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.is_vendor == 1) {
+                        if (full.type == 1) {
                             return full.vendor_name;
                         } else {
                             return data
