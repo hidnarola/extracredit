@@ -22,7 +22,7 @@ class Donors_model extends MY_Model {
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
-        $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
+        $this->db->join(TBL_CITIES . ' as c', 'd.city_id=c.id', 'left');
         $this->db->join(TBL_PAYMENT_TYPES . ' as p', 'd.payment_type_id=p.id', 'left');
 
         if (!empty($keyword['value'])) {
@@ -106,7 +106,7 @@ class Donors_model extends MY_Model {
      * @return type
      */
     public function get_donors_reports($type = 'result') {
-        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'd.date', 'd.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'city', 'state', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'd.payment_number', 'd.memo'];
+        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'd.date', 'd.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'state', 'city', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'd.payment_number', 'd.memo'];
         $keyword = $this->input->get('search');
         $this->db->select('d.*,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,s.name as state,f.type,p.type as payment_type');
 

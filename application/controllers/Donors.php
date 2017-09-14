@@ -78,7 +78,8 @@ class Donors extends MY_Controller {
             $settings_arr[$val['setting_key']] = $val['setting_value'];
         }
         $data['settings'] = $settings_arr;
-        $data['fund_types'] = $this->donors_model->sql_select(TBL_FUND_TYPES, 'id,name', ['where' => ['is_delete' => 0]]);
+//        $data['fund_types'] = $this->donors_model->sql_select(TBL_FUND_TYPES, 'id,name', ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM '.TBL_FUND_TYPES.' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
         $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->donors_model->sql_select(TBL_STATES, NULL);
 
@@ -92,12 +93,21 @@ class Donors extends MY_Controller {
         $this->form_validation->set_rules('city_id', 'City', 'trim|required');
 
         $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
+        $this->form_validation->set_rules('admin_percent', 'Admin Donation(%)', 'trim|required');
+        $this->form_validation->set_rules('account_percent', 'Program/AMC Donation(%)', 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         $this->form_validation->set_rules('amount', 'Amount', 'trim|required');
         $this->form_validation->set_rules('payment_type_id', 'PAyment Type', 'trim|required');
         $this->form_validation->set_rules('payment_number', 'Payment Number', 'trim|required');
 
         if ($this->form_validation->run() == TRUE) {
+            $admin_donatoin = $this->input->post('admin_percent');
+            $program_donatoin = $this->input->post('account_percent');
+            $total = $admin_donatoin + $program_donatoin;
+            if ($total != 100) {
+                $this->session->set_flashdata('error', 'You have entered invalid data for Donation split settings. Please try again later');
+                redirect($this->agent->referrer());
+            }
             $dataArr = array(
                 'account_id' => $this->input->post('account_id'),
                 'firstname' => $this->input->post('firstname'),
@@ -110,12 +120,14 @@ class Donors extends MY_Controller {
                 'date' => date('Y-m-d', strtotime($this->input->post('date'))),
                 'post_date' => date('Y-m-d', strtotime($this->input->post('post_date'))),
                 'amount' => $this->input->post('amount'),
+                'admin_percent' => $admin_donatoin,
+                'account_percent' => $program_donatoin,
                 'payment_type_id' => $this->input->post('payment_type_id'),
                 'payment_number' => $this->input->post('payment_number'),
                 'memo' => $this->input->post('memo')
             );
             $amount = $this->input->post('amount');
-            $admin_amount = ($settings_arr['admin-donation-percent'] * $amount) / 100;
+            $admin_amount = ($admin_donatoin * $amount) / 100;
             $admin_amount = round($admin_amount, 2);
             $account_amount = $amount - $admin_amount;
             $fund_array = array('admin_fund' => $admin_amount, 'account_fund' => $account_amount);
