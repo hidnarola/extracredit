@@ -72,7 +72,7 @@ if (isset($donor)) {
                                         if (isset($donor) && $donor['fund_type_id'] == $type['id'])
                                             $selected = 'selected';
                                         ?>
-                                        <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['type'] ?></option>
+                                        <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['name'] ?></option>
                                     <?php } ?>
                                 </select>
                                 <?php
@@ -180,6 +180,37 @@ if (isset($donor)) {
                             </div>
                         </fieldset>
                         <fieldset class="content-group">
+                            <legend class="text-bold">Donation Split Settings&nbsp;&nbsp;
+                                <!--<div class="form-group form-group-material has-feedback">-->
+                                <!--<label class="checkbox-inline checkbox-right">-->
+                                <input type="checkbox" class="styled" id="change_donation_split">
+                                <!--</label>-->
+                                <!--</div>-->
+                            </legend>
+
+<!--<a href="javascript:void(0)"id="change_donation_split" class="btn btn-info btn-labeled btn-xs"><b><i class="icon-compose"></i></b>Change Donation Split</a>-->
+                            <div class="content-group split_div" style="display: none;">
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Admin Donation(%)<span class="text-danger">*</span></label>
+                                    <div class="col-lg-4">
+                                        <input type="number" name="admin_percent" id="admin-donation-percent" placeholder="Enter Admin Donation(%)" class="form-control" value="<?php echo ($settings) ? $settings['admin-donation-percent'] : set_value('admin-donation-percent'); ?>" required="required"/>
+                                        <?php
+                                        echo '<label id="admin_percent-error" class="validation-error-label" for="admin_percent">' . form_error('admin_percent') . '</label>';
+                                        ?>
+                                    </div>
+                                    <!--                                </div>
+                                                                    <div class="form-group">-->
+                                    <label class="col-lg-1 control-label">Program/AMC Donation(%)<span class="text-danger">*</span></label>
+                                    <div class="col-lg-4">
+                                        <input type="number" name="account_percent" id="program-donation-percent" placeholder="Enter Program Donation(%)" class="form-control" value="<?php echo ($settings) ? $settings['program-donation-percent'] : set_value('program-donation-percent'); ?>" required="required" readonly/>
+                                        <?php
+                                        echo '<label id="account_percent-error" class="validation-error-label" for="account_percent">' . form_error('account_percent') . '</label>';
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="content-group">
                             <legend class="text-bold">Payment Details</legend>
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Date <span class="text-danger">*</span></label>
@@ -272,6 +303,9 @@ if (isset($donor)) {
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script type="text/javascript">
+    $(".styled, .multiselect-container input").uniform({
+        radioClass: 'choice'
+    });
     admin_donation = <?php echo $settings['admin-donation-percent'] ?>;
     account_donation = <?php echo $settings['program-donation-percent'] ?>;
     $('.pickadate').pickadate({
@@ -285,7 +319,24 @@ if (isset($donor)) {
     }
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
-    //
+
+    $(document).on('click', '#change_donation_split', function () {
+        if ($(this).prop("checked") == true) {
+            $('.split_div').css('display', 'block');
+        } else if ($(this).prop("checked") == false) {
+            $('.split_div').css('display', 'none');
+        }
+    });
+
+    //-- Admin donation & Program donation key change event
+    $("#admin-donation-percent").on("keyup keydown change", function (event) {
+        if ($(this).val() != '' && Number($(this).val()) >= 0 && Number($(this).val()) <= 100) {
+            var p_amount = 100 - $(this).val();
+            $('#program-donation-percent').val(p_amount);
+        }
+    });
+
+
     //-- Donor Amount change eevent
     $("#amount").on("keyup keydown change", function (event) {
         if ($(this).val() != '' && Number($(this).val()) >= 0) {
@@ -354,8 +405,7 @@ if (isset($donor)) {
             if (element.parents('div').hasClass("checker") || element.parents('div').hasClass("choice") || element.parent().hasClass('bootstrap-switch-container')) {
                 if (element.parents('label').hasClass('checkbox-inline') || element.parents('label').hasClass('radio-inline')) {
                     error.appendTo(element.parent().parent().parent().parent());
-                }
-                else {
+                } else {
                     error.appendTo(element.parent().parent().parent().parent().parent());
                 }
             }
@@ -378,9 +428,7 @@ if (isset($donor)) {
             // Input group, styled file input
             else if (element.parent().hasClass('uploader') || element.parents().hasClass('input-group')) {
                 error.appendTo(element.parent().parent());
-            }
-
-            else {
+            } else {
                 error.insertAfter(element);
             }
         },
