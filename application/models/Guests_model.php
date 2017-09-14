@@ -180,7 +180,7 @@ class Guests_model extends MY_Model {
      * @param int $id
      */
     public function get_guest_details_view($id) {
-        $this->db->select('g.*,a.fund_type_id,f.type,a.action_matters_campaign,a.vendor_name,c.name as cityname, s.name as statename');
+        $this->db->select('g.*,a.fund_type_id,f.type,f.name,a.action_matters_campaign,a.vendor_name,c.name as cityname, s.name as statename');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'f.id=a.fund_type_id', 'left');
          $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');

@@ -10,7 +10,7 @@
     <tbody>
         <tr class="alpha-teal">
             <th>Fund Type</th>
-            <td><?php echo $guest_details['type']; ?></td>
+            <td><?php echo $guest_details['name']; ?></td>
         </tr>
         <tr>
             <th>Program/AMC</th>

@@ -68,7 +68,7 @@ if (isset($account)) {
                                         if (isset($account) && $account['fund_type_id'] == $type['id'])
                                             $selected = 'selected';
                                         ?>
-                                        <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['type'] ?></option>
+                                        <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['name'] ?></option>
                                     <?php } ?>
                                 </select>
                                 <?php
