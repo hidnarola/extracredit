@@ -78,7 +78,7 @@ class Donors extends MY_Controller {
             $settings_arr[$val['setting_key']] = $val['setting_value'];
         }
         $data['settings'] = $settings_arr;
-        $data['fund_types'] = $this->donors_model->sql_select(TBL_FUND_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->donors_model->sql_select(TBL_FUND_TYPES, 'id,name', ['where' => ['is_delete' => 0]]);
         $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->donors_model->sql_select(TBL_STATES, NULL);
 
@@ -439,9 +439,9 @@ class Donors extends MY_Controller {
 
                 //-- check if first colums is according to predefined row
                 if ($data_format2 == $data2) {
-                    $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
                     while (($col_data = fgetcsv($handle)) !== FALSE) {
                         $donor = [];
+                        p($col_data);
                         if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[4] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '') {
                             fclose($handle);
                             $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
@@ -449,17 +449,19 @@ class Donors extends MY_Controller {
                         } else {
                             $row++;
                             //-- Check if program/amc name is valid or not if not then add it into array
-                            if (array_search(strtolower($col_data[0]), array_map('strtolower', $account_name_arr)) != FALSE) {
-                                $donor['account_id'] = array_search(strtolower($col_data[0]), array_map('strtolower', $account_name_arr));
+                            $account_name_arr = array_map('strtolower', $account_name_arr);
+                            if (array_search(strtolower($col_data[0]), $account_name_arr) != FALSE) {
+                                $donor['account_id'] = array_search(strtolower($col_data[0]), $account_name_arr);
                             } else {
                                 $check_account[] = $row;
                             }
 
                             //--check email is unique or not
-                            if (array_search(strtolower($col_data[3]), array_map('strtolower', $donor_emails_arr)) != FALSE) {
-                                $donor['email'] = $col_data[3];
-                            } else {
+                            $donor_emails_arr = array_map('strtolower', $donor_emails_arr);
+                            if (array_search(strtolower($col_data[3]), $donor_emails_arr) != FALSE) {
                                 $check_email[] = $row;
+                            } else {
+                                $donor['email'] = $col_data[3];
                             }
 
                             $imported_emails[] = $col_data[3];
@@ -529,6 +531,9 @@ class Donors extends MY_Controller {
                     if (count(array_unique($imported_emails)) != count($imported_emails)) {
                         fclose($handle);
                         $this->session->set_flashdata('error', "Duplicate value in email column.");
+                    } else if (!empty($check_email)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email);
+                        $this->session->set_flashdata('error', "Donor Email already exist in the system. Please check entries at row number - " . $rows);
                     } else if (!empty($check_account)) { //-- check Account/Program in columns are valid or not
                         $rows = implode(',', $check_account);
                         $this->session->set_flashdata('error', "Account/Program doesn't exist in the system. Please check entries at row number - " . $rows);
