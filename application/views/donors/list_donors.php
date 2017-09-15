@@ -93,7 +93,6 @@
     });
     var permissions = <?php echo json_encode($perArr); ?>;
     var compermissions = <?php echo json_encode($comperArr); ?>;
-    console.log(permissions);
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
@@ -160,11 +159,13 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
-                        if ($.inArray('edit', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
-                        }
-                        if ($.inArray('edit', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/refund/' + btoa(full.id) + '" class="btn border-pink text-pink-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class=" icon-share2"></i></a>';
+                        if (full.refund == 0) {
+                            if ($.inArray('edit', permissions) !== -1) {
+                                action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
+                            }
+                            if ($.inArray('edit', permissions) !== -1) {
+                                action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-pink text-pink-600 btn-flat btn-icon btn-rounded btn-xs" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i></a>';
+                            }
                         }
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
@@ -184,6 +185,29 @@
         });
     });
 
+    function refund_alert(e) {
+        id = $(e).attr('data-id');
+        $.ajax({
+            url: site_url + 'donors/refund/' + id,
+            data: {id: id},
+            type: "POST",
+            dataType: 'json',
+            success: function (data) {
+                if (data.type == 1) {
+                    window.location.href = site_url + '/donors';
+                } else {
+                    swal({
+                        title: "Refund Alert",
+                        text: "There isn't sufficient funds available to process the refund",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#FF7043",
+                        confirmButtonText: "Ok!"
+                    });
+                }
+            }
+        });
+    }
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",

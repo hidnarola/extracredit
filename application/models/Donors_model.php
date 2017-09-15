@@ -53,7 +53,7 @@ class Donors_model extends MY_Model {
      * @param int $id
      */
     public function get_donor_details($id) {
-        $this->db->select('d.*,a.fund_type_id,f.admin_fund,f.account_fund');
+        $this->db->select('d.*,a.fund_type_id,f.admin_fund,f.account_fund,a.total_fund as account_total_fund');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id', 'left');
         $this->db->join(TBL_FUNDS . ' as f', 'd.account_id=f.account_id AND d.id=f.donor_id AND f.is_delete=0', 'left');
         $this->db->where(['d.id' => $id, 'd.is_delete' => 0]);

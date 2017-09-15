@@ -49,7 +49,6 @@ class Donors extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
-        checkPrivileges('donors', 'add');
         $data['perArr'] = checkPrivileges('donors');
         if (!is_null($id))
             $id = base64_decode($id);
@@ -65,6 +64,7 @@ class Donors extends MY_Controller {
                 show_404();
             }
         } else {
+            checkPrivileges('donors', 'add');
             $data['title'] = 'Extracredit | Add Donor';
             $data['heading'] = 'Add Donor';
             $data['cities'] = [];
@@ -79,7 +79,7 @@ class Donors extends MY_Controller {
         }
         $data['settings'] = $settings_arr;
 //        $data['fund_types'] = $this->donors_model->sql_select(TBL_FUND_TYPES, 'id,name', ['where' => ['is_delete' => 0]]);
-        $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM '.TBL_FUND_TYPES.' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
+        $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
         $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->donors_model->sql_select(TBL_STATES, NULL);
 
@@ -142,7 +142,7 @@ class Donors extends MY_Controller {
                 $fund_array['account_id'] = $account_id;
                 $fund_array['donor_id'] = $id;
                 $fund_array['modified'] = date('Y-m-d H:i:s');
-                $this->donors_model->common_insert_update('update', TBL_FUNDS, $fund_array, ['account_id' => $account_id, 'donor_id' => $id]);
+                $this->donors_model->common_insert_update('update', TBL_FUNDS, $fund_array, ['account_id' => $account_id, 'donor_id' => $id, 'is_delete' => 0]);
                 $this->session->set_flashdata('success', 'Donor details has been updated successfully.');
 
                 //---get account's total fund 
@@ -242,7 +242,7 @@ class Donors extends MY_Controller {
 
                 $this->db->trans_begin();
                 $this->donors_model->common_insert_update('update', TBL_DONORS, $update_array, ['id' => $id]);
-                $this->donors_model->common_insert_update('update', TBL_FUNDS, $update_array, ['account_id' => $donor['account_id'], 'donor_id' => $id]);
+                $this->donors_model->common_insert_update('update', TBL_FUNDS, $update_array, ['account_id' => $donor['account_id'], 'donor_id' => $id, 'is_delete' => 0]);
                 $total_fund = $account['total_fund'] - $donor['account_fund'];
                 $admin_fund = $account['admin_fund'] - $donor['admin_fund'];
                 $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund, 'admin_fund' => $admin_fund], ['id' => $donor['account_id']]);
@@ -453,7 +453,6 @@ class Donors extends MY_Controller {
                 if ($data_format2 == $data2) {
                     while (($col_data = fgetcsv($handle)) !== FALSE) {
                         $donor = [];
-                        p($col_data);
                         if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[4] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '') {
                             fclose($handle);
                             $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
@@ -622,6 +621,47 @@ class Donors extends MY_Controller {
         } else {
             $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
             redirect('donors');
+        }
+    }
+
+    /**
+     * Refund Donor data
+     * @author KU
+     * */
+    public function refund() {
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $data['perArr'] = checkPrivileges('donors');
+            $donor_detail = $this->donors_model->get_donor_details($id);
+            if ($donor_detail['account_total_fund'] >= $donor_detail['amount']) {
+                $account = $donor_detail['account_total_fund'] - $donor_detail['amount'];
+                $account_details = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund', ['where' => ['id' => $donor_detail['account_id']]], ['single' => TRUE]);
+                $total_fund = $account_details['total_fund'];
+                $total_fund = $total_fund - $donor_detail['account_fund'];
+
+                $this->db->trans_begin();
+                $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund], ['id' => $donor_detail['account_id']]);
+
+                $admin_fund = $this->admin_fund;
+                $admin_fund = $admin_fund - $donor_detail['admin_fund'];
+
+                $this->donors_model->update_admin_fund($admin_fund);
+
+                $this->donors_model->common_insert_update('update', TBL_DONORS, ['refund' => 1, 'refund_date' => date('Y-m-d H:i:s')], ['id' => $donor_detail['id']]);
+                $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_refund' => 1], ['account_id' => $donor_detail['account_id'], 'donor_id' => $donor_detail['id'], 'is_delete' => 0]);
+                $this->db->trans_complete();
+
+                $type = 1;
+                $msg = 'success';
+                $this->session->set_flashdata('success', "Refund done successfully!");
+            } else {
+                $type = 0;
+                $msg = 'Account is not having sufficient balance!';
+            }
+            echo json_encode(['type' => $type, 'msg' => $msg]);
+        } else {
+            show_404();
         }
     }
 
