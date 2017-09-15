@@ -77,7 +77,7 @@ class Guests extends MY_Controller {
             $data['cities'] = [];
             $data['accounts'] = [];
         }
-        $data['fund_types'] = $this->guests_model->sql_select(TBL_FUND_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->guests_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->guests_model->sql_select(TBL_STATES, NULL);
 
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
@@ -355,17 +355,234 @@ class Guests extends MY_Controller {
     public function view_guest() {
         $guest_id = base64_decode($this->input->post('id'));
         $guest = $this->guests_model->get_guest_details_view($guest_id);
-        if ($guest) {            
+        if ($guest) {
 //            p($guest,1);
             $guest['invite_date'] = date('d F, Y', strtotime($guest['invite_date']));
             $guest['guest_date'] = date('d F, Y', strtotime($guest['guest_date']));
             $guest['AIR_date'] = date('d F, Y', strtotime($guest['AIR_date']));
-            $data['guest_details'] = $guest;    
+            $data['guest_details'] = $guest;
             return $this->load->view('guests/guest_view', $data);
         } else {
             show_404();
         }
     }
+
+    /**
+     * Import guest data from CSV file
+     * @author REP
+     */
+    public function import_guest() {
+        $fileDirectory = GUEST_CSV;
+        $config['overwrite'] = FALSE;
+        $config['remove_spaces'] = TRUE;
+        $config['upload_path'] = GUEST_CSV;
+        $config['allowed_types'] = 'csv|CSV';
+        $this->load->library('upload', $config);
+
+        //-- Upload csv file
+        if ($this->upload->do_upload('import_guest')) {
+            $fileDetails = $this->upload->data();
+
+            $accounts = $this->guests_model->get_all_accounts();
+            $account_name_arr = $cities_arr = $states_arr = [];
+            foreach ($accounts as $account) {
+                if (!empty($account['action_matters_campaign'])) {
+                    $account_name_arr[$account['id']] = $account['action_matters_campaign'];
+                } else {
+                    $account_name_arr[$account['id']] = $account['vendor_name'];
+                }
+            }
+
+            //-- Get cities array
+            $cities = $this->guests_model->sql_select(TBL_CITIES);
+            foreach ($cities as $city) {
+                $cities_arr[$city['id']] = $city['name'];
+                $states_arr[$city['id']] = $city['state_id'];
+            }
+
+            //-- Get guest emails
+            $guest_emails = $this->guests_model->sql_select(TBL_GUESTS, 'email', ['where' => ['is_delete' => 0]]);
+            $guest_emails_arr = array_column($guest_emails, 'email');
+
+            $row = 1;
+            $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
+            $guest_data = $check_account = $check_email = $check_email_valid = $check_city = $check_invite_date = $check_guest_date = $check_AIR_date = $check_assiatnt_email = $check_phone = $check_assistant_phone = $check_assistant_email = $imported_emails = [];
+            if (($data2 = fgetcsv($handle)) !== FALSE) {
+                $data_format2 = array('firstname', 'lastname', 'companyname', 'invite_date', 'guest_date', 'AIR_date', 'AMC_created', 'amc', 'address', 'city', 'zip', 'email', 'phone', 'assistant', 'assistant_phone', 'assistant_email');
+
+                //-- check if first colums is according to predefined row
+                if ($data_format2 == $data2) {
+                    while (($col_data = fgetcsv($handle)) !== FALSE) {
+                        $guest = [];
+//                        p($col_data);
+                        if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[4] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '' || $col_data[12] == '' || $col_data[12] == '' || $col_data[13] == '' || $col_data[14] == '' || $col_data[15] == '') {
+                            fclose($handle);
+                            $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
+                            redirect('guests');
+                        } else {
+                            $row++;
+                            $guest['firstname'] = $col_data[0];
+                            $guest['lastname'] = $col_data[1];
+                            $guest['companyname'] = $col_data[2];
+
+                            //-- invite Date, guest date and AIR date validation 
+                            //-- Check date is valid or not
+                            $date_arr = explode('-', $col_data[3]);
+                            if (count($date_arr) == 3) {
+                                list($y, $m, $d) = explode('-', $col_data[3]);
+                                if (!checkdate($m, $d, $y)) {
+                                    $check_invite_date[] = $row;
+                                } else {
+                                    $guest['invite_date'] = $col_data[3];
+                                }
+                            } else {
+                                $check_invite_date[] = $row;
+                            }
+
+                            //-- Check Guest date is valid or not
+                            $date_arr = explode('-', $col_data[4]);
+                            if (count($date_arr) == 3) {
+                                list($y, $m, $d) = explode('-', $col_data[4]);
+                                if (!checkdate($m, $d, $y)) {
+                                    $check_guest_date[] = $row;
+                                } else {
+                                    $guest['guest_date'] = $col_data[4];
+                                }
+                            } else {
+                                $check_guest_date[] = $row;
+                            }
+                            //-- Check post date is valid or not
+                            $date_arr = explode('-', $col_data[5]);
+                            if (count($date_arr) == 3) {
+                                list($y, $m, $d) = explode('-', $col_data[5]);
+                                if (!checkdate($m, $d, $y)) {
+                                    $check_AIR_date[] = $row;
+                                } else {
+                                    $guest['AIR_date'] = $col_data[5];
+                                }
+                            } else {
+                                $check_AIR_date[] = $row;
+                            }
+
+                            $guest['AMC_created'] = $col_data[6];
+                            //-- Check if program/amc name is valid or not if not then add it into array
+                            $account_name_arr = array_map('strtolower', $account_name_arr);
+                            if (array_search(strtolower($col_data[7]), $account_name_arr) != FALSE) {
+                                $guest['account_id'] = array_search(strtolower($col_data[7]), $account_name_arr);
+                            } else {
+                                $check_account[] = $row;
+                            }
+
+                            $guest['address'] = $col_data[8];
+                            //--check city is valid or not
+                            if (array_search(strtolower($col_data[9]), array_map('strtolower', $cities_arr)) != FALSE) {
+                                $guest['city_id'] = array_search(strtolower($col_data[9]), array_map('strtolower', $cities_arr));
+                                $guest['state_id'] = $states_arr[$guest['city_id']];
+                            } else {
+                                $check_city[] = $row;
+                            }
+
+                            $guest['zip'] = $col_data[10];
+                            //--check email is unique or not
+                            $guest_emails_arr = array_map('strtolower', $guest_emails_arr);
+                            if (array_search(strtolower($col_data[11]), $guest_emails_arr) != FALSE) {
+                                $check_email[] = $row;
+                            } else {
+                                $guest['email'] = $col_data[11];
+                            }
+                            if (filter_var($col_data[11], FILTER_VALIDATE_EMAIL)) {
+                                $guest['email'] = $col_data[11];
+                            } else {
+                                $check_email_valid[] = $row;
+                            }
+
+                            $imported_emails[] = $col_data[11];
+                            if (is_numeric($col_data[12])) {
+                                $guest['phone'] = $col_data[12];
+                            } else {
+                                $check_phone[] = $row;
+                            }
+
+                            $guest['assistant'] = $col_data[13];
+                            if (is_numeric($col_data[14])) {
+                                $guest['assistant_phone'] = $col_data[14];
+                            } else {
+                                $check_assistant_phone[] = $row;
+                            }
+
+                            if (filter_var($col_data[15], FILTER_VALIDATE_EMAIL)) {
+                                $guest['assistant_email'] = $col_data[15];
+                            } else {
+                                $check_assistant_email[] = $row;
+                            }
+                            $guest['created'] = date('Y-m-d H:i:s');
+                            $guest_data[] = $guest;
+                        }
+                    }
+
+                    //-- check email in column are unique or not
+                    if (count(array_unique($imported_emails)) != count($imported_emails)) {
+                        fclose($handle);
+                        $this->session->set_flashdata('error', "Duplicate value in email column.");
+                    } else if (!empty($check_email)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email);
+                        $this->session->set_flashdata('error', "Guest Email already exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_email_valid)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email_valid);
+                        $this->session->set_flashdata('error', "Invalid email in email column. Please check entries at row number - " . $rows);
+                    }
+                    else if (!empty($check_account)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_account);
+                        $this->session->set_flashdata('error', "Account/Program doesn't exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_city)) { //-- check city in column are unique or not
+                        $rows = implode(',', $check_city);
+                        $this->session->set_flashdata('error', "City doesn't exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_invite_date)) {  //-- check dates in column are valid or not
+                        $rows = implode(',', $check_invite_date);
+                        $this->session->set_flashdata('error', "Invalid invite date in invite_date column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_guest_date)) {   //-- check post dates in column are valid or not
+                        $rows = implode(',', $check_guest_date);
+                        $this->session->set_flashdata('error', "Invalid guest date in guest_date column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_AIR_date)) {   //-- check post dates in column are valid or not
+                        $rows = implode(',', $check_AIR_date);
+                        $this->session->set_flashdata('error', "Invalid Air date in AIR_date column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_phone)) {   //-- check post dates in column are valid or not
+                        $rows = implode(',', $check_phone);
+                        $this->session->set_flashdata('error', "Invalid phone number in phone column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_assistant_phone)) {   //-- check post dates in column are valid or not
+                        $rows = implode(',', $check_assistant_phone);
+                        $this->session->set_flashdata('error', "Invalid assistant phone number in assistant phone column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_assistant_email)) {   //-- check post dates in column are valid or not
+                        $rows = implode(',', $check_assistant_email);
+                        $this->session->set_flashdata('error', "Invalid assistant email in assistant email column. Please check entries at row number - " . $rows);
+                    } else {
+                        if (!empty($guest_data)) {
+                            //-- Insert Guest details into database
+                            foreach ($guest_data as $val) {
+                                $this->db->trans_begin();
+                                $this->guests_model->common_insert_update('insert', TBL_GUESTS, $val);
+                                $this->db->trans_complete();
+                            }
+                            $this->session->set_flashdata('success', "CSV file imported successfully! Guest data added successfully");
+                        } else {
+                            $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
+                        }
+                    }
+                } else {
+                    fclose($handle);
+                    $this->session->set_flashdata('error', 'The columns in this csv file does not match to the database');
+                }
+            } else {
+                $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
+            }
+            fclose($handle);
+            redirect('guests');
+        } else {
+            $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
+            redirect('guests');
+        }
+    }
+
 }
 
 /* End of file Guests.php */
