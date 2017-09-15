@@ -85,10 +85,10 @@
 <div id="import_modal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?php echo site_url('donors/import_donor') ?>" class="form-horizontal form-validate-jquery" id="import_donor_form" method="post" enctype="multipart/form-data">
+            <form action="<?php echo site_url('guests/import_guest') ?>" class="form-horizontal form-validate-jquery" id="import_guest_form" method="post" enctype="multipart/form-data">
                 <div class="modal-header bg-teal">
                     <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h6 class="modal-title">Import Donor</h6>
+                    <h6 class="modal-title">Import Guest</h6>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -96,9 +96,9 @@
                             <label class="control-label">Upload File</label>
                             <div class="media no-margin-top">
                                 <div class="media-body">
-                                    <input type="file" name="import_donor" id="import_donor" class="file-styled">
+                                    <input type="file" name="import_guest" id="import_guest" class="file-styled">
                                     <span class="help-block">Accepted formats: CSV. Max file size 2Mb</span>
-                                    <span class="help-block"><code>File should be in this format <a href="<?php echo base_url(DEMO_CSV . 'donor_demo.csv') ?>">Download Demo File</a></code></span>
+                                    <span class="help-block"><code>File should be in this format <a href="<?php echo base_url(DEMO_CSV . 'guest_demo.csv') ?>">Download Demo File</a></code></span>
                                 </div>
                             </div>
                         </div>
@@ -145,8 +145,10 @@
                     render: function (data, type, full, meta) {
                         var logo = '';
                         if (data != null) {
+                            console.log('if', data);
                             logo = '<a class="fancybox" href="' + logo_img_url + data + '"><img src="' + logo_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
                         } else {
+                            console.log('else');
                             logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return logo;

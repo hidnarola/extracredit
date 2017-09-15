@@ -144,7 +144,7 @@ class Guests_model extends MY_Model {
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
-        $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left');     
+        $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -175,6 +175,7 @@ class Guests_model extends MY_Model {
             return $query->num_rows();
         }
     }
+
     /**
      * Get guest details of particular id
      * @param int $id
@@ -183,11 +184,22 @@ class Guests_model extends MY_Model {
         $this->db->select('g.*,a.fund_type_id,f.type,f.name,a.action_matters_campaign,a.vendor_name,c.name as cityname, s.name as statename');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'f.id=a.fund_type_id', 'left');
-         $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
-        $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left'); 
+        $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left');
         $this->db->where(['g.id' => $id, 'g.is_delete' => 0]);
         $query = $this->db->get(TBL_GUESTS . ' g');
         return $query->row_array();
+    }
+
+    /**
+     * Get all accounts 
+     */
+    public function get_all_accounts() {
+        $this->db->select('f.name as fund_type,a.id,a.fund_type_id,a.action_matters_campaign,a.vendor_name,f.type');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->where(['a.is_delete' => 0]);
+        $query = $this->db->get(TBL_ACCOUNTS . ' a');
+        return $query->result_array();
     }
 
 }
