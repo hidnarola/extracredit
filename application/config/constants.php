@@ -107,6 +107,7 @@ define('TBL_USER_PERMISSION', 'user_permissions');
 /**
  * Contants for User Images
  */
+define('UPLOADS', 'uploads/');
 define('USER_IMAGES', 'uploads/user_images/');
 define('GUEST_IMAGES', 'uploads/guest_images/');
 define('COMMUNICATION_IMAGES', 'uploads/communication_images/');

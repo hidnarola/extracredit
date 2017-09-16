@@ -77,7 +77,9 @@ class Guests extends MY_Controller {
             $data['cities'] = [];
             $data['accounts'] = [];
         }
-        $data['fund_types'] = $this->guests_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0]]);
+//        $data['fund_types'] = $this->guests_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->guests_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
+
         $data['states'] = $this->guests_model->sql_select(TBL_STATES, NULL);
 
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
@@ -530,8 +532,7 @@ class Guests extends MY_Controller {
                     } else if (!empty($check_email_valid)) { //-- check Account/Program in columns are valid or not
                         $rows = implode(',', $check_email_valid);
                         $this->session->set_flashdata('error', "Invalid email in email column. Please check entries at row number - " . $rows);
-                    }
-                    else if (!empty($check_account)) { //-- check Account/Program in columns are valid or not
+                    } else if (!empty($check_account)) { //-- check Account/Program in columns are valid or not
                         $rows = implode(',', $check_account);
                         $this->session->set_flashdata('error', "Account/Program doesn't exist in the system. Please check entries at row number - " . $rows);
                     } else if (!empty($check_city)) { //-- check city in column are unique or not
@@ -581,6 +582,26 @@ class Guests extends MY_Controller {
             $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
             redirect('guests');
         }
+    }
+
+    public function storeState() {
+        $content = file_get_contents(UPLOADS . "/" . "USStates.txt");
+        $lines = explode("\n", $content);
+        foreach ($lines as $line) {
+            $row = explode(":", $line);
+            $data = array(
+                'name' => trim($row[0])
+            );
+            $this->db->insert('states_new', $data);
+//            $query = "INSERT INTO states_new SET name = '" . trim($row[0]) . "'";
+//            $this->donors_model->custom_Query($query);
+        }
+    }
+
+    public function storeCity() {
+        $states = $this->guests_model->sql_select(TBL_STATES);
+        $states_new = $this->guests_model->sql_select('state_new');
+        $cities = $this->guests_model->sql_select(TBL_CITIES);
     }
 
 }
