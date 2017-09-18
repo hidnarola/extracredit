@@ -23,7 +23,7 @@ class Guests_model extends MY_Model {
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
-        $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
+        $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -41,6 +41,7 @@ class Guests_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_GUESTS . ' g');
+//            p($query->result_array());
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_GUESTS . ' g');
@@ -200,6 +201,46 @@ class Guests_model extends MY_Model {
         $this->db->where(['a.is_delete' => 0]);
         $query = $this->db->get(TBL_ACCOUNTS . ' a');
         return $query->result_array();
+    }
+
+    /**
+     * Check state is saved in database
+     * @param type $state
+     * @return int
+     */
+    public function check_state($state) {
+        $this->db->select('*');
+        $this->db->where('short_name=', $state);
+        $result = $this->db->get(TBL_STATES);
+        if ($result->num_rows() > 0) {
+            return $result->row_array();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * check city is saved in database and if not save new city in database
+     * @param type $city
+     * @param type $state_id
+     * @return type
+     */
+    public function check_city($city, $state_id) {
+        $this->db->select('*');
+        $this->db->where('name=', $city);
+        $this->db->where('state_id=', $state_id);
+        $result = $this->db->get(TBL_CITIES);
+        if ($result->num_rows() > 0) {
+            return $result->row_array();
+        } else {
+            $record_array = array(
+                'name' => $city,
+                'state_id' => $state_id
+            );
+            $this->db->insert(TBL_CITIES, $record_array);
+            $insert_id = $this->db->insert_id(TBL_CITIES);
+            return $insert_id;
+        }
     }
 
 }
