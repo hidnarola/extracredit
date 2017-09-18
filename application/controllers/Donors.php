@@ -89,8 +89,8 @@ class Donors extends MY_Controller {
         $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
         $this->form_validation->set_rules('address', 'Address', 'trim|required');
 
-        $this->form_validation->set_rules('state_id', 'State', 'trim|required');
-        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
+        $this->form_validation->set_rules('state', 'State', 'trim|required|callback_state_validation');
+        $this->form_validation->set_rules('city', 'City', 'trim|required');
 
         $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
         $this->form_validation->set_rules('admin_percent', 'Admin Donation(%)', 'trim|required');
@@ -101,6 +101,19 @@ class Donors extends MY_Controller {
         $this->form_validation->set_rules('payment_number', 'Payment Number', 'trim|required');
 
         if ($this->form_validation->run() == TRUE) {
+            //-- Get state id from post value
+            $state_code = $this->input->post('state_short');
+            $post_city = $this->input->post('city');
+            $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+            $state_id = $state['id'];
+            $city = $this->donors_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+            if (!empty($city)) {
+                $city_id = $city['id'];
+            } else {
+                $city_id = $this->donors_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+            }
+
+
             $admin_donatoin = $this->input->post('admin_percent');
             $program_donatoin = $this->input->post('account_percent');
             $total = $admin_donatoin + $program_donatoin;
@@ -114,8 +127,8 @@ class Donors extends MY_Controller {
                 'lastname' => $this->input->post('lastname'),
                 'address' => $this->input->post('address'),
                 'email' => $this->input->post('email'),
-                'state_id' => $this->input->post('state_id'),
-                'city_id' => $this->input->post('city_id'),
+                'state_id' => $state_id,
+                'city_id' => $city_id,
                 'zip' => $this->input->post('zip'),
                 'date' => date('Y-m-d', strtotime($this->input->post('date'))),
                 'post_date' => date('Y-m-d', strtotime($this->input->post('post_date'))),
@@ -186,6 +199,22 @@ class Donors extends MY_Controller {
         checkPrivileges('donors', 'edit');
         $data['perArr'] = checkPrivileges('donors');
         $this->add($id);
+    }
+
+    /**
+     * Callback Validate function to check state is valid or not
+     * @return boolean
+     * @author KU
+     */
+    public function state_validation() {
+        $state_code = $this->input->post('state_short');
+        $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+        if (empty($state)) {
+            $this->form_validation->set_message('state_validation', 'State does not exist in the database! Please enter correct zipcode');
+            return FALSE;
+        } else {
+            return TRUE;
+        }
     }
 
     /**
@@ -263,6 +292,7 @@ class Donors extends MY_Controller {
 
     /**
      * Listing of All Donors Communication
+     * @author REP
      */
     public function communication($id = null) {
         checkPrivileges('donors_communication', 'view');
@@ -274,6 +304,7 @@ class Donors extends MY_Controller {
 
     /**
      * Get Donors communication data for ajax table
+     * @author REP
      * */
     public function get_donors_communication($id) {
         checkPrivileges('donors_communication', 'view');
@@ -296,6 +327,7 @@ class Donors extends MY_Controller {
 
     /**
      * Get donors communication data for ajax call for view
+     * @author REP
      * */
     public function get_communication_by_id() {
         $id = $this->input->post('id');
@@ -310,6 +342,7 @@ class Donors extends MY_Controller {
      * Add Donors communication 
      * @param type $donor_id
      * @param type $comm_id
+     * @author REP
      */
     public function add_communication($donor_id = null, $comm_id = null) {
         checkPrivileges('donors_communication', 'add');
@@ -379,6 +412,7 @@ class Donors extends MY_Controller {
     /**
      * Delete Donor Communication
      * @param int $id
+     * @author REP
      * */
     public function delete_communication($donor_id = null, $id = NULL) {
         checkPrivileges('donors_communication', 'delete');
@@ -665,6 +699,18 @@ class Donors extends MY_Controller {
         }
     }
 
+    /*
+      public function test() {
+      $cities = $this->donors_model->sql_select(TBL_CITIES, 'name,state_id');
+      foreach ($cities as $city) {
+      $state = $this->donors_model->sql_select(TBL_STATES, 'name', ['where' => ['id' => $city['state_id']]], ['single' => TRUE]);
+      $new_state = $this->donors_model->sql_select('states_new', 'name,id', ['where' => ['name' => $state['name']]], ['single' => TRUE]);
+      if (!empty($new_state)) {
+      $city_arr = ['name' => $city['name'], 'state_id' => $new_state['id']];
+      $this->donors_model->common_insert_update('insert', 'cities_new', $city_arr);
+      }
+      }
+      } */
 }
 
 /* End of file Donors.php */
