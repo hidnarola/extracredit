@@ -63,6 +63,11 @@ class Guests extends MY_Controller {
                 $data['heading'] = 'Edit Guest';
                 $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_check_email_edit[' . $id . ']');
                 $data['cities'] = $this->guests_model->sql_select(TBL_CITIES, NULL, ['where' => ['state_id' => $guest['state_id']]]);
+                $city_id = $this->guests_model->sql_select(TBL_CITIES, NULL, ['where' => ['id' => $guest['city_id']]]);
+                $data['city_id'] = $city_id[0]['name'];
+                $state_id = $this->guests_model->sql_select(TBL_STATES, NULL, ['where' => ['id' => $guest['state_id']]]);
+                $data['state_id'] = $state_id[0]['name'];
+                $data['state_short'] = $state_id[0]['short_name'];
                 $data['accounts'] = $this->guests_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['fund_type_id' => $guest['fund_type_id']]]);
 
                 $logo = $guest['logo'];
@@ -89,7 +94,7 @@ class Guests extends MY_Controller {
         $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
 //        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         $this->form_validation->set_rules('address', 'Address', 'trim|required');
-        $this->form_validation->set_rules('state_id', 'State', 'trim|required');
+        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
         $this->form_validation->set_rules('city_id', 'City', 'trim|required');
         $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
         $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
@@ -117,6 +122,19 @@ class Guests extends MY_Controller {
                     $logo = $image_data;
                 }
             }
+            $state = $this->input->post('state_short');
+            $city = $this->input->post('city_id');
+//            echo $state;
+            $check_state = $this->guests_model->check_state($state);
+            if (!empty($check_state)) {
+                $state_id = $check_state['id'];
+            }
+//            p($check_state);
+            $check_city = $this->guests_model->check_city($city, $state_id);
+//            p($check_city);
+            if (!empty($check_city)) {
+                $city_id = $check_city['id'];
+            }
             if ($flag == 0) {
                 $dataArr = array(
                     'account_id' => $this->input->post('account_id'),
@@ -125,8 +143,8 @@ class Guests extends MY_Controller {
                     'companyname' => $this->input->post('companyname'),
                     'logo' => $logo,
                     'address' => $this->input->post('address'),
-                    'city_id' => $this->input->post('city_id'),
-                    'state_id' => $this->input->post('state_id'),
+                    'city_id' => $city_id,
+                    'state_id' => $state_id,
                     'zip' => $this->input->post('zip'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
@@ -162,6 +180,22 @@ class Guests extends MY_Controller {
         checkPrivileges('guest', 'edit');
         $data['perArr'] = checkPrivileges('guest');
         $this->add($id);
+    }
+
+    /**
+     * Callback Validate function to check state is valid or not
+     * @return boolean
+     * @author KU
+     */
+    public function state_validation() {
+        $state_code = $this->input->post('state_short');
+        $state = $this->guests_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+        if (empty($state)) {
+            $this->form_validation->set_message('state_validation', 'State does not exist in the database! Please enter correct zipcode');
+            return FALSE;
+        } else {
+            return TRUE;
+        }
     }
 
     /**

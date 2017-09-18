@@ -11,6 +11,7 @@ class Accounts extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('accounts_model');
+        $this->load->model('guests_model');
     }
 
     /**
@@ -60,6 +61,11 @@ class Accounts extends MY_Controller {
                 $data['title'] = 'Extracredit | Edit Account';
                 $data['heading'] = 'Edit Account';
                 $data['cities'] = $this->accounts_model->sql_select(TBL_CITIES, NULL, ['where' => ['state_id' => $account['state_id']]]);
+                $city_id = $this->guests_model->sql_select(TBL_CITIES, NULL, ['where' => ['id' => $account['city_id']]]);
+                $data['city_id'] = $city_id[0]['name'];
+                $state_id = $this->guests_model->sql_select(TBL_STATES, NULL, ['where' => ['id' => $account['state_id']]]);
+                $data['state_id'] = $state_id[0]['name'];
+                $data['state_short'] = $state_id[0]['short_name'];
             } else {
                 show_404();
             }
@@ -98,13 +104,25 @@ class Accounts extends MY_Controller {
 
 
         if ($this->form_validation->run() == TRUE) {
+
+            $state = $this->input->post('state_short');
+            $city = $this->input->post('city_id');
+            $check_state = $this->guests_model->check_state($state);
+            if (!empty($check_state)) {
+                $state_id = $check_state['id'];
+            }
+            $check_city = $this->guests_model->check_city($city, $state_id);
+            if (!empty($check_city)) {
+                $city_id = $check_city['id'];
+            }
+
             $dataArr = array(
                 'fund_type_id' => $this->input->post('fund_type_id'),
                 'is_active' => ($this->input->post('is_active') == 1) ? 1 : 0,
                 'contact_name' => $this->input->post('contact_name'),
                 'address' => $this->input->post('address'),
-                'state_id' => $this->input->post('state_id'),
-                'city_id' => $this->input->post('city_id'),
+                'state_id' => $state_id,
+                'city_id' => $city_id,
                 'zip' => $this->input->post('zip'),
                 'email' => $this->input->post('email'),
                 'phone' => $this->input->post('phone'),

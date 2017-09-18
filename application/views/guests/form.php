@@ -1,3 +1,4 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdyDSU074CCHVR2oygIqTLO9_ZOZEVrWE"  type="text/javascript"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/validation/validate.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
@@ -134,42 +135,6 @@ if (isset($guest)) {
 
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <select name="state_id" id="state_id" class="select2" required="required" data-placeholder="Select State">
-                                        <option value=""></option>
-                                        <?php
-                                        foreach ($states as $state) {
-                                            $selected = '';
-                                            if (isset($guest) && $guest['state_id'] == $state['id'])
-                                                $selected = 'selected';
-                                            ?>
-                                            <option value="<?php echo $state['id']; ?>" <?php echo $selected ?>><?php echo $state['name'] ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <?php
-                                    echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
-                                    ?>
-                                </div>
-                                <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <select name="city_id" id="city_id" class="select2" required="required" data-placeholder="Select City">
-                                        <option value=""></option>
-                                        <?php
-                                        foreach ($cities as $city) {
-                                            $selected = '';
-                                            if (isset($guest) && $guest['city_id'] == $city['id'])
-                                                $selected = 'selected';
-                                            ?>
-                                            <option value="<?php echo $city['id']; ?>" <?php echo $selected ?>><?php echo $city['name'] ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <?php
-                                    echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="col-lg-1 control-label">Zip <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['zip']) ? $guest['zip'] : set_value('zip'); ?>">
@@ -186,6 +151,25 @@ if (isset($guest)) {
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control" required="required" value="<?php echo (isset($guest) && $state_id) ? $state_id : set_value('state_id'); ?>">
+
+                                    <?php
+                                    echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
+                                <div class="col-lg-4" id="city_wrap">
+                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control" required="required" value="<?php echo (isset($guest) && $city_id) ? $city_id : set_value('city_id'); ?>">
+                                    <?php
+                                    echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
+                                    ?>
+                                </div>
+                                <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $state_short : set_value('state_short'); ?>"/>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-lg-1 control-label">Company Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <input type="text" name="companyname" id="companyname" placeholder="Enter Company Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($guest)) ? $guest['companyname'] : set_value('companyname'); ?>">
@@ -194,7 +178,7 @@ if (isset($guest)) {
                                     ?>
                                 </div>
 
-                                <label class="control-label col-lg-1">Logo<span class="text-danger">*</span></label>
+                                <label class="control-label col-lg-1">Logo</label>
                                 <div class="col-lg-4">
                                     <div class="media no-margin-top">
                                         <div class="media-left" id="image_preview_div">
@@ -211,7 +195,7 @@ if (isset($guest)) {
                                         </div>
 
                                         <div class="media-body">
-                                            <input type="file" name="logo" id="logo" class="file-styled" onchange="readURL(this);" <?php echo $required; ?>>
+                                            <input type="file" name="logo" id="logo" class="file-styled" onchange="readURL(this);">
                                             <span class="help-block">Accepted formats: png, jpg. Max file size 2Mb</span>
                                         </div>
                                     </div>
@@ -439,9 +423,8 @@ if (isset($guest)) {
                 phoneno: true
             },
             zip: {
-                required: true,
-                digits: true
-            },
+                zipcodeUS: true
+            }
         },
         submitHandler: function (form) {
             $('#guest_btn_submit').attr('disabled', true);
@@ -466,4 +449,66 @@ if (isset($guest)) {
             reader.readAsDataURL(input.files[0]);
         }
     }
+</script>
+<script>
+    $(document).ready(function () {
+        var geocoder = new google.maps.Geocoder();
+        //when the user clicks off of the zip field:
+        $("#zip").on("keyup keydown change", function () {
+            if ($(this).val().length == 5) {
+                var zip = $(this).val();
+                var city = '';
+                var state = '';
+                var state_short = '';
+                //make a request to the google geocode api
+                $.getJSON('http://maps.googleapis.com/maps/api/geocode/json?address=' + zip)
+                        .success(function (response) {
+                            //find the city and state
+                            var address_components = response.results[0].address_components;
+                            $.each(address_components, function (index, component) {
+                                var types = component.types;
+                                $.each(types, function (index, type) {
+                                    if (type == 'locality') {
+                                        city = component.long_name;
+                                    }
+                                    if (type == 'administrative_area_level_1') {
+                                        state_short = component.short_name;
+                                        state = component.long_name;
+                                    }
+                                });
+                            });
+                            //pre-fill the city and state
+                            var cities = response.results[0].postcode_localities;
+                            if (cities) {
+                                //turn city into a dropdown if necessary
+                                var $select = $(document.createElement('select'));
+                                console.log(cities);
+                                $.each(cities, function (index, locality) {
+                                    var $option = $(document.createElement('option'));
+                                    $option.html(locality);
+                                    $option.attr('value', locality);
+                                    if (city == locality) {
+                                        $option.attr('selected', 'selected');
+                                    }
+                                    $select.append($option);
+                                });
+                                $select.attr('id', 'city_id');
+                                $select.attr('name', 'city_id');
+                                $('#city_wrap').html($select);
+                                $('#city_id').select2();
+                            } else {
+                                var txtbox = '<input type="text" name="city_id" id="city_id" placeholder="City" class="form-control" required="required" value="' + city + '" readonly>'
+                                $('#city_wrap').html(txtbox);
+                                $('#city_id').val(city);
+                            }
+                            $('#state_id').val(state);
+                            $('#state_short').val(state_short);
+                        });
+            }
+        });
+    });
+    /*Validator method for US Zipcode*/
+    $.validator.addMethod("zipcodeUS", function (value, element) {
+        return this.optional(element) || /^\d{5}-\d{4}$|^\d{5}$/.test(value);
+    }, "The specified US ZIP Code is invalid");
 </script>

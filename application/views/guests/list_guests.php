@@ -60,7 +60,7 @@
                     <th>Email</th>
                     <th>City</th>
                     <!--<th>Invite Date</th>-->
-                    <th>Added Date</th>
+                    <th style="width: 50px;">Added Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -130,7 +130,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[7, "desc"]],
+            order: [[8, "desc"]],
             ajax: site_url + 'guests/get_guests',
             columns: [
                 {
