@@ -162,4 +162,19 @@ class Donors_model extends MY_Model {
         return $query->result_array();
     }
 
+     /**
+     * Get donor details of particular id
+     * @param int $id
+     */
+    public function get_donor_details_view($id) {
+        $this->db->select('d.*,a.fund_type_id,f.type,f.name,a.action_matters_campaign,a.vendor_name,c.name as cityname, s.name as statename,p.type as payment_type');
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id', 'left');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'f.id=a.fund_type_id', 'left');
+        $this->db->join(TBL_CITIES . ' as c', 'd.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'd.state_id=s.id', 'left');
+        $this->db->join(TBL_PAYMENT_TYPES . ' as p', 'd.payment_type_id=p.id', 'left');
+        $this->db->where(['d.id' => $id, 'd.is_delete' => 0]);
+        $query = $this->db->get(TBL_DONORS . ' d');
+        return $query->row_array();
+    }
 }

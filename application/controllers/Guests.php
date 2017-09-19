@@ -627,17 +627,8 @@ class Guests extends MY_Controller {
                 'name' => trim($row[0])
             );
             $this->db->insert('states_new', $data);
-//            $query = "INSERT INTO states_new SET name = '" . trim($row[0]) . "'";
-//            $this->donors_model->custom_Query($query);
         }
     }
-
-    public function storeCity() {
-        $states = $this->guests_model->sql_select(TBL_STATES);
-        $states_new = $this->guests_model->sql_select('state_new');
-        $cities = $this->guests_model->sql_select(TBL_CITIES);
-    }
-
 }
 
 /* End of file Guests.php */

@@ -69,6 +69,7 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 
+<!-- Guest View Modal -->
 <div id="guest_view_modal" class="modal fade">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -145,10 +146,8 @@
                     render: function (data, type, full, meta) {
                         var logo = '';
                         if (data != null) {
-                            console.log('if', data);
                             logo = '<a class="fancybox" href="' + logo_img_url + data + '"><img src="' + logo_img_url + data + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="' + full.firstname + '" class="img-circle"/></a>';
                         } else {
-                            console.log('else');
                             logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return logo;

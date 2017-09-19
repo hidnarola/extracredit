@@ -699,6 +699,24 @@ class Donors extends MY_Controller {
         }
     }
 
+    
+    /**
+     * View Donor
+     * @return : Partial View
+     * @author : REP
+     */
+    public function view_donor() {
+        $donor_id = base64_decode($this->input->post('id'));
+        $donor = $this->donors_model->get_donor_details_view($donor_id);
+        if ($donor) {
+//            p($donor,1);
+            $data['donor_details'] = $donor;
+            return $this->load->view('donors/donor_view', $data);
+        } else {
+            show_404();
+        }
+    }    
+    
     /*
       public function test() {
       $cities = $this->donors_model->sql_select(TBL_CITIES, 'name,state_id');
