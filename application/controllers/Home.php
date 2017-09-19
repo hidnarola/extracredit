@@ -10,6 +10,7 @@ class Home extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
+        $this->load->model('funds_model');
     }
 
     /**
@@ -21,7 +22,7 @@ class Home extends MY_Controller {
         $data['accounts'] = $this->users_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['donors'] = $this->users_model->sql_select(TBL_DONORS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['guests'] = $this->users_model->sql_select(TBL_GUESTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
-        $sql = 'SELECT sum(admin_fund) total_admin,sum(pymt.amount) total_payment,(sum(admin_fund) - sum(pymt.amount)) as final FROM ' . TBL_FUNDS . ',(SELECT amount FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . date('Y-m-d') . '") pymt WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . date('Y-m-d') . '"';
+        $sql = 'SELECT sum(admin_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . date('Y-m-d') . '") as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . date('Y-m-d') . '"';
         $total = $this->users_model->customQuery($sql, 2);
         $data['today_admin_fund'] = $total['final'];
         $monday = strtotime("last monday");
@@ -29,9 +30,64 @@ class Home extends MY_Controller {
         $sunday = strtotime(date("Y-m-d", $monday) . " +6 days");
         $this_week_sd = date("Y-m-d", $monday);
         $this_week_ed = date("Y-m-d", $sunday);
-        $sql = 'SELECT sum(admin_fund) total_admin,sum(pymt.amount) total_payment,(sum(admin_fund) - sum(pymt.amount)) as final FROM ' . TBL_FUNDS . ',(SELECT amount FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . $this_week_sd . '" AND p.created <= "' . $this_week_ed . '") pymt WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . $this_week_sd . '"  AND ' . TBL_FUNDS . '.created <= "' . $this_week_ed . '"';
+
+        $sql = 'SELECT sum(admin_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . $this_week_sd . '" AND p.created <= "' . $this_week_ed . '") as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . $this_week_sd . '"  AND ' . TBL_FUNDS . '.created <= "' . $this_week_ed . '"';
         $total = $this->users_model->customQuery($sql, 2);
         $data['week_admin_fund'] = $total['final'];
+        $data['payments'] = $this->users_model->sql_select(TBL_PAYMENTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
+
+        //-- Chart data
+        //-- Returns the number of free images purchased
+        $date = $this->input->get('date');
+        $date_array = array();
+        $event_arr = array();
+        $date_string = '';
+        if ($date != '') {
+            $dates = explode('-', $date);
+            $start_date = $dates[0];
+            $end_date = $dates[1];
+            $date_array = array('created >=' => date('Y-m-d', strtotime($start_date)), 'created <=' => date('Y-m-d', strtotime($end_date)));
+            $date_string = ' AND created >="' . date('Y-m-d', strtotime($start_date)) . '" AND created <="' . date('Y-m-d', strtotime($end_date)) . '"';
+            $event_arr['from_date'] = date('Y-m-d', strtotime($start_date));
+            $event_arr['to_date'] = date('Y-m-d', strtotime($end_date));
+        }
+        $data['json'] = json_encode("");
+
+        //-- Json data for chart
+        $json_data = array(
+            'donors' => $this->users_model->num_of_records_by_date(TBL_DONORS, array_merge($date_array, array('is_delete' => 0, 'refund' => 0))),
+            'incoming_money' => $this->funds_model->get_incoming_money(array_merge($date_array, array('is_delete' => 0, 'refund' => 0))),
+        );
+
+        $new_json_data = array();
+        $key_arrays = array();
+
+        foreach ($json_data as $key => $val) {
+            $new_array = array();
+            foreach ($val as $val1) {
+                $new_array[$val1['date']] = $val1['count'];
+                $key_arrays[] = array($val1['date'], date('jS M \'y', strtotime($val1['date'])));
+            }
+            $new_json_data[$key] = $new_array;
+        }
+
+        $key_arrays = array_unique($key_arrays, SORT_REGULAR);
+        usort($key_arrays, array($this, 'sortFunction'));
+
+        $actions = [];
+        foreach ($new_json_data as $k => $data_value) {
+            $actions[$k] = array();
+            foreach ($key_arrays as $key => $value) {
+                if (isset($data_value[$value[0]])) {
+                    $actions[$k][$value[0]] = array(
+                        $data_value[$value[0]], $value[1]
+                    );
+                }
+            }
+        }
+
+        $actions['key_array'] = $key_arrays;
+        $data['json'] = json_encode($actions);
         $this->template->load('default', 'dashboard', $data);
     }
 
@@ -100,6 +156,16 @@ class Home extends MY_Controller {
             }
         }
         redirect('home/profile');
+    }
+
+    /**
+     * Specifies sort for date array
+     * @param string $a
+     * @param string $b
+     * @return type
+     */
+    function sortFunction($a, $b) {
+        return strtotime($a[0]) - strtotime($b[0]);
     }
 
 }

@@ -170,4 +170,19 @@ class Funds_model extends MY_Model {
         }
     }
 
+    /**
+     * Get incoming money from donors model
+     * @param string/array $where
+     * @author KU
+     */
+    public function get_incoming_money($where = NULL) {
+        $this->db->select("sum(amount) as count,DATE_FORMAT(created,'%Y-%m-%d') as date");
+        if (!is_null($where)) {
+            $this->db->where($where);
+        }
+        $this->db->group_by("DATE_FORMAT(created,'%Y-%m-%d')");
+        $query = $this->db->get(TBL_DONORS);
+        return $query->result_array();
+    }
+
 }

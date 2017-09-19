@@ -198,7 +198,7 @@ class MY_Model extends CI_Model {
             return $result->row_array();
         }
     }
-    
+
     /**
      * Custom Query
      * @author REP
@@ -229,6 +229,22 @@ class MY_Model extends CI_Model {
                 )
         );
         return $this->db->get();
+    }
+
+    /**
+     * Returns number of records by date as key array
+     * @param string $table - Table name
+     * @param string $where - Where condition
+     * @return array
+     */
+    public function num_of_records_by_date($table, $where = NULL) {
+        $this->db->select("count(id) as count,DATE_FORMAT(created,'%Y-%m-%d') as date");
+        if (!is_null($where)) {
+            $this->db->where($where);
+        }
+        $this->db->group_by("DATE_FORMAT(created,'%Y-%m-%d')");
+        $query = $this->db->get($table);
+        return $query->result_array();
     }
 
 }

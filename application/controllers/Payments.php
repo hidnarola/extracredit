@@ -75,7 +75,7 @@ class Payments extends MY_Controller {
             $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
             $this->form_validation->set_rules('account_id', 'Program/AMC', 'trim|required');
         }
-        $data['fund_types'] = $this->payments_model->sql_select(TBL_FUND_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->payments_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type!=' => 2]]);
 
         $this->form_validation->set_rules('check_date', 'Check Date', 'trim|required');
         $this->form_validation->set_rules('check_number', 'Post Date', 'trim|required');
