@@ -1,6 +1,9 @@
 <script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
+<style>
+    .btn-icon.btn-xs, .input-group-xs > .input-group-btn > .btn.btn-icon {padding-right: 6px;}
+</style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -47,9 +50,9 @@
                     <th>Lastname</th>
                     <th>Email</th>
                     <th>City</th>
-                    <th>Payment Type</th>
+                    <th style="width: 50px;">Payment Type</th>
                     <th>Amount</th>
-                    <th>Added Date</th>
+                    <th style="width: 50px;">Added Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -84,6 +87,20 @@
                     <button type="submit" class="btn bg-teal">Upload</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Guest View Modal -->
+<div id="donor_view_modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-teal-400 custom_modal_header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title text-center">Guest's Details</h6>
+            </div>
+            <div class="modal-body panel-body custom_scrollbar" id="donor_view_body" style="height: 600px;overflow-y: auto;">
+            </div>
         </div>
     </div>
 </div>
@@ -166,6 +183,9 @@
                             if ($.inArray('edit', permissions) !== -1) {
                                 action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-pink text-pink-600 btn-flat btn-icon btn-rounded btn-xs" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i></a>';
                             }
+                            if ($.inArray('view', permissions) !== -1) {
+                                action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs donor_view_btn" id=' + btoa(full.id) + ' title="View Conversation"><i class="icon-eye"></i></a>';
+                            }
                         }
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
@@ -217,14 +237,26 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
+    
+     $(document).on('click', '.donor_view_btn', function () {
+        $.ajax({
+            url: site_url + 'donors/view_donor',
+            type: "POST",
+            data: {id: this.id},
+            success: function (response) {
+                $('#donor_view_body').html(response);
+                $('#donor_view_modal').modal('show');
+            }
+        });
+    });
 </script>
