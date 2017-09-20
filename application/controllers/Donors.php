@@ -721,11 +721,11 @@ class Donors extends MY_Controller {
 
     public function test() {
         $apiKey = $this->config->item('Mailchimp_api_key');
-        $memberId = md5(strtolower('ku1@narola.email'));
+        $memberId = md5(strtolower('ku2@narola.email'));
         $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
         $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
         $json = json_encode([
-            'email_address' => 'ku1@narola.email',
+            'email_address' => 'ku2@narola.email',
             'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
             'merge_fields' => [
                 'FNAME' => 'rep',
