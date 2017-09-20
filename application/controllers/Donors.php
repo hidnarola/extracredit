@@ -11,17 +11,16 @@ class Donors extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('donors_model');
-        $this->load->library('MailChimp');
-        $this->list_id = '1dfb45ca7d';
-        $this->load->library('Mailchimp_library');
+        /*
+          $this->load->library('MailChimp');
+          $this->list_id = '1dfb45ca7d';
+          $this->load->library('Mailchimp_library'); */
     }
 
     /**
      * Listing of All Donors
      */
     public function index() {
-        $lists = $this->mailchimp_library->call('lists/list');
-//        var_dump($lists);
         checkPrivileges('donors', 'view');
         $data['perArr'] = checkPrivileges('donors');
         $data['comperArr'] = checkPrivileges('donors_communication');
@@ -178,9 +177,6 @@ class Donors extends MY_Controller {
                 $fund_array['created'] = date('Y-m-d H:i:s');
                 $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
                 $this->session->set_flashdata('success', 'Donor has been added successfully');
-                $result = $this->mailchimp->post("lists/$this->list_id/members", ['email_address' => $this->input->post('email'), 'merge_fields' => ['FNAME' => $this->input->post('firstname'), 'LNAME' => $this->input->post('lastname')], 'status' => 'subscribed',]);
-                echo $MailChimp->getLastError();
-                p($result, 1);
                 //---get account's total fund 
                 $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
                 $total_fund = $account['total_fund'];

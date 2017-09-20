@@ -67,6 +67,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            order: [[6, "desc"]],
             ajax: site_url + 'payments/get_payments',
             columns: [
                 {
@@ -139,14 +140,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
 </script>

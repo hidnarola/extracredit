@@ -3,6 +3,7 @@
 <script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <style>
     .btn-icon.btn-xs, .input-group-xs > .input-group-btn > .btn.btn-icon {padding-right: 6px;}
+    .refund_row {background-color: rgba(253, 82, 82, 0.14);}    
 </style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
@@ -38,6 +39,7 @@
     </div>
     <div class="panel panel-flat">
         <div class="panel-heading text-right">
+            The <code>Highlighted</code> row represents donor has asked for refund and amount is refunded
             <a href="#" data-target="#import_modal" data-toggle="modal" class="btn bg-pink-400 btn-labeled"><b><i class="icon-file-upload2"></i></b> Import Donor</a>
             <a href="<?php echo site_url('donors/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Donor</a>
         </div>
@@ -50,9 +52,9 @@
                     <th>Lastname</th>
                     <th>Email</th>
                     <th>City</th>
-                    <th style="width: 50px;">Payment Type</th>
+                    <th>Payment Type</th>
                     <th>Amount</th>
-                    <th style="width: 50px;">Added Date</th>
+                    <th>Added Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -113,6 +115,7 @@
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
+            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
@@ -183,9 +186,9 @@
                             if ($.inArray('edit', permissions) !== -1) {
                                 action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-pink text-pink-600 btn-flat btn-icon btn-rounded btn-xs" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i></a>';
                             }
-                            if ($.inArray('view', permissions) !== -1) {
-                                action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs donor_view_btn" id=' + btoa(full.id) + ' title="View Conversation"><i class="icon-eye"></i></a>';
-                            }
+                        }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs donor_view_btn" id=' + btoa(full.id) + ' title="View Conversation"><i class="icon-eye"></i></a>';
                         }
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
@@ -196,7 +199,14 @@
                         return action;
                     }
                 }
-            ]
+            ],
+            createdRow: function (row, data, index) {
+                if (data.refund == 1) {
+                    $(row).addClass('refund_row');
+                }
+//                console.dir(data);
+//                console.dir(row);
+            }
         });
 
         $('.dataTables_length select').select2({
@@ -237,18 +247,18 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
-    
-     $(document).on('click', '.donor_view_btn', function () {
+
+    $(document).on('click', '.donor_view_btn', function () {
         $.ajax({
             url: site_url + 'donors/view_donor',
             type: "POST",
