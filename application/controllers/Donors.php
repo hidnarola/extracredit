@@ -11,12 +11,17 @@ class Donors extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('donors_model');
+        $this->load->library('MailChimp');
+        $this->list_id = '1dfb45ca7d';
+        $this->load->library('Mailchimp_library');
     }
 
     /**
      * Listing of All Donors
      */
     public function index() {
+        $lists = $this->mailchimp_library->call('lists/list');
+//        var_dump($lists);
         checkPrivileges('donors', 'view');
         $data['perArr'] = checkPrivileges('donors');
         $data['comperArr'] = checkPrivileges('donors_communication');
@@ -173,7 +178,9 @@ class Donors extends MY_Controller {
                 $fund_array['created'] = date('Y-m-d H:i:s');
                 $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
                 $this->session->set_flashdata('success', 'Donor has been added successfully');
-
+                $result = $this->mailchimp->post("lists/$this->list_id/members", ['email_address' => $this->input->post('email'), 'merge_fields' => ['FNAME' => $this->input->post('firstname'), 'LNAME' => $this->input->post('lastname')], 'status' => 'subscribed',]);
+                echo $MailChimp->getLastError();
+                p($result, 1);
                 //---get account's total fund 
                 $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
                 $total_fund = $account['total_fund'];
@@ -699,7 +706,6 @@ class Donors extends MY_Controller {
         }
     }
 
-    
     /**
      * View Donor
      * @return : Partial View
@@ -715,8 +721,59 @@ class Donors extends MY_Controller {
         } else {
             show_404();
         }
-    }    
-    
+    }
+
+    public function test() {
+        $apiKey = $this->config->item('Mailchimp_api_key');
+        $memberId = md5(strtolower('ku1@narola.email'));
+        $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
+        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
+        $json = json_encode([
+            'email_address' => 'ku1@narola.email',
+            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+            'merge_fields' => [
+                'FNAME' => 'rep',
+                'LNAME' => 'P'
+            ]
+        ]);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        $result = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $arr = json_decode($result, true);
+        p($arr);
+    }
+
+    public function delete_sub() {
+        $apiKey = $this->config->item('Mailchimp_api_key');
+        $memberId = md5(strtolower('ku1@narola.email'));
+        $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
+        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
+        $json = json_encode([
+            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+        ]);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        $result = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $arr = json_decode($result, true);
+        p($arr);
+    }
+
     /*
       public function test() {
       $cities = $this->donors_model->sql_select(TBL_CITIES, 'name,state_id');
