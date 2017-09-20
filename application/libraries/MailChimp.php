@@ -216,9 +216,8 @@ class MailChimp
 
         $response['body']    = curl_exec($ch);
         $response['headers'] = curl_getinfo($ch);
-//        p($response['headers']);
 
-//        $this->last_request['headers'] = $response['headers']['request_header'];
+        $this->last_request['headers'] = $response['headers']['request_header'];
         
         if ($response['body'] === false) {
             $this->last_error = curl_error($ch);
