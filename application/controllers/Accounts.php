@@ -145,10 +145,51 @@ class Accounts extends MY_Controller {
             if (is_numeric($id)) {
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $dataArr, ['id' => $id]);
+
+                if ($account['email'] != $dataArr['email']) {
+                    $subscriber = get_mailchimp_subscriber($account['email']);
+                    if (!empty($subscriber)) {
+                        $interests = $subscriber['interests'];
+                        if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                            $mailchimp_data = array(
+                                'email_address' => $account['email'],
+                                'interests' => array(ACCOUNTS_GROUP_ID => false)
+                            );
+                        } else {
+                            //-- Update old entry to unsubscribed and add new to subscribed
+                            $mailchimp_data = array(
+                                'email_address' => $account['email'],
+                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                'interests' => array(ACCOUNTS_GROUP_ID => false)
+                            );
+                        }
+                    }
+                    mailchimp($mailchimp_data);
+                    $mailchimp_data = array(
+                        'email_address' => $dataArr['email'],
+                        'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                        'merge_fields' => [
+                            'FNAME' => $dataArr['contact_name']
+                        ],
+                        'interests' => array(ACCOUNTS_GROUP_ID => true)
+                    );
+                    mailchimp($mailchimp_data);
+                }
                 $this->session->set_flashdata('success', 'Account details has been updated successfully.');
             } else {
                 $dataArr['created'] = date('Y-m-d H:i:s');
                 $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $dataArr);
+
+                //-- Insert account email into mailchimp subscriber list
+                $mailchimp_data = array(
+                    'email_address' => $dataArr['email'],
+                    'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                    'merge_fields' => [
+                        'FNAME' => $dataArr['contact_name']
+                    ],
+                    'interests' => array(ACCOUNTS_GROUP_ID => true)
+                );
+                mailchimp($mailchimp_data);
                 $this->session->set_flashdata('success', 'Account has been added successfully');
             }
             redirect('accounts');

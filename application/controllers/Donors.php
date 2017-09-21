@@ -167,6 +167,26 @@ class Donors extends MY_Controller {
                 $total_fund = $account['total_fund'] - $donor['account_fund'];
                 $admin_fund = $account['admin_fund'] - $donor['admin_fund'];
                 $total_admin_fund = $this->admin_fund - $donor['admin_fund'];
+
+                if ($donor['email'] != $dataArr['email']) {
+                    //-- Update old entry to unsubscribed and add new to subscribed
+                    $mailchimp_data = array(
+                        'email_address' => $donor['email'],
+                        'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending",
+                        'interests' => array(DONORS_GROUP_ID => false)
+                    );
+                    mailchimp($mailchimp_data);
+                    $mailchimp_data = array(
+                        'email_address' => $dataArr['email'],
+                        'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                        'merge_fields' => [
+                            'FNAME' => $dataArr['firstname'],
+                            'LNAME' => $dataArr['lastname']
+                        ],
+                        'interests' => array(DONORS_GROUP_ID => true)
+                    );
+                    mailchimp($mailchimp_data);
+                }
             } else {
                 $account_id = $this->input->post('account_id');
                 $dataArr['created'] = date('Y-m-d H:i:s');
@@ -182,6 +202,17 @@ class Donors extends MY_Controller {
                 $total_fund = $account['total_fund'];
                 $admin_fund = $account['admin_fund'];
                 $total_admin_fund = $this->admin_fund;
+
+                $mailchimp_data = array(
+                    'email_address' => $dataArr['email'],
+                    'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                    'merge_fields' => [
+                        'FNAME' => $dataArr['firstname'],
+                        'LNAME' => $dataArr['lastname']
+                    ],
+                    'interests' => array(DONORS_GROUP_ID => true)
+                );
+                mailchimp($mailchimp_data);
             }
 
             $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
@@ -721,40 +752,51 @@ class Donors extends MY_Controller {
 
     public function test() {
         $apiKey = $this->config->item('Mailchimp_api_key');
-        $memberId = md5(strtolower('anp2@narola.email'));
+        $memberId = md5(strtolower('rep1.narola@gmail.com'));
         $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
-        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
-        $json = json_encode([
-            'email_address' => 'anp2@narola.email',
-            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-            'merge_fields' => [
-                'FNAME' => 'rep',
-                'LNAME' => 'P'
-            ],
-            'interests' => array('0d925e6644' => true,'1915cbc554' => false,'0bec7658b6' => false)
-        ]);
+//        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
+        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . LIST_ID . '/members/' . $memberId;
+//        $json = json_encode([
+//            'email_address' => 'anp2@narola.email',
+//            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+//            'merge_fields' => [
+//                'FNAME' => 'rep',
+//                'LNAME' => 'P'
+//            ],
+//            'interests' => array('0d925e6644' => true, '1915cbc554' => false, '0bec7658b6' => false)
+//        ]);
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
         $result = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         $arr = json_decode($result, true);
         p($arr);
+
+        $interests = $arr['interests'];
+        p($interests);
+        if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+            echo 'In more thab one group';
+        } else {
+            echo 'in one ';
+        }
     }
 
     public function delete_sub() {
         $apiKey = $this->config->item('Mailchimp_api_key');
+        $apiKey = '90e07aa9302a98c5b37c7e9b3a1bb814-us16';
         $memberId = md5(strtolower('ku1@narola.email'));
         $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
-        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
+        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/1dfb45ca7d/members/' . $memberId;
         $json = json_encode([
-            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+            'email_address' => 'ku1@narola.email',
+            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
         ]);
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
