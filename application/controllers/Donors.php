@@ -169,12 +169,23 @@ class Donors extends MY_Controller {
                 $total_admin_fund = $this->admin_fund - $donor['admin_fund'];
 
                 if ($donor['email'] != $dataArr['email']) {
-                    //-- Update old entry to unsubscribed and add new to subscribed
-                    $mailchimp_data = array(
-                        'email_address' => $donor['email'],
-                        'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending",
-                        'interests' => array(DONORS_GROUP_ID => false)
-                    );
+                    $subscriber = get_mailchimp_subscriber($donor['email']);
+                    if (!empty($subscriber)) {
+                        $interests = $subscriber['interests'];
+                        if ($interests[ACCOUNTS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                            $mailchimp_data = array(
+                                'email_address' => $donor['email'],
+                                'interests' => array(DONORS_GROUP_ID => false)
+                            );
+                        } else {
+                            //-- Update old entry to unsubscribed and add new to subscribed
+                            $mailchimp_data = array(
+                                'email_address' => $donor['email'],
+                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                'interests' => array(DONORS_GROUP_ID => false)
+                            );
+                        }
+                    }
                     mailchimp($mailchimp_data);
                     $mailchimp_data = array(
                         'email_address' => $dataArr['email'],
@@ -313,6 +324,27 @@ class Donors extends MY_Controller {
                 $this->donors_model->update_admin_fund($total_admin_fund);
 
                 $this->db->trans_complete();
+
+                //--Delete subscriber from donors list
+
+                $subscriber = get_mailchimp_subscriber($donor['email']);
+                if (!empty($subscriber)) {
+                    $interests = $subscriber['interests'];
+                    if ($interests[ACCOUNTS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                        $mailchimp_data = array(
+                            'email_address' => $donor['email'],
+                            'interests' => array(DONORS_GROUP_ID => false)
+                        );
+                    } else {
+                        //-- Update old entry to unsubscribed and add new to subscribed
+                        $mailchimp_data = array(
+                            'email_address' => $donor['email'],
+                            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                            'interests' => array(DONORS_GROUP_ID => false)
+                        );
+                    }
+                    mailchimp($mailchimp_data);
+                }
 
                 $this->session->set_flashdata('success', 'Donor has been deleted successfully!');
             } else {
