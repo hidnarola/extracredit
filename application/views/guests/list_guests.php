@@ -60,7 +60,7 @@
                     <th>Email</th>
                     <th>City</th>
                     <!--<th>Invite Date</th>-->
-                    <th style="width: 50px;">Added Date</th>
+                    <th>Added Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -122,9 +122,11 @@
     var logo_img_url = '<?php echo base_url() . GUEST_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
+            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
+             "bPaginate": true,
             language: {
                 search: '<span>Filter:</span> _INPUT_',
                 lengthMenu: '<span>Show:</span> _MENU_',

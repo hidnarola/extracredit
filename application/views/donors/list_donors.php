@@ -38,10 +38,17 @@
         </div>
     </div>
     <div class="panel panel-flat">
-        <div class="panel-heading text-right">
-            The <code>Highlighted</code> row represents donor has asked for refund and amount is refunded
-            <a href="#" data-target="#import_modal" data-toggle="modal" class="btn bg-pink-400 btn-labeled"><b><i class="icon-file-upload2"></i></b> Import Donor</a>
-            <a href="<?php echo site_url('donors/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Donor</a>
+
+        <div class="panel-heading">
+            <div class="col-md-7">
+                The <code>Highlighted</code> row represents donor has asked for refund and amount is refunded
+            </div>
+            <div class="col-md-5 text-right">
+                <a href="#" data-target="#import_modal" data-toggle="modal" class="btn bg-pink-400 btn-labeled"><b><i class="icon-file-upload2"></i></b> Import Donor</a>
+                <a href="<?php echo site_url('donors/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Donor</a>
+            </div>
+            <br/>
+            <br/>
         </div>
         <table class="table datatable-basic">
             <thead>
@@ -247,14 +254,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 

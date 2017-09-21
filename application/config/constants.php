@@ -86,7 +86,7 @@ defined('EXIT__AUTO_MIN') OR define('EXIT__AUTO_MIN', 9); // lowest automaticall
 defined('EXIT__AUTO_MAX') OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
 /**
- * Contants for Tables
+ * Constants for Tables
  */
 define('TBL_ACCOUNTS', 'accounts');
 define('TBL_CITIES', 'cities');
@@ -105,7 +105,7 @@ define('TBL_USERS', 'users');
 define('TBL_PAGES', 'pages');
 define('TBL_USER_PERMISSION', 'user_permissions');
 /**
- * Contants for User Images
+ * Constants for User Images
  */
 define('UPLOADS', 'uploads/');
 define('USER_IMAGES', 'uploads/user_images/');
@@ -117,7 +117,7 @@ define('DEMO_CSV', 'uploads/demo_csv/');
 
 define('REMEMBER_ME_COOKIE_NAME', 'ecs908f7d89f');
 
-//---- Mail chimp details
+//---- Mailchimp details
 
 define('LIST_ID', 'd2028b5221');
 define('DONORS_GROUP_ID', 'c6e2307e09');
