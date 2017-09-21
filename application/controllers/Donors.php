@@ -11,10 +11,10 @@ class Donors extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('donors_model');
-        /*
-          $this->load->library('MailChimp');
-          $this->list_id = '1dfb45ca7d';
-          $this->load->library('Mailchimp_library'); */
+
+//          $this->load->library('MailChimp');
+        $this->list_id = '1dfb45ca7d';
+//          $this->load->library('Mailchimp_library'); 
     }
 
     /**
@@ -721,16 +721,17 @@ class Donors extends MY_Controller {
 
     public function test() {
         $apiKey = $this->config->item('Mailchimp_api_key');
-        $memberId = md5(strtolower('ku2@narola.email'));
+        $memberId = md5(strtolower('anp2@narola.email'));
         $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
         $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
         $json = json_encode([
-            'email_address' => 'ku2@narola.email',
+            'email_address' => 'anp2@narola.email',
             'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
             'merge_fields' => [
                 'FNAME' => 'rep',
                 'LNAME' => 'P'
-            ]
+            ],
+            'interests' => array('0d925e6644' => true,'1915cbc554' => false,'0bec7658b6' => false)
         ]);
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
@@ -753,7 +754,7 @@ class Donors extends MY_Controller {
         $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
         $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
         $json = json_encode([
-            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
         ]);
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);

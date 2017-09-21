@@ -116,3 +116,10 @@ define('GUEST_CSV', 'uploads/csv/guest');
 define('DEMO_CSV', 'uploads/demo_csv/');
 
 define('REMEMBER_ME_COOKIE_NAME', 'ecs908f7d89f');
+
+//---- Mail chimp details
+
+define('LIST_ID', 'd2028b5221');
+define('DONORS_GROUP_ID', 'd2028b5221');
+define('GUESTS_GROUP_ID', 'af24fc6eb0');
+define('ACCOUNTS_GROUP_ID', '44d6a93d29');
