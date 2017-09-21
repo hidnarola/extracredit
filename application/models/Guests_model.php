@@ -239,7 +239,8 @@ class Guests_model extends MY_Model {
             );
             $this->db->insert(TBL_CITIES, $record_array);
             $insert_id = $this->db->insert_id(TBL_CITIES);
-            return $insert_id;
+            $data = array('id' => $insert_id);
+            return $data;
         }
     }
 

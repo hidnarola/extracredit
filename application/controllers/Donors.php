@@ -11,10 +11,6 @@ class Donors extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('donors_model');
-
-//          $this->load->library('MailChimp');
-        $this->list_id = '1dfb45ca7d';
-//          $this->load->library('Mailchimp_library'); 
     }
 
     /**
@@ -82,7 +78,6 @@ class Donors extends MY_Controller {
             $settings_arr[$val['setting_key']] = $val['setting_value'];
         }
         $data['settings'] = $settings_arr;
-//        $data['fund_types'] = $this->donors_model->sql_select(TBL_FUND_TYPES, 'id,name', ['where' => ['is_delete' => 0]]);
         $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
         $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->donors_model->sql_select(TBL_STATES, NULL);
@@ -774,7 +769,6 @@ class Donors extends MY_Controller {
         $donor_id = base64_decode($this->input->post('id'));
         $donor = $this->donors_model->get_donor_details_view($donor_id);
         if ($donor) {
-//            p($donor,1);
             $data['donor_details'] = $donor;
             return $this->load->view('donors/donor_view', $data);
         } else {
@@ -782,81 +776,6 @@ class Donors extends MY_Controller {
         }
     }
 
-    public function test() {
-        $apiKey = $this->config->item('Mailchimp_api_key');
-        $memberId = md5(strtolower('rep1.narola@gmail.com'));
-        $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
-//        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . $this->list_id . '/members/' . $memberId;
-        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . LIST_ID . '/members/' . $memberId;
-//        $json = json_encode([
-//            'email_address' => 'anp2@narola.email',
-//            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-//            'merge_fields' => [
-//                'FNAME' => 'rep',
-//                'LNAME' => 'P'
-//            ],
-//            'interests' => array('0d925e6644' => true, '1915cbc554' => false, '0bec7658b6' => false)
-//        ]);
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-        $result = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        $arr = json_decode($result, true);
-        p($arr);
-
-        $interests = $arr['interests'];
-        p($interests);
-        if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
-            echo 'In more thab one group';
-        } else {
-            echo 'in one ';
-        }
-    }
-
-    public function delete_sub() {
-        $apiKey = $this->config->item('Mailchimp_api_key');
-        $apiKey = '90e07aa9302a98c5b37c7e9b3a1bb814-us16';
-        $memberId = md5(strtolower('ku1@narola.email'));
-        $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
-        $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/1dfb45ca7d/members/' . $memberId;
-        $json = json_encode([
-            'email_address' => 'ku1@narola.email',
-            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-        ]);
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-        $result = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        $arr = json_decode($result, true);
-        p($arr);
-    }
-
-    /*
-      public function test() {
-      $cities = $this->donors_model->sql_select(TBL_CITIES, 'name,state_id');
-      foreach ($cities as $city) {
-      $state = $this->donors_model->sql_select(TBL_STATES, 'name', ['where' => ['id' => $city['state_id']]], ['single' => TRUE]);
-      $new_state = $this->donors_model->sql_select('states_new', 'name,id', ['where' => ['name' => $state['name']]], ['single' => TRUE]);
-      if (!empty($new_state)) {
-      $city_arr = ['name' => $city['name'], 'state_id' => $new_state['id']];
-      $this->donors_model->common_insert_update('insert', 'cities_new', $city_arr);
-      }
-      }
-      } */
 }
 
 /* End of file Donors.php */
