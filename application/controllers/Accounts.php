@@ -163,8 +163,8 @@ class Accounts extends MY_Controller {
                                 'interests' => array(ACCOUNTS_GROUP_ID => false)
                             );
                         }
+                        mailchimp($mailchimp_data);
                     }
-                    mailchimp($mailchimp_data);
                     $mailchimp_data = array(
                         'email_address' => $dataArr['email'],
                         'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
@@ -252,7 +252,7 @@ class Accounts extends MY_Controller {
         $data['perArr'] = checkPrivileges('accounts');
         $id = base64_decode($id);
         if (is_numeric($id)) {
-            $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['id' => $id]], ['single' => true]);
+            $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,email', ['where' => ['id' => $id]], ['single' => true]);
             if ($account) {
                 //-- Check if account is assigned to donor then don't allow to delete that account
                 $is_assigned = $this->accounts_model->sql_select(TBL_DONORS, NULL, ['where' => ['account_id' => $id, 'is_delete' => 0]], ['single' => true]);
@@ -264,6 +264,26 @@ class Accounts extends MY_Controller {
                     'is_delete' => 1
                 );
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $update_array, ['id' => $id]);
+
+                //--Delete subscriber from account list
+                $subscriber = get_mailchimp_subscriber($account['email']);
+                if (!empty($subscriber)) {
+                    $interests = $subscriber['interests'];
+                    if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                        $mailchimp_data = array(
+                            'email_address' => $account['email'],
+                            'interests' => array(ACCOUNTS_GROUP_ID => false)
+                        );
+                    } else {
+                        //-- Update old entry to unsubscribed and add new to subscribed
+                        $mailchimp_data = array(
+                            'email_address' => $account['email'],
+                            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                            'interests' => array(ACCOUNTS_GROUP_ID => false)
+                        );
+                    }
+                    mailchimp($mailchimp_data);
+                }
                 $this->session->set_flashdata('success', 'Account has been deleted successfully!');
             } else {
                 $this->session->set_flashdata('error', 'Invalid request. Please try again!');
