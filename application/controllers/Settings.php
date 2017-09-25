@@ -17,7 +17,6 @@ class Settings extends MY_Controller {
      */
     public function index() {
         checkPrivileges('donation_split_settings', 'view');
-        $data['perArr'] = checkPrivileges('donation_split_settings');
         $data['title'] = 'Extracredit | Settings';
         $settings = $this->users_model->sql_select(TBL_SETTINGS);
         $settings_arr = [];
@@ -61,6 +60,7 @@ class Settings extends MY_Controller {
             if ($id != '') {
                 $result = $this->users_model->sql_select(TBL_FUND_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
                 if (!empty($result)) {
+                    checkPrivileges('fund_types', 'edit');
                     $update_array = array(
                         'type' => trim($this->input->post('type')),
                         'name' => $this->input->post('name'),
@@ -72,9 +72,10 @@ class Settings extends MY_Controller {
                     $this->session->set_flashdata('error', 'Invalid request! Please try again later');
                 }
             } else {
+                checkPrivileges('fund_types', 'add');
                 $update_array = array(
                     'type' => trim($this->input->post('type')),
-                        'name' => $this->input->post('name'),
+                    'name' => $this->input->post('name'),
                     'created' => date('Y-m-d H:i:s')
                 );
                 $this->users_model->common_insert_update('insert', TBL_FUND_TYPES, $update_array);
@@ -119,7 +120,6 @@ class Settings extends MY_Controller {
      */
     public function delete_fundtype($id = NULL) {
         checkPrivileges('fund_types', 'delete');
-        $data['perArr'] = checkPrivileges('fund_types');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_FUND_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
@@ -159,6 +159,7 @@ class Settings extends MY_Controller {
             if ($id != '') {
                 $result = $this->users_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
                 if (!empty($result)) {
+                    checkPrivileges('payment_types', 'edit');
                     $update_array = array(
                         'type' => trim($this->input->post('payment_type')),
                         'modified' => date('Y-m-d H:i:s')
@@ -169,6 +170,7 @@ class Settings extends MY_Controller {
                     $this->session->set_flashdata('error', 'Invalid request! Please try again later');
                 }
             } else {
+                checkPrivileges('payment_types', 'add');
                 $update_array = array(
                     'type' => trim($this->input->post('payment_type')),
                     'created' => date('Y-m-d H:i:s')
@@ -187,7 +189,6 @@ class Settings extends MY_Controller {
      */
     public function delete_paymenttype($id = NULL) {
         checkPrivileges('payment_types', 'delete');
-        $data['perArr'] = checkPrivileges('payment_types');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
@@ -256,6 +257,7 @@ class Settings extends MY_Controller {
             if ($id != '') {
                 $result = $this->users_model->sql_select(TBL_PROGRAM_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
                 if (!empty($result)) {
+                    checkPrivileges('program_types', 'edit');
                     $update_array = array(
                         'type' => trim($this->input->post('program_type')),
                         'modified' => date('Y-m-d H:i:s')
@@ -266,6 +268,7 @@ class Settings extends MY_Controller {
                     $this->session->set_flashdata('error', 'Invalid request! Please try again later');
                 }
             } else {
+                checkPrivileges('program_types', 'add');
                 $update_array = array(
                     'type' => trim($this->input->post('program_type')),
                     'created' => date('Y-m-d H:i:s')
@@ -284,7 +287,6 @@ class Settings extends MY_Controller {
      */
     public function delete_programtype($id = NULL) {
         checkPrivileges('program_types', 'delete');
-        $data['perArr'] = checkPrivileges('program_types');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PROGRAM_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
@@ -352,6 +354,7 @@ class Settings extends MY_Controller {
             if ($id != '') {
                 $result = $this->users_model->sql_select(TBL_PROGRAM_STATUS, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
                 if (!empty($result)) {
+                    checkPrivileges('program_status', 'edit');
                     $update_array = array(
                         'status' => trim($this->input->post('program_status')),
                         'modified' => date('Y-m-d H:i:s')
@@ -362,6 +365,7 @@ class Settings extends MY_Controller {
                     $this->session->set_flashdata('error', 'Invalid request! Please try again later');
                 }
             } else {
+                checkPrivileges('program_status', 'add');
                 $update_array = array(
                     'status' => trim($this->input->post('program_status')),
                     'created' => date('Y-m-d H:i:s')
@@ -380,7 +384,6 @@ class Settings extends MY_Controller {
      */
     public function delete_programstatus($id = NULL) {
         checkPrivileges('program_status', 'delete');
-        $data['perArr'] = checkPrivileges('program_status');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $result = $this->users_model->sql_select(TBL_PROGRAM_STATUS, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);

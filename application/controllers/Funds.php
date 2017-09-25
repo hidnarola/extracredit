@@ -18,7 +18,6 @@ class Funds extends MY_Controller {
      */
     public function admin_fund() {
         checkPrivileges('admin_fund', 'view');
-        $data['perArr'] = checkPrivileges('admin_fund');
         $data['title'] = 'Extracredit | Admin Fund';
         $this->template->load('default', 'funds/admin_fund', $data);
     }
@@ -28,7 +27,6 @@ class Funds extends MY_Controller {
      * */
     public function get_adminfund() {
         checkPrivileges('admin_fund', 'view');
-        $data['perArr'] = checkPrivileges('admin_fund');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_adminfund('count');
         $final['redraw'] = 1;
         $admin_fund = $this->funds_model->get_adminfund('result');
@@ -41,7 +39,6 @@ class Funds extends MY_Controller {
      */
     public function accounts() {
         checkPrivileges('account_fund', 'view');
-        $data['perArr'] = checkPrivileges('account_fund');
         $data['title'] = 'Extracredit | Account Fund';
         $this->template->load('default', 'funds/accounts', $data);
     }
@@ -51,7 +48,6 @@ class Funds extends MY_Controller {
      * */
     public function get_accountfund() {
         checkPrivileges('account_fund', 'view');
-        $data['perArr'] = checkPrivileges('account_fund');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_accountfund('count');
         $final['redraw'] = 1;
         $account_fund = $this->funds_model->get_accountfund('result');
@@ -64,7 +60,6 @@ class Funds extends MY_Controller {
      */
     public function donors() {
         checkPrivileges('donor_fund', 'view');
-        $data['perArr'] = checkPrivileges('donor_fund');
         $data['title'] = 'Extracredit | Donor Fund';
         $this->template->load('default', 'funds/donors', $data);
     }
@@ -74,7 +69,6 @@ class Funds extends MY_Controller {
      * */
     public function get_donorfund() {
         checkPrivileges('donor_fund', 'view');
-        $data['perArr'] = checkPrivileges('donor_fund');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_donorfund('count');
         $final['redraw'] = 1;
         $donor_fund = $this->funds_model->get_donorfund('result');
@@ -87,7 +81,6 @@ class Funds extends MY_Controller {
      */
     public function payments() {
         checkPrivileges('payment_fund', 'view');
-        $data['perArr'] = checkPrivileges('payment_fund');
         $data['title'] = 'Extracredit | Payment';
         $this->template->load('default', 'funds/payments', $data);
     }
@@ -97,7 +90,6 @@ class Funds extends MY_Controller {
      * */
     public function get_payment() {
         checkPrivileges('payment_fund', 'view');
-        $data['perArr'] = checkPrivileges('payment_fund');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_paymentfund('count');
         $final['redraw'] = 1;
         $donor_fund = $this->funds_model->get_paymentfund('result');

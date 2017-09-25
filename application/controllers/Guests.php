@@ -11,7 +11,6 @@ class Guests extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('guests_model');
-        $this->list_id = '1dfb45ca7d';
     }
 
     /**
@@ -30,8 +29,6 @@ class Guests extends MY_Controller {
      * */
     public function get_guests() {
         checkPrivileges('guest', 'view');
-        $data['perArr'] = checkPrivileges('guest');
-        $data['comperArr'] = checkPrivileges('guests_communication');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests('count');
         $final['redraw'] = 1;
         $guests = $this->guests_model->get_guests('result');
@@ -52,8 +49,6 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
-        checkPrivileges('guest', 'add');
-        $data['perArr'] = checkPrivileges('guest');
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -76,6 +71,7 @@ class Guests extends MY_Controller {
                 show_404();
             }
         } else {
+            checkPrivileges('guest', 'add');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_is_uniquemail');
             $logo = NULL;
             $data['title'] = 'Extracredit | Add Guest';
@@ -83,9 +79,7 @@ class Guests extends MY_Controller {
             $data['cities'] = [];
             $data['accounts'] = [];
         }
-//        $data['fund_types'] = $this->guests_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0]]);
         $data['fund_types'] = $this->guests_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
-
         $data['states'] = $this->guests_model->sql_select(TBL_STATES, NULL);
 
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
@@ -93,7 +87,6 @@ class Guests extends MY_Controller {
 
         $this->form_validation->set_rules('firstname', 'First Name', 'trim|required');
         $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
-//        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         $this->form_validation->set_rules('address', 'Address', 'trim|required');
         $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
         $this->form_validation->set_rules('city_id', 'City', 'trim|required');
@@ -125,14 +118,11 @@ class Guests extends MY_Controller {
             }
             $state = $this->input->post('state_short');
             $city = $this->input->post('city_id');
-//            echo $state;
             $check_state = $this->guests_model->check_state($state);
             if (!empty($check_state)) {
                 $state_id = $check_state['id'];
             }
-//            p($check_state);
             $check_city = $this->guests_model->check_city($city, $state_id);
-//            p($check_city);
             if (!empty($check_city)) {
                 $city_id = $check_city['id'];
             }
@@ -223,7 +213,6 @@ class Guests extends MY_Controller {
      * */
     public function edit($id) {
         checkPrivileges('guest', 'edit');
-        $data['perArr'] = checkPrivileges('guest');
         $this->add($id);
     }
 
@@ -249,7 +238,6 @@ class Guests extends MY_Controller {
      * */
     public function delete($id = NULL) {
         checkPrivileges('guest', 'delete');
-        $data['perArr'] = checkPrivileges('guest');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $guest = $this->guests_model->get_guest_details($id);
@@ -306,7 +294,6 @@ class Guests extends MY_Controller {
 
     function check_email_edit($email, $id) {
         $return_value = $this->guests_model->check_email_edit($email, $id);
-//        pr($return_value,1);
         if ($return_value == 1) {
             $this->form_validation->set_message('check_email_edit', 'Sorry, This email is already Exists..!');
             return FALSE;
@@ -331,7 +318,6 @@ class Guests extends MY_Controller {
      * */
     public function get_guests_communication($id) {
         checkPrivileges('guests_communication', 'view');
-        $data['perArr'] = checkPrivileges('guests_communication');
         $id = base64_decode($id);
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_communication('count', $id);
         $final['redraw'] = 1;
@@ -359,12 +345,11 @@ class Guests extends MY_Controller {
     }
 
     public function add_communication($guest_id = null, $comm_id = null) {
-        checkPrivileges('guests_communication', 'add');
-        $data['perArr'] = checkPrivileges('guests_communication');
         if (!is_null($guest_id))
             $guest_id = base64_decode($guest_id);
         $comm_id = base64_decode($comm_id);
         if (is_numeric($comm_id)) {
+            checkPrivileges('guests_communication', 'edit');
             $guest_communication = $this->guests_model->get_guest_communication_details($comm_id);
             $data['guest_communication'] = $guest_communication;
             $data['title'] = 'Extracredit | Edit Communication';
@@ -374,6 +359,7 @@ class Guests extends MY_Controller {
             else
                 $media = NULL;
         } else {
+            checkPrivileges('guests_communication', 'add');
             $media = NULL;
             $data['title'] = 'Extracredit | Add Communication';
             $data['heading'] = 'Add Communication';
@@ -429,7 +415,6 @@ class Guests extends MY_Controller {
      * */
     public function delete_communication($guest_id = null, $id = NULL) {
         checkPrivileges('guests_communication', 'delete');
-        $data['perArr'] = checkPrivileges('guests_communication');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $guest_communication = $this->guests_model->get_guest_communication_details($id);
@@ -454,10 +439,10 @@ class Guests extends MY_Controller {
      * @author : REP
      */
     public function view_guest() {
+        checkPrivileges('guest', 'view');
         $guest_id = base64_decode($this->input->post('id'));
         $guest = $this->guests_model->get_guest_details_view($guest_id);
         if ($guest) {
-//            p($guest,1);
             $guest['invite_date'] = date('d F, Y', strtotime($guest['invite_date']));
             $guest['guest_date'] = date('d F, Y', strtotime($guest['guest_date']));
             $guest['AIR_date'] = date('d F, Y', strtotime($guest['AIR_date']));
@@ -473,6 +458,7 @@ class Guests extends MY_Controller {
      * @author REP
      */
     public function import_guest() {
+        checkPrivileges('guest', 'add');
         $fileDirectory = GUEST_CSV;
         $config['overwrite'] = FALSE;
         $config['remove_spaces'] = TRUE;

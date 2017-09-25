@@ -29,7 +29,6 @@ class Donors extends MY_Controller {
      * */
     public function get_donors() {
         checkPrivileges('donors', 'view');
-        $data['perArr'] = checkPrivileges('donors');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors('count');
         $final['redraw'] = 1;
         $donors = $this->donors_model->get_donors('result');
@@ -49,12 +48,11 @@ class Donors extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
-        $data['perArr'] = checkPrivileges('donors');
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
             $donor = $this->donors_model->get_donor_details($id);
-            if ($donor) {
+            if (!empty($donor)) {
                 $data['donor'] = $donor;
                 $data['title'] = 'Extracredit | Edit Donor';
                 $data['heading'] = 'Edit Donor';
@@ -237,7 +235,6 @@ class Donors extends MY_Controller {
      * */
     public function edit($id) {
         checkPrivileges('donors', 'edit');
-        $data['perArr'] = checkPrivileges('donors');
         $this->add($id);
     }
 
@@ -299,7 +296,6 @@ class Donors extends MY_Controller {
      * */
     public function delete($id = NULL) {
         checkPrivileges('donors', 'delete');
-        $data['perArr'] = checkPrivileges('donors');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $donor = $this->donors_model->get_donor_details($id);
@@ -369,7 +365,6 @@ class Donors extends MY_Controller {
      * */
     public function get_donors_communication($id) {
         checkPrivileges('donors_communication', 'view');
-        $data['perArr'] = checkPrivileges('donors_communication');
         $id = base64_decode($id);
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_communication('count', $id);
         $final['redraw'] = 1;
@@ -406,12 +401,11 @@ class Donors extends MY_Controller {
      * @author REP
      */
     public function add_communication($donor_id = null, $comm_id = null) {
-        checkPrivileges('donors_communication', 'add');
-        $data['perArr'] = checkPrivileges('donors_communication');
         if (!is_null($donor_id))
             $donor_id = base64_decode($donor_id);
         $comm_id = base64_decode($comm_id);
         if (is_numeric($comm_id)) {
+            checkPrivileges('donors_communication', 'edit');
             $donor_communication = $this->donors_model->get_donor_communication_details($comm_id);
             $data['donor_communication'] = $donor_communication;
             $data['title'] = 'Extracredit | Edit Communication';
@@ -421,6 +415,7 @@ class Donors extends MY_Controller {
             else
                 $media = NULL;
         } else {
+            checkPrivileges('donors_communication', 'add');
             $media = NULL;
             $data['title'] = 'Extracredit | Add Communication';
             $data['heading'] = 'Add Communication';
@@ -477,7 +472,6 @@ class Donors extends MY_Controller {
      * */
     public function delete_communication($donor_id = null, $id = NULL) {
         checkPrivileges('donors_communication', 'delete');
-        $data['perArr'] = checkPrivileges('donors_communication');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $donor_communication = $this->donors_model->get_donor_communication_details($id);
@@ -501,6 +495,7 @@ class Donors extends MY_Controller {
      * @author KU
      */
     public function import_donor() {
+        checkPrivileges('donors', 'add');
         $fileDirectory = DONORS_CSV;
         $config['overwrite'] = FALSE;
         $config['remove_spaces'] = TRUE;
@@ -724,6 +719,7 @@ class Donors extends MY_Controller {
      * @author KU
      * */
     public function refund() {
+        checkPrivileges('donors', 'edit');
         $id = $this->input->post('id');
         $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -766,6 +762,7 @@ class Donors extends MY_Controller {
      * @author : REP
      */
     public function view_donor() {
+        checkPrivileges('donors', 'view');
         $donor_id = base64_decode($this->input->post('id'));
         $donor = $this->donors_model->get_donor_details_view($donor_id);
         if ($donor) {

@@ -17,6 +17,7 @@ class Reports extends MY_Controller {
      * Listing of All Guests for reports
      */
     public function donors_report() {
+        checkPrivileges('donor_report', 'view');
         $data['title'] = 'Extracredit | Donors Report';
         $this->template->load('default', 'reports/donors_report', $data);
     }
@@ -25,9 +26,9 @@ class Reports extends MY_Controller {
      * Get donors data for ajax table
      * */
     public function get_donors_reports() {
+        checkPrivileges('donor_report', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_reports('count');
         $final['redraw'] = 1;
-//        p($this->input->get('post_date_filter'),1);
         $donors = $this->donors_model->get_donors_reports('result');
         $start = $this->input->get('start') + 1;
 
@@ -46,6 +47,7 @@ class Reports extends MY_Controller {
      * Listing of All Guests for reports
      */
     public function guests_report() {
+        checkPrivileges('guest_report', 'view');
         $data['title'] = 'Extracredit | Guests Report';
         $this->template->load('default', 'reports/guests_report', $data);
     }
@@ -54,6 +56,7 @@ class Reports extends MY_Controller {
      * Get Guest data for ajax table
      * */
     public function get_guests_reports() {
+        checkPrivileges('guest_report', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_reports('count');
         $final['redraw'] = 1;
         $guests = $this->guests_model->get_guests_reports('result');
@@ -75,6 +78,7 @@ class Reports extends MY_Controller {
      * Listing of All Programs/amc for reports
      */
     public function programs_amc_report() {
+        checkPrivileges('account_report', 'view');
         $data['title'] = 'Extracredit | Program / AMC';
         $this->template->load('default', 'reports/programs_amc_report', $data);
     }
@@ -83,6 +87,7 @@ class Reports extends MY_Controller {
      * Get programs/amc data for ajax table
      * */
     public function get_programs_amc_report() {
+        checkPrivileges('account_report', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_programs_amc_report('count');
         $final['redraw'] = 1;
         $programs = $this->accounts_model->get_programs_amc_report('result');
@@ -101,6 +106,7 @@ class Reports extends MY_Controller {
      * Listing of All awards 90%(outgoing money) for reports
      */
     public function awards_report() {
+        checkPrivileges('account_report', 'view');
         $data['title'] = 'Extracredit | Awards';
         $this->template->load('default', 'reports/awards_report', $data);
     }
@@ -109,6 +115,7 @@ class Reports extends MY_Controller {
      * Get programs/awards 90% data for ajax table
      * */
     public function get_awards_report() {
+        checkPrivileges('account_report', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_awards_report('count');
         $final['redraw'] = 1;
         $awards = $this->accounts_model->get_awards_report('result');
@@ -127,6 +134,7 @@ class Reports extends MY_Controller {
      * Listing of VENDOR ADMIN(10%) for reports
      */
     public function vendor_admin_report() {
+        checkPrivileges('account_report', 'view');
         $data['title'] = 'Extracredit | Awards';
         $this->template->load('default', 'reports/vendor_admin_report', $data);
     }
@@ -135,6 +143,7 @@ class Reports extends MY_Controller {
      * Get programs/awards 90% data for ajax table
      * */
     public function get_vendor_admin_report() {
+        checkPrivileges('account_report', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_vendor_admin_report('count');
         $final['redraw'] = 1;
         $vendor_admin = $this->accounts_model->get_vendor_admin_report('result');
@@ -153,6 +162,7 @@ class Reports extends MY_Controller {
      * @author KU
      */
     public function amc_balance_report() {
+        checkPrivileges('amc_balance_report', 'view');
         $data['title'] = 'Extracredit | Program/AMC Balances Report';
         $this->template->load('default', 'reports/amc_balance_report', $data);
     }
@@ -161,6 +171,7 @@ class Reports extends MY_Controller {
      * Get program/AMC Balance report
      * */
     public function get_amc_balance_report() {
+        checkPrivileges('amc_balance_report', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_amc_balance_report('count');
         $final['redraw'] = 1;
         $balance_report = $this->accounts_model->get_amc_balance_report('result');
@@ -173,6 +184,7 @@ class Reports extends MY_Controller {
      * @author KU
      */
     public function payments_made_report() {
+        checkPrivileges('payments_made_report', 'view');
         $data['title'] = 'Extracredit | Payments Made Report';
         $this->template->load('default', 'reports/payments_made_report', $data);
     }
@@ -181,6 +193,7 @@ class Reports extends MY_Controller {
      * Get program/AMC Balance report
      * */
     public function get_payments_made_report() {
+        checkPrivileges('payments_made_report', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->payments_model->get_payments_made_report('count');
         $final['redraw'] = 1;
         $payment_report = $this->payments_model->get_payments_made_report('result');

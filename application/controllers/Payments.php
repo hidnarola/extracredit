@@ -28,7 +28,6 @@ class Payments extends MY_Controller {
      * */
     public function get_payments() {
         checkPrivileges('payments', 'view');
-        $data['perArr'] = checkPrivileges('payments');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->payments_model->get_payments('count');
         $final['redraw'] = 1;
         $payments = $this->payments_model->get_payments('result');
@@ -48,7 +47,6 @@ class Payments extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
-        checkPrivileges('payments', 'add');
         $data['perArr'] = checkPrivileges('payments');
         if (!is_null($id))
             $id = base64_decode($id);
@@ -68,6 +66,7 @@ class Payments extends MY_Controller {
                 show_404();
             }
         } else {
+            checkPrivileges('payments', 'add');
             $data['title'] = 'Extracredit | Add Payment';
             $data['heading'] = 'Add Payment';
             $data['accounts'] = [];
@@ -204,7 +203,6 @@ class Payments extends MY_Controller {
      * */
     public function delete($id = NULL) {
         checkPrivileges('payments', 'delete');
-        $data['perArr'] = checkPrivileges('payments');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $payment = $this->payments_model->get_payment_details($id);

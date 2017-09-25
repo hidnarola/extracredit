@@ -64,12 +64,12 @@
                                     <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
                             </div>  
-<!--                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-success custom_save_button" id="paymenttype_submit_btn">Save</button>
-                                    <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
-                                </div>
-                            </div>-->
+                            <!--                            <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <button type="submit" class="btn btn-success custom_save_button" id="paymenttype_submit_btn">Save</button>
+                                                                <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
+                                                            </div>
+                                                        </div>-->
                         </div>
                     </div>
                 </div>
@@ -96,8 +96,12 @@
                                 <td><?php echo $val['type']; ?></td>
                                 <td><?php echo date('d,M Y', strtotime($val['created'])); ?></td>
                                 <td>
-                                    <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Payment Type"><i class="icon-pencil3"></i></a>
-                                    &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_paymenttype/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Payment Type"><i class="icon-trash"></i></a>
+                                    <?php if (in_array('edit', $perArr)) { ?>
+                                        <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Payment Type"><i class="icon-pencil3"></i></a>
+                                    <?php } ?>
+                                    <?php if (in_array('delete', $perArr)) { ?>
+                                        &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_paymenttype/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Payment Type"><i class="icon-trash"></i></a>
+                                        <?php } ?>
                                 </td>
                             </tr>
                         <?php } ?>

@@ -29,7 +29,6 @@ if (isset($donor_communication)) {
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('donors'); ?>"><i class="icon-coins position-left"></i> Donors</a></li>
-            <!--<li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-comment-discussion position-left"></i> Guest Communication</a></li>-->
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -129,7 +128,8 @@ if (isset($donor_communication)) {
                                     </div>
 
                                     <div class="media-body">
-                                        <input type="file" name="media" id="media" class="file-styled" onchange="readURL(this);ValidateSingleInput(this)">
+                                        <input type="file" name="media" id="media" class="file-styled" onchange="readURL(this);
+                                                ValidateSingleInput(this)">
                                         <span class="help-block">Accepted formats:  png, jpg , jpeg, doc, docx, pdf</span>
                                     </div>
                                 </div>
@@ -224,7 +224,6 @@ if (isset($donor_communication)) {
             label.addClass("validation-valid-label")
         },
         rules: {
-
         },
         submitHandler: function (form) {
             $('#communication_btn_submit').attr('disabled', true);

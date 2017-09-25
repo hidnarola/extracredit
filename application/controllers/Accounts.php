@@ -29,7 +29,6 @@ class Accounts extends MY_Controller {
      * */
     public function get_accounts() {
         checkPrivileges('accounts', 'view');
-        $data['perArr'] = checkPrivileges('accounts');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_accounts('count');
         $final['redraw'] = 1;
         $accounts = $this->accounts_model->get_accounts('result');
@@ -50,8 +49,6 @@ class Accounts extends MY_Controller {
      * @param type $id
      */
     public function add($id = NULL) {
-        checkPrivileges('accounts', 'add');
-        $data['perArr'] = checkPrivileges('accounts');
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -70,6 +67,8 @@ class Accounts extends MY_Controller {
                 show_404();
             }
         } else {
+            //-- Check logged in user has access to add account
+            checkPrivileges('accounts', 'add');
             $data['title'] = 'Extracredit | Add Account';
             $data['heading'] = 'Add Account';
             $data['cities'] = [];
@@ -202,8 +201,8 @@ class Accounts extends MY_Controller {
      * @param int $id
      * */
     public function edit($id) {
+        //-- Check logged in user has access to edit account
         checkPrivileges('accounts', 'edit');
-        $data['perArr'] = checkPrivileges('accounts');
         $this->add($id);
     }
 
@@ -249,7 +248,6 @@ class Accounts extends MY_Controller {
      * */
     public function delete($id = NULL) {
         checkPrivileges('accounts', 'delete');
-        $data['perArr'] = checkPrivileges('accounts');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,email', ['where' => ['id' => $id]], ['single' => true]);
@@ -295,7 +293,7 @@ class Accounts extends MY_Controller {
     }
 
     /**
-     * This function used to check Unique Vedor at the time of account's add and edit
+     * Ajax call to this function checks Unique Vedor at the time of account's add and edit
      * */
     public function checkUniqueVendor($id = NULL) {
         $where = ['vendor_name' => trim($this->input->get('vendor_name'))];
@@ -313,7 +311,7 @@ class Accounts extends MY_Controller {
     }
 
     /**
-     * This function used to check Unique AMC at the time of account's add and edit
+     * Ajax call to this function checks Unique AMC at the time of account's add and edit
      * */
     public function checkUniqueAMC($id = NULL) {
         $where = ['action_matters_campaign' => trim($this->input->get('action_matters_campaign'))];

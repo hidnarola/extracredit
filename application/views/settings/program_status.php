@@ -90,8 +90,12 @@
                                 <td><?php echo $val['status']; ?></td>
                                 <td><?php echo date('d,M Y', strtotime($val['created'])); ?></td>
                                 <td>
-                                    <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Program Status"><i class="icon-pencil3"></i></a>
-                                    &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_programstatus/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Program Status"><i class="icon-trash"></i></a>
+                                    <?php if (in_array('edit', $perArr)) { ?>
+                                        <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Program Status"><i class="icon-pencil3"></i></a>
+                                    <?php } ?>
+                                    <?php if (in_array('delete', $perArr)) { ?>
+                                        &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_programstatus/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Program Status"><i class="icon-trash"></i></a>
+                                        <?php } ?>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -241,14 +245,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
 </script>
