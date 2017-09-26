@@ -123,7 +123,6 @@ class Accounts_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_PAYMENTS . ' p');
-//            echo $this->db->last_query();
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_PAYMENTS . ' p');
@@ -159,7 +158,6 @@ class Accounts_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_PAYMENTS . ' p');
-//            echo $this->db->last_query();
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_PAYMENTS . ' p');

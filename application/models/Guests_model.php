@@ -17,7 +17,6 @@ class Guests_model extends MY_Model {
      */
     public function get_guests($type = 'result') {
         $columns = ['id', 'logo', 'action_matters_campaign,vendor_name', 'g.firstname', 'g.lastname', 'g.companyname', 'g.email', 'c.name', 'g.created'];
-//        $columns = ['id','logo', 'action_matters_campaign,vendor_name', 'g.firstname', 'g.lastname','g.companyname', 'g.email', 'c.name','g.invite_date', 'g.created'];
         $keyword = $this->input->get('search');
         $this->db->select('g.*,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,f.type');
 
@@ -41,7 +40,6 @@ class Guests_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_GUESTS . ' g');
-//            p($query->result_array());
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_GUESTS . ' g');
@@ -137,7 +135,6 @@ class Guests_model extends MY_Model {
      * @return type
      */
     public function get_guests_reports($type = 'result') {
-//        $columns = ['id', 'action_matters_campaign,vendor_name','d.date','d.post_date','id', 'd.firstname', 'd.lastname','d.address', 'city','state','d.zip','d.email','d.amount', 'd.refund', 'p.type','d.payment_number', 'd.memo'];
         $columns = ['id', 'g.firstname', 'g.lastname', 'g.company_name', 'g.invite_date', 'g.guest_date', 'g.AIR_date', 'g.AMC_created', 'action_matters_campaign,vendor_name', 'g.address', 'city', 'state', 'g.zip', 'g.email', 'g.phone', 'g.assistant', 'g.assistant_phone', 'g.assistant_email'];
         $keyword = $this->input->get('search');
         $this->db->select('g.*,a.action_matters_campaign,a.vendor_name,c.name as city,s.name as state,f.type');

@@ -44,11 +44,4 @@ class MY_Controller extends CI_Controller {
         $this->total_users = $this->users_model->sql_select(TBL_USERS, 'id', ['where' => ['role' => 'staff', 'is_delete' => 0]], ['count' => true]);
     }
 
-    public function check_login($redirect = '') {
-        if (!$this->is_loggedin) {
-            $this->session->set_flashdata('error', 'Login required to access protected pages.');
-            redirect($redirect);
-        }
-    }
-
 }

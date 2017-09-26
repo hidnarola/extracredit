@@ -13,7 +13,7 @@ class Users_model extends MY_Model {
     /**
      * Return user detail
      * @param string/array $where
-     * @param string/array $where
+     * @param string/array $select
      * @return array
      */
     public function get_user_detail($where, $select = '*') {

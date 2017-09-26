@@ -38,8 +38,6 @@ function send_email($to = '', $template = '', $data = []) {
     $ci->email->from('no-reply@extracredit.com');
     $ci->email->subject($data['subject']);
     $view = $ci->load->view('email_templates/' . $template, $data, TRUE);
-//    echo $view;
-//    exit;
     $ci->email->message($view);
     $ci->email->send();
 }
@@ -164,6 +162,100 @@ function randomPassword() {
 }
 
 /**
+ * Check User is allowed for the following permission or not
+ * @param string $page_name
+ * @param string $permission - add/edit/delete/view
+ * @param int $flag
+ * @return boolean
+ */
+function checkPrivileges($page_name = '', $permission = '', $flag = 0) {
+    $CI = & get_instance();
+    $user_id = $CI->session->userdata('extracredit_user')['id'];
+    $user_role = $CI->session->userdata('extracredit_user')['role'];
+    $prevArr = $CI->users_model->checkPrivleges($page_name, $user_id)->row_array();
+    $columns = $CI->db->query("SHOW COLUMNS FROM " . TBL_USER_PERMISSION . " LIKE 'pg_%'")->result();
+    $actions = array();
+    if ($permission != '') {
+        if ($user_role == 'admin') {
+            return true;
+        }
+        if ($prevArr['pg_' . $permission] == 1) {
+            return true;
+        } else {
+            if ($flag == 0) {
+                $CI->session->set_flashdata('error', 'You are not authorized to access this page!');
+                redirect('home');
+            } else {
+                return false;
+            }
+        }
+    } else if ($permission == '') {
+        if ($user_role == 'admin') {
+            foreach ($columns as $k => $v) {
+                $actions[] = strtolower(substr($v->Field, 3));
+            }
+        } else {
+            foreach ($columns as $k => $v) {
+                if (array_key_exists($v->Field, $prevArr) && $prevArr[$v->Field] == 1) {
+                    $actions[] = strtolower(substr($v->Field, 3));
+                }
+            }
+        }
+        return $actions;
+    }
+}
+
+/**
+ * Add/Update subscriber into MailChimp
+ * @param array $data
+ */
+function mailchimp($data) {
+    $CI = & get_instance();
+    $apiKey = $CI->config->item('Mailchimp_api_key');
+    $email = $data['email_address'];
+    $memberId = md5(strtolower($email));
+    $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
+    $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . LIST_ID . '/members/' . $memberId;
+    $json = json_encode($data);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    $result = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $arr = json_decode($result, true);
+}
+
+/**
+ * Return details of mailchimp subscriber
+ * @param string $email
+ */
+function get_mailchimp_subscriber($email) {
+    $CI = & get_instance();
+    $apiKey = $CI->config->item('Mailchimp_api_key');
+    $memberId = md5(strtolower($email));
+    $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
+    $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . LIST_ID . '/members/' . $memberId;
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $result = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $arr = json_decode($result, true);
+    return $arr;
+}
+
+/**
  * Set up configuration array for pagination
  * @return array - Configuration array for pagination
  */
@@ -262,98 +354,4 @@ function crop_image($source_x, $source_y, $width, $height, $image_name) {
     } else if ($extension == 'png') {
         imagepng($new_image, $output_path . $filename . '.' . $extension);
     }
-}
-
-/**
- * Check User is allowed for the following permission or not
- * @param string $page_name
- * @param string $permission - add/edit/delete/view
- * @param int $flag
- * @return boolean
- */
-function checkPrivileges($page_name = '', $permission = '', $flag = 0) {
-    $CI = & get_instance();
-    $user_id = $CI->session->userdata('extracredit_user')['id'];
-    $user_role = $CI->session->userdata('extracredit_user')['role'];
-    $prevArr = $CI->users_model->checkPrivleges($page_name, $user_id)->row_array();
-    $columns = $CI->db->query("SHOW COLUMNS FROM " . TBL_USER_PERMISSION . " LIKE 'pg_%'")->result();
-    $actions = array();
-    if ($permission != '') {
-        if ($user_role == 'admin') {
-            return true;
-        }
-        if ($prevArr['pg_' . $permission] == 1) {
-            return true;
-        } else {
-            if ($flag == 0) {
-                $CI->session->set_flashdata('error', 'You are not authorized to access this page!');
-                redirect('home');
-            } else {
-                return false;
-            }
-        }
-    } else if ($permission == '') {
-        if ($user_role == 'admin') {
-            foreach ($columns as $k => $v) {
-                $actions[] = strtolower(substr($v->Field, 3));
-            }
-        } else {
-            foreach ($columns as $k => $v) {
-                if (array_key_exists($v->Field, $prevArr) && $prevArr[$v->Field] == 1) {
-                    $actions[] = strtolower(substr($v->Field, 3));
-                }
-            }
-        }
-        return $actions;
-    }
-}
-
-/**
- * Add/Update subscriber into MailChimp
- * @param array $data
- */
-function mailchimp($data) {
-    $CI = & get_instance();
-    $apiKey = $CI->config->item('Mailchimp_api_key');
-    $email = $data['email_address'];
-    $memberId = md5(strtolower($email));
-    $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
-    $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . LIST_ID . '/members/' . $memberId;
-    $json = json_encode($data);
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-    $result = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    $arr = json_decode($result, true);
-}
-
-/**
- * Return details of mailchimp subscriber
- * @param string $email
- */
-function get_mailchimp_subscriber($email) {
-    $CI = & get_instance();
-    $apiKey = $CI->config->item('Mailchimp_api_key');
-    $memberId = md5(strtolower($email));
-    $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
-    $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . LIST_ID . '/members/' . $memberId;
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    $result = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    $arr = json_decode($result, true);
-    return $arr;
 }
