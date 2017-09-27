@@ -56,7 +56,7 @@ class Funds_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_accountfund($type = 'result') {
-        $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.type', 'd.payment_number', 'd.memo', 'f.account_fund', 'd.amount', 'a.total_fund'];
+        $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.type', 'd.payment_number', 'd.memo', 'a.total_fund'];
         $keyword = $this->input->get('search');
         $this->db->select('d.date,d.post_date,ft.name as fund_type,a.action_matters_campaign,a.vendor_name,p.type as payment_type,d.payment_number,d.memo,f.account_fund,d.amount,a.total_fund as balance,ft.type');
 
@@ -96,7 +96,7 @@ class Funds_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_donorfund($type = 'result') {
-        $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'd.id', 'd.lastname', 'd.firstname', 'p.type', 'd.payment_number', 'd.memo', 'f.account_fund', 'd.amount', 'a.total_fund'];
+        $columns = ['d.date', 'd.post_date', 'ft.type', 'a.action_matters_campaign,a.vendor_name', 'd.id', 'd.lastname', 'd.firstname', 'p.type', 'd.payment_number', 'd.memo', 'd.amount'];
         $keyword = $this->input->get('search');
         $this->db->select('d.date,d.post_date,ft.name as fund_type,a.action_matters_campaign,a.vendor_name,d.id,d.lastname,d.firstname,'
                 . 'p.type as payment_type,d.payment_number,d.memo,f.account_fund,d.amount,a.total_fund as balance,ft.type');
@@ -116,10 +116,19 @@ class Funds_model extends MY_Model {
                     ' OR d.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR d.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR d.payment_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR d.memo LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR f.account_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR d.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR a.total_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+                    ' OR d.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+        }
+
+        //-- Date filter
+        $date_filter = $this->input->get('date_filter');
+        if ($date_filter != '') {
+            $dates = explode('-', $date_filter);
+            $startdate = date('Y-m-d', strtotime($dates[0]));
+            $enddate = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where('d.date >=', $startdate);
+            $this->db->where('d.date <=', $enddate);
         }
 
         $this->db->where(['d.is_delete' => 0]);
@@ -140,7 +149,7 @@ class Funds_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_paymentfund($type = 'result') {
-        $columns = ['ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.check_date', 'p.check_number', 'p.amount', 'a.total_fund'];
+        $columns = ['ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.check_date', 'p.check_number', 'p.amount'];
         $keyword = $this->input->get('search');
         $this->db->select('ft.name as fund_type,a.action_matters_campaign,a.vendor_name,p.check_date,p.check_number,p.amount,'
                 . 'a.total_fund as balance,ft.type');
@@ -154,8 +163,16 @@ class Funds_model extends MY_Model {
                     ' OR ft.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR a.total_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+                    ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+        }
+        //-- Check date filter
+        $date_filter = $this->input->get('date_filter');
+        if ($date_filter != '') {
+            $dates = explode('-', $date_filter);
+            $startdate = date('Y-m-d', strtotime($dates[0]));
+            $enddate = date('Y-m-d', strtotime($dates[1]));
+            $this->db->where('p.check_date >=', $startdate);
+            $this->db->where('p.check_date <=', $enddate);
         }
 
         $this->db->where(['p.is_delete' => 0]);

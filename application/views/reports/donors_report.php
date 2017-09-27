@@ -1,6 +1,5 @@
 <script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
-<script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/ui/moment/moment.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/daterangepicker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/anytime.min.js"></script>
@@ -48,7 +47,10 @@
                     <label>Post date filter: </label>
                     <div class="input-group">
                         <span class="input-group-addon"><i class="icon-calendar22"></i></span>
-                        <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo date('Y-m-d'); ?>"> 
+                        <?php
+                        $date_filter = date('m/01/Y') . ' - ' . date('m/t/Y'); // hard-coded '01' for first day
+                        ?>
+                        <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo $date_filter; ?>"> 
                     </div>
                 </div>
             </div>
@@ -81,15 +83,14 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
-    var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
-    var data_table = post_date_filter = '';
+    var data_table = '';
+    var post_date_filter = $('#post_date_filter').val();
     $(function () {
         bind();
         $('.dataTables_length select').select2({
             minimumResultsForSearch: Infinity,
             width: 'auto'
         });
-        // $('.created_date').val('');
     });
 
     function bind() {
@@ -118,7 +119,6 @@
                     data: "fund_type",
                     visible: true,
                 },
-
                 {
                     data: "action_matters_campaign",
                     visible: true,
@@ -200,10 +200,7 @@
     //--- daterange change event and call bind function
     $('#post_date_filter').on('apply.daterangepicker', function (ev, picker) {
         post_date_filter = $(this).val();
-//        console.log(post_date_filter);
-//        $(".datatable-basic").dataTable().fnDestroy();
         data_table.fnDestroy();
         bind();
-
     });
 </script>

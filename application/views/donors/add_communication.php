@@ -78,7 +78,7 @@ if (isset($donor_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control pickadate" value="<?php echo (isset($donor_communication)) ? date('d F, Y', strtotime($donor_communication['follow_up_date'])) : set_value('follow_up_date'); ?>" required="required">
+                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($donor_communication)) ? date('d F, Y', strtotime($donor_communication['follow_up_date'])) : set_value('follow_up_date'); ?>" required="required">
                                 </div>
                                 <?php
                                 echo '<label id="follow_up_date-error" class="validation-error-label" for="follow_up_date">' . form_error('follow_up_date') . '</label>';
@@ -175,6 +175,8 @@ if (isset($donor_communication)) {
     $('.pickadate').pickadate({
         max: new Date()
     });
+    $('.followdate').pickadate();
+
     $("#add_conversation_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',

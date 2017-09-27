@@ -8,7 +8,7 @@
 </style>
 <table class="table table-striped table-bordered main_table" data-alert="" data-all="189">
     <tbody>
-        <tr class="alpha-teal">
+        <tr>
             <th>Fund Type</th>
             <td><?php echo $guest_details['name']; ?></td>
         </tr>
@@ -22,7 +22,7 @@
                 }
                 ?></td>
         </tr>
-        <tr class="alpha-teal">
+        <tr>
             <th style="width:32%">Name</th>
             <td><?php echo $guest_details['firstname'] . ' ' . $guest_details['lastname']; ?></td>
         </tr>
@@ -33,6 +33,10 @@
         <tr>
             <th>Company Name</th>
             <td><?php echo $guest_details['companyname']; ?></td>
+        </tr>   
+        <tr>
+            <th>Company Website</th>
+            <td><?php echo $guest_details['company_website']; ?></td>
         </tr>   
         <tr>
             <th>Address</th>

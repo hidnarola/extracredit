@@ -79,7 +79,7 @@ if (isset($guest_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control pickadate" value="<?php echo (isset($guest_communication)) ? date('d F, Y', strtotime($guest_communication['follow_up_date'])) : set_value('follow_up_date'); ?>" required="required">
+                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($guest_communication)) ? date('d F, Y', strtotime($guest_communication['follow_up_date'])) : set_value('follow_up_date'); ?>" required="required">
                                 </div>
                                 <?php
                                 echo '<label id="follow_up_date-error" class="validation-error-label" for="follow_up_date">' . form_error('follow_up_date') . '</label>';
@@ -129,7 +129,8 @@ if (isset($guest_communication)) {
                                     </div>
 
                                     <div class="media-body">
-                                        <input type="file" name="media" id="media" class="file-styled" onchange="readURL(this);ValidateSingleInput(this)">
+                                        <input type="file" name="media" id="media" class="file-styled" onchange="readURL(this);
+                                                ValidateSingleInput(this)">
                                         <span class="help-block">Accepted formats:  png, jpg , jpeg, doc, docx, pdf</span>
                                     </div>
                                 </div>
@@ -150,7 +151,7 @@ if (isset($guest_communication)) {
             </div>
         </div>
     </div>
-    <?php $this->load->view('Templates/footer'); ?>
+<?php $this->load->view('Templates/footer'); ?>
 </div>
 <div id="validation_modal" class="modal fade">
     <div class="modal-dialog">
@@ -175,6 +176,7 @@ if (isset($guest_communication)) {
     $('.pickadate').pickadate({
         max: new Date()
     });
+    $('.followdate').pickadate();
     $("#add_conversation_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',
@@ -224,7 +226,6 @@ if (isset($guest_communication)) {
             label.addClass("validation-valid-label")
         },
         rules: {
-
         },
         submitHandler: function (form) {
             $('#communication_btn_submit').attr('disabled', true);

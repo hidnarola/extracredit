@@ -60,44 +60,6 @@ if (isset($guest)) {
             <div class="panel panel-flat">
                 <div class="panel-body">
                     <form class="form-horizontal form-validate-jquery" action="" id="add_guest_form" method="post" enctype="multipart/form-data">                        
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Fund Type <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <select name="fund_type_id" id="fund_type_id" class="select2" required="required" data-placeholder="Select Fund Type">
-                                    <option value=""></option>
-                                    <?php
-                                    foreach ($fund_types as $type) {
-                                        $selected = '';
-                                        if (isset($guest) && $guest['fund_type_id'] == $type['id'])
-                                            $selected = 'selected';
-                                        ?>
-                                        <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['name'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Program/AMC <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <select name="account_id" id="account_id" class="select2" required="required" data-placeholder="Select account">
-                                    <option value=""></option>
-                                    <?php
-                                    foreach ($accounts as $account) {
-                                        $selected = '';
-                                        if (isset($guest) && $guest['account_id'] == $account['id'])
-                                            $selected = 'selected';
-                                        ?>
-                                        <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                echo '<label id="account_id-error" class="validation-error-label" for="account_id">' . form_error('account_id') . '</label>';
-                                ?>
-                            </div>
-                        </div>
                         <fieldset class="content-group">
                             <legend class="text-bold">Basic Guest Details</legend>
                             <div class="form-group">
@@ -205,6 +167,34 @@ if (isset($guest)) {
                                     ?>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Company Website </label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="company_website" id="company_website" placeholder="Enter Company Website" class="form-control" value="<?php echo (isset($guest)) ? $guest['company_website'] : set_value('company_website'); ?>">
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="text-bold">Program/AMC</legend>  
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Program/AMC <span class="text-danger">*</span></label>
+                                <div class="col-lg-6">
+                                    <select name="account_id" id="account_id" class="select2" required="required">
+                                        <option value="">None</option>
+                                        <?php
+                                        foreach ($accounts as $account) {
+                                            $selected = '';
+                                            if (isset($guest) && $guest['account_id'] == $account['id'])
+                                                $selected = 'selected';
+                                            ?>
+                                            <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <?php
+                                    echo '<label id="account_id-error" class="validation-error-label" for="account_id">' . form_error('account_id') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
                         </fieldset>
                         <fieldset class="content-group">
                             <legend class="text-bold">Extra Guest Details</legend>                          
@@ -308,45 +298,6 @@ if (isset($guest)) {
     var edit = <?php echo $edit ?>;
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
-    //-- fund type change event
-    $('#fund_type_id').change(function () {
-        $.ajax({
-            url: '<?php echo site_url('donors/get_accounts') ?>',
-            data: {id: btoa($(this).val())},
-            type: "POST",
-            dataType: 'json',
-            success: function (data) {
-                var options = "<option value=''></option>";
-                for (var i = 0; i < data.length; i++) {
-                    options += '<option value="' + data[i]['id'] + '">';
-                    if (data[i]['action_matters_campaign'] != null) {
-                        options += data[i]['action_matters_campaign'];
-                    } else {
-                        options += data[i]['vendor_name'];
-                    }
-                    options += '</option>';
-                }
-                $('#account_id').empty().append(options);
-                $("#account_id").select2("val", '');
-            }
-        });
-    });
-    $('#state_id').change(function () {
-        $.ajax({
-            url: '<?php echo site_url('donors/get_cities') ?>',
-            data: {id: btoa($(this).val())},
-            type: "POST",
-            dataType: 'json',
-            success: function (data) {
-                var options = "<option value=''></option>";
-                for (var i = 0; i < data.length; i++) {
-                    options += '<option value="' + data[i]['id'] + '">' + data[i]['name'] + '</option>';
-                }
-                $('#city_id').empty().append(options);
-                $("#city_id").select2("val", '');
-            }
-        });
-    });
 
     $('#logo').change(function () {
         $(this).rules("add", {
@@ -409,6 +360,9 @@ if (isset($guest)) {
             email: {
                 required: true,
                 email: true,
+            },
+            company_website: {
+                url: true
             },
             assistant_email: {
                 required: true,

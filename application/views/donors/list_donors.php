@@ -41,7 +41,7 @@
 
         <div class="panel-heading">
             <div class="col-md-7">
-                The <code>Highlighted</code> row represents donor has asked for refund and amount is refunded
+                <code>Highlighted</code> rows represent refunded donations
             </div>
             <div class="col-md-5 text-right">
                 <a href="#" data-target="#import_modal" data-toggle="modal" class="btn bg-pink-400 btn-labeled"><b><i class="icon-file-upload2"></i></b> Import Donor</a>
@@ -195,7 +195,7 @@
                             }
                         }
                         if ($.inArray('view', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs donor_view_btn" id=' + btoa(full.id) + ' title="View Conversation"><i class="icon-eye"></i></a>';
+                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs donor_view_btn" id=' + btoa(full.id) + ' title="View Details"><i class="icon-eye"></i></a>';
                         }
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'

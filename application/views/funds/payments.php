@@ -1,5 +1,13 @@
 <script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/ui/moment/moment.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/daterangepicker.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/anytime.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.time.js"></script>
+<script type="text/javascript" src="assets/js/plugins/pickers/pickadate/legacy.js"></script>
+<script type="text/javascript" src="assets/js/pages/picker_date.js"></script>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -34,6 +42,17 @@
         </div>
     </div>
     <div class="panel panel-flat">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Check Date filter: </label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="icon-calendar22"></i></span>
+                        <input type="text" name="date_filter" id="date_filter" class="form-control daterange-basic" value="<?php echo date('m/01/Y') . ' - ' . date('m/t/Y'); ?>"> 
+                    </div>
+                </div>
+            </div>
+        </div>
         <table class="table datatable-basic">
             <thead>
                 <tr>
@@ -42,7 +61,6 @@
                     <th>Check Date</th>
                     <th>Check Number</th>
                     <th>Amount</th>
-                    <th>Balance</th>
                 </tr>
             </thead>
         </table>
@@ -50,8 +68,18 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
+    var data_table = '';
+    var date_filter = $('#date_filter').val();
+
     $(function () {
-        $('.datatable-basic').dataTable({
+        bind();
+        $('.dataTables_length select').select2({
+            minimumResultsForSearch: Infinity,
+            width: 'auto'
+        });
+    });
+    function bind() {
+        data_table = $('.datatable-basic').dataTable({
             scrollX: true,
             autoWidth: false,
             processing: true,
@@ -62,8 +90,13 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-//            order: [[7, "desc"]],
-            ajax: site_url + 'funds/get_payment',
+            order: [[2, "asc"]],
+            ajax: {
+                url: site_url + 'funds/get_payment',
+                data: {
+                    date_filter: date_filter
+                },
+            },
             columns: [
                 {
                     data: "fund_type",
@@ -92,16 +125,13 @@
                     data: "amount",
                     visible: true,
                 },
-                {
-                    data: "balance",
-                    visible: true
-                },
             ]
         });
-
-        $('.dataTables_length select').select2({
-            minimumResultsForSearch: Infinity,
-            width: 'auto'
-        });
+    }
+    //--- daterange change event and call bind function
+    $('#date_filter').on('apply.daterangepicker', function (ev, picker) {
+        date_filter = $(this).val();
+        data_table.fnDestroy();
+        bind();
     });
 </script>

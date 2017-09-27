@@ -103,6 +103,7 @@ if ($get_date != '') {
         </div>
     </div>
     <div class="row">               
+        <!-- Admin Fund -->
         <div class="col-lg-4">
             <div class="panel panel-flat">
                 <div class="panel-heading">
@@ -130,6 +131,42 @@ if ($get_date != '') {
                         <div class="col-md-4">
                             <div class="content-group">
                                 <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo round($this->admin_fund, 2); ?></h6>
+                                <span class="text-muted text-size-small">Total Fund</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /numbers -->
+            </div>
+        </div>
+        <!-- Account Fund -->
+        <div class="col-lg-4">
+            <div class="panel panel-flat">
+                <div class="panel-heading">
+                    <h6 class="panel-title">Accounts Fund</h6>
+                    <div class="heading-elements">
+                        <span class="heading-text"><i class="icon-history text-warning position-left"></i> <?php echo date('d F, Y'); ?></span>                       
+                    </div>
+                    <a class="heading-elements-toggle"><i class="icon-more"></i></a></div>
+
+                <!-- Numbers -->
+                <div class="container-fluid">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="content-group">
+                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_account_fund != '' && $today_account_fund > 0) ? round($today_account_fund, 2) : 0 ?></h6>
+                                <span class="text-muted text-size-small">Today</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="content-group">
+                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_account_fund != '' && $week_account_fund > 0) ? round($week_account_fund, 2) : 0 ?></h6>
+                                <span class="text-muted text-size-small">This week</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="content-group">
+                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo round($total_account_fund, 2); ?></h6>
                                 <span class="text-muted text-size-small">Total Fund</span>
                             </div>
                         </div>
@@ -167,7 +204,7 @@ if ($get_date != '') {
             $("#date_range_pick").daterangepicker({
                 startDate: start,
                 endDate: end,
-                maxDate: moment(),
+//                maxDate: moment(),
 //                opens: 'left',
                 ranges: {
                     'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -187,9 +224,11 @@ if ($get_date != '') {
             //var start = moment().subtract(6, 'days');
             //var end = moment();
             $("#date_range_pick").daterangepicker({
+                startDate: moment().startOf('month'),
+                endDate: moment().endOf('month'),
                 autoUpdateInput: false,
-                maxDate: moment(),
-                //opens: 'left',
+//                maxDate: moment(),
+//                opens: 'left',
                 ranges: {
                     'Last 7 Days': [moment().subtract(6, 'days'), moment()],
                     'Last 30 Days': [moment().subtract(29, 'days'), moment()],
@@ -197,7 +236,13 @@ if ($get_date != '') {
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 },
                 alwaysShowCalendars: true,
-            });
+            },
+                    function (start, end) {
+                        $('.daterange-ranges span').html(moment().startOf('month').format('MMMM D, YYYY') + ' &nbsp; - &nbsp; ' + moment().endOf('month').format('MMMM D, YYYY'));
+                    }
+            );
+            $('#date_range_pick span').html(moment().startOf('month').format('MMMM D, YYYY') + ' &nbsp; - &nbsp; ' + moment().endOf('month').format('MMMM D, YYYY'));
+
         }
 
         $('#date_range_pick').on('apply.daterangepicker', function (ev, picker) {
@@ -206,7 +251,6 @@ if ($get_date != '') {
             $('#date_range_pick span').html(picker.startDate.format('MMMM D, YYYY') + ' &nbsp; - &nbsp; ' + picker.endDate.format('MMMM D, YYYY'));
             window.location.href = newurl;
         });
-
         $('#date_range_pick').on('cancel.daterangepicker', function (ev, picker) {
             if ($('#date_range_pick span').html() != '') {
                 var url = window.location.href;

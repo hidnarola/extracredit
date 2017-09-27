@@ -30,7 +30,6 @@ class Reports extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_reports('count');
         $final['redraw'] = 1;
         $donors = $this->donors_model->get_donors_reports('result');
-        $start = $this->input->get('start') + 1;
 
         foreach ($donors as $key => $val) {
             $donors[$key] = $val;
@@ -60,7 +59,6 @@ class Reports extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests_reports('count');
         $final['redraw'] = 1;
         $guests = $this->guests_model->get_guests_reports('result');
-        $start = $this->input->get('start') + 1;
 
         foreach ($guests as $key => $val) {
             $guests[$key] = $val;

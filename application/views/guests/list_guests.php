@@ -186,10 +186,6 @@
                     data: "city",
                     visible: true
                 },
-//                {
-//                    data: "invite_date",
-//                    visible: true
-//                },
                 {
                     data: "created",
                     visible: true,
@@ -205,7 +201,7 @@
                             action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest"><i class="icon-pencil3"></i></a>';
                         }
                         if ($.inArray('view', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs guest_view_btn" id=' + btoa(full.id) + ' title="View Conversation"><i class="icon-eye"></i></a>';
+                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs guest_view_btn" id=' + btoa(full.id) + ' title="View Details"><i class="icon-eye"></i></a>';
                         }
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'

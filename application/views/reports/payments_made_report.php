@@ -44,10 +44,10 @@
         <div class="panel-heading">
             <div class="row">
                 <div class="col-md-6">
-                    <label>Post date filter: </label>
+                    <label>Check date filter: </label>
                     <div class="input-group">
                         <span class="input-group-addon"><i class="icon-calendar22"></i></span>
-                        <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo date('Y-m-d'); ?>"> 
+                        <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo date('m/01/Y') . ' - ' . date('m/t/Y'); ?>"> 
                     </div>
                 </div>
             </div>
@@ -66,7 +66,9 @@
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
-    var data_table = post_date_filter = '';
+    var data_table = '';
+    var post_date_filter = $('#post_date_filter').val();
+
     $(function () {
         bind();
         $('.dataTables_length select').select2({
@@ -87,8 +89,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-//            order: [[7, "desc"]],
-//            ajax: site_url + 'reports/get_payments_made_report',
+            order: [[2, "desc"]],
             ajax: {
                 url: site_url + 'reports/get_payments_made_report',
                 data: {
@@ -132,6 +133,5 @@
         post_date_filter = $(this).val();
         data_table.fnDestroy();
         bind();
-
     });
 </script>

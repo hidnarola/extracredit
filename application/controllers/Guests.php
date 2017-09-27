@@ -64,7 +64,6 @@ class Guests extends MY_Controller {
                 $state_id = $this->guests_model->sql_select(TBL_STATES, NULL, ['where' => ['id' => $guest['state_id']]]);
                 $data['state_id'] = $state_id[0]['name'];
                 $data['state_short'] = $state_id[0]['short_name'];
-                $data['accounts'] = $this->guests_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['fund_type_id' => $guest['fund_type_id']]]);
 
                 $logo = $guest['logo'];
             } else {
@@ -77,13 +76,9 @@ class Guests extends MY_Controller {
             $data['title'] = 'Extracredit | Add Guest';
             $data['heading'] = 'Add Guest';
             $data['cities'] = [];
-            $data['accounts'] = [];
         }
-        $data['fund_types'] = $this->guests_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
+        $data['accounts'] = $this->guests_model->get_amc_accounts();
         $data['states'] = $this->guests_model->sql_select(TBL_STATES, NULL);
-
-        $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
-        $this->form_validation->set_rules('account_id', 'Program/AMC', 'trim|required');
 
         $this->form_validation->set_rules('firstname', 'First Name', 'trim|required');
         $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
@@ -132,6 +127,7 @@ class Guests extends MY_Controller {
                     'firstname' => $this->input->post('firstname'),
                     'lastname' => $this->input->post('lastname'),
                     'companyname' => $this->input->post('companyname'),
+                    'company_website' => $this->input->post('company_website'),
                     'logo' => $logo,
                     'address' => $this->input->post('address'),
                     'city_id' => $city_id,

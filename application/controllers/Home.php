@@ -22,35 +22,59 @@ class Home extends MY_Controller {
         $data['accounts'] = $this->users_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['donors'] = $this->users_model->sql_select(TBL_DONORS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
         $data['guests'] = $this->users_model->sql_select(TBL_GUESTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
+
+        //-- Get todays admin fund
         $sql = 'SELECT sum(admin_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . date('Y-m-d') . '") as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . date('Y-m-d') . '"';
         $total = $this->users_model->customQuery($sql, 2);
         $data['today_admin_fund'] = $total['final'];
+
+        //-- Get todays account fund
+        $sql = 'SELECT sum(account_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=0 AND p.created >= "' . date('Y-m-d') . '") as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . date('Y-m-d') . '"';
+        $total = $this->users_model->customQuery($sql, 2);
+        $data['today_account_fund'] = $total['final'];
+
         $monday = strtotime("last monday");
         $monday = date('w', $monday) == date('w') ? $monday + 7 * 86400 : $monday;
         $sunday = strtotime(date("Y-m-d", $monday) . " +6 days");
         $this_week_sd = date("Y-m-d", $monday);
         $this_week_ed = date("Y-m-d", $sunday);
 
+        //-- Get this week admin fund
         $sql = 'SELECT sum(admin_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=1 AND p.created >= "' . $this_week_sd . '" AND p.created <= "' . $this_week_ed . '") as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . $this_week_sd . '"  AND ' . TBL_FUNDS . '.created <= "' . $this_week_ed . '"';
         $total = $this->users_model->customQuery($sql, 2);
         $data['week_admin_fund'] = $total['final'];
+
+        //-- Get this week account fund
+        $sql = 'SELECT sum(account_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=0 AND p.created >= "' . $this_week_sd . '" AND p.created <= "' . $this_week_ed . '") as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.created >= "' . $this_week_sd . '"  AND ' . TBL_FUNDS . '.created <= "' . $this_week_ed . '"';
+        $total = $this->users_model->customQuery($sql, 2);
+        $data['week_account_fund'] = $total['final'];
+
+        //-- Get total account fund
+        $sql = 'SELECT sum(account_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=0) as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0';
+        $total = $this->users_model->customQuery($sql, 2);
+        $data['total_account_fund'] = $total['final'];
+
         $data['payments'] = $this->users_model->sql_select(TBL_PAYMENTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
 
         //-- Chart data
         //-- Returns the number of free images purchased
         $date = $this->input->get('date');
         $date_array = array();
-        $event_arr = array();
         $date_string = '';
+        $event_arr = array();
+        //-- By default take current months start and ending date
+        $start_date = date('Y-m-01'); // hard-coded '01' for first day
+        $end_date = date('Y-m-t');
+
         if ($date != '') {
             $dates = explode('-', $date);
             $start_date = $dates[0];
             $end_date = $dates[1];
-            $date_array = array('created >=' => date('Y-m-d', strtotime($start_date)), 'created <=' => date('Y-m-d', strtotime($end_date)));
-            $date_string = ' AND created >="' . date('Y-m-d', strtotime($start_date)) . '" AND created <="' . date('Y-m-d', strtotime($end_date)) . '"';
-            $event_arr['from_date'] = date('Y-m-d', strtotime($start_date));
-            $event_arr['to_date'] = date('Y-m-d', strtotime($end_date));
         }
+        $date_array = array('created >=' => date('Y-m-d', strtotime($start_date)), 'created <=' => date('Y-m-d', strtotime($end_date)));
+        $date_string = ' AND created >="' . date('Y-m-d', strtotime($start_date)) . '" AND created <="' . date('Y-m-d', strtotime($end_date)) . '"';
+        $event_arr['from_date'] = date('Y-m-d', strtotime($start_date));
+        $event_arr['to_date'] = date('Y-m-d', strtotime($end_date));
         $data['json'] = json_encode("");
 
         //-- Json data for chart

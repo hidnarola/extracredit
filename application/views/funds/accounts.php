@@ -44,8 +44,6 @@
                     <th>Paymt Method</th>
                     <th>Paymt No.</th>
                     <th>Notes</th>
-                    <th>Debit Amt</th>
-                    <th>Credit Amt</th>
                     <th>Balance</th>
                 </tr>
             </thead>
@@ -101,14 +99,6 @@
                 },
                 {
                     data: "memo",
-                    visible: true
-                },
-                {
-                    data: "account_fund",
-                    visible: true
-                },
-                {
-                    data: "amount",
                     visible: true
                 },
                 {
