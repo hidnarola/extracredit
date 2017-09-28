@@ -58,12 +58,6 @@ class Guests extends MY_Controller {
                 $data['title'] = 'Extracredit | Edit Guest';
                 $data['heading'] = 'Edit Guest';
                 $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_check_email_edit[' . $id . ']');
-                $data['cities'] = $this->guests_model->sql_select(TBL_CITIES, NULL, ['where' => ['state_id' => $guest['state_id']]]);
-                $city_id = $this->guests_model->sql_select(TBL_CITIES, NULL, ['where' => ['id' => $guest['city_id']]]);
-                $data['city_id'] = $city_id[0]['name'];
-                $state_id = $this->guests_model->sql_select(TBL_STATES, NULL, ['where' => ['id' => $guest['state_id']]]);
-                $data['state_id'] = $state_id[0]['name'];
-                $data['state_short'] = $state_id[0]['short_name'];
 
                 $logo = $guest['logo'];
             } else {
@@ -75,10 +69,8 @@ class Guests extends MY_Controller {
             $logo = NULL;
             $data['title'] = 'Extracredit | Add Guest';
             $data['heading'] = 'Add Guest';
-            $data['cities'] = [];
         }
         $data['accounts'] = $this->guests_model->get_amc_accounts();
-        $data['states'] = $this->guests_model->sql_select(TBL_STATES, NULL);
 
         $this->form_validation->set_rules('firstname', 'First Name', 'trim|required');
         $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
@@ -111,16 +103,19 @@ class Guests extends MY_Controller {
                     $logo = $image_data;
                 }
             }
-            $state = $this->input->post('state_short');
-            $city = $this->input->post('city_id');
-            $check_state = $this->guests_model->check_state($state);
-            if (!empty($check_state)) {
-                $state_id = $check_state['id'];
+
+            //-- Get state id from post value
+            $state_code = $this->input->post('state_short');
+            $post_city = $this->input->post('city_id');
+            $state = $this->guests_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+            $state_id = $state['id'];
+            $city = $this->guests_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+            if (!empty($city)) {
+                $city_id = $city['id'];
+            } else {
+                $city_id = $this->guests_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
             }
-            $check_city = $this->guests_model->check_city($city, $state_id);
-            if (!empty($check_city)) {
-                $city_id = $check_city['id'];
-            }
+
             if ($flag == 0) {
                 $dataArr = array(
                     'account_id' => $this->input->post('account_id'),

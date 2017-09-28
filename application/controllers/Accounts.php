@@ -11,7 +11,6 @@ class Accounts extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('accounts_model');
-        $this->load->model('guests_model');
     }
 
     /**
@@ -57,12 +56,6 @@ class Accounts extends MY_Controller {
                 $data['account'] = $account;
                 $data['title'] = 'Extracredit | Edit Account';
                 $data['heading'] = 'Edit Account';
-                $data['cities'] = $this->accounts_model->sql_select(TBL_CITIES, NULL, ['where' => ['state_id' => $account['state_id']]]);
-                $city_id = $this->guests_model->sql_select(TBL_CITIES, NULL, ['where' => ['id' => $account['city_id']]]);
-                $data['city_id'] = $city_id[0]['name'];
-                $state_id = $this->guests_model->sql_select(TBL_STATES, NULL, ['where' => ['id' => $account['state_id']]]);
-                $data['state_id'] = $state_id[0]['name'];
-                $data['state_short'] = $state_id[0]['short_name'];
             } else {
                 show_404();
             }
@@ -81,7 +74,7 @@ class Accounts extends MY_Controller {
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
         $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
         $this->form_validation->set_rules('address', 'Address', 'trim|required');
-        $this->form_validation->set_rules('state_id', 'State', 'trim|required');
+        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
         $this->form_validation->set_rules('city_id', 'City', 'trim|required');
         $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
@@ -104,15 +97,16 @@ class Accounts extends MY_Controller {
 
         if ($this->form_validation->run() == TRUE) {
 
-            $state = $this->input->post('state_short');
-            $city = $this->input->post('city_id');
-            $check_state = $this->guests_model->check_state($state);
-            if (!empty($check_state)) {
-                $state_id = $check_state['id'];
-            }
-            $check_city = $this->guests_model->check_city($city, $state_id);
-            if (!empty($check_city)) {
-                $city_id = $check_city['id'];
+            //-- Get state id from post value
+            $state_code = $this->input->post('state_short');
+            $post_city = $this->input->post('city_id');
+            $state = $this->accounts_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+            $state_id = $state['id'];
+            $city = $this->accounts_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+            if (!empty($city)) {
+                $city_id = $city['id'];
+            } else {
+                $city_id = $this->accounts_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
             }
 
             $dataArr = array(
@@ -326,6 +320,22 @@ class Accounts extends MY_Controller {
             echo "true";
         }
         exit;
+    }
+
+    /**
+     * Callback Validate function to check state is valid or not
+     * @return boolean
+     * @author KU
+     */
+    public function state_validation() {
+        $state_code = $this->input->post('state_short');
+        $state = $this->accounts_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+        if (empty($state)) {
+            $this->form_validation->set_message('state_validation', 'State does not exist in the database! Please enter correct zipcode');
+            return FALSE;
+        } else {
+            return TRUE;
+        }
     }
 
 }

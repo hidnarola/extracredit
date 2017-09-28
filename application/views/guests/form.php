@@ -115,7 +115,7 @@ if (isset($guest)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control" required="required" value="<?php echo (isset($guest) && $state_id) ? $state_id : set_value('state_id'); ?>">
+                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control" required="required" value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
 
                                     <?php
                                     echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
@@ -123,12 +123,12 @@ if (isset($guest)) {
                                 </div>
                                 <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control" required="required" value="<?php echo (isset($guest) && $city_id) ? $city_id : set_value('city_id'); ?>">
+                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control" required="required" value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
                                     <?php
                                     echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
                                     ?>
                                 </div>
-                                <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $state_short : set_value('state_short'); ?>"/>
+                                <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $guest['state_short'] : set_value('state_short'); ?>"/>
                             </div>
 
                             <div class="form-group">
@@ -209,7 +209,6 @@ if (isset($guest)) {
                                     echo '<label id="invite_date-error" class="validation-error-label" for="invite_date">' . form_error('invite_date') . '</label>';
                                     ?>
                                 </div>
-
                                 <label class="col-lg-1 control-label">Guest Date <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <div class="input-group">
@@ -254,7 +253,6 @@ if (isset($guest)) {
                                     echo '<label id="assistant-error" class="validation-error-label" for="assistant">' . form_error('assistant') . '</label>';
                                     ?>
                                 </div>
-
                                 <label class="col-lg-1 control-label">Assistant Phone <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <input type="text" name="assistant_phone" id="assistant_phone" placeholder="Enter Assistant Phone" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['assistant_phone']) ? $guest['assistant_phone'] : set_value('assistant_phone'); ?>">
@@ -362,7 +360,7 @@ if (isset($guest)) {
                 email: true,
             },
             company_website: {
-                url: true
+                validUrl: true
             },
             assistant_email: {
                 required: true,
@@ -436,7 +434,6 @@ if (isset($guest)) {
                             if (cities) {
                                 //turn city into a dropdown if necessary
                                 var $select = $(document.createElement('select'));
-                                console.log(cities);
                                 $.each(cities, function (index, locality) {
                                     var $option = $(document.createElement('option'));
                                     $option.html(locality);
@@ -465,4 +462,9 @@ if (isset($guest)) {
     $.validator.addMethod("zipcodeUS", function (value, element) {
         return this.optional(element) || /^\d{5}-\d{4}$|^\d{5}$/.test(value);
     }, "The specified US ZIP Code is invalid");
+    /*Validator method for valid URL*/
+    $.validator.addMethod('validUrl', function (value, element) {
+        var url = $.validator.methods.url.bind(this);
+        return url(value, element) || url('http://' + value, element);
+    }, 'Please enter a valid URL');
 </script>

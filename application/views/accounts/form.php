@@ -2,6 +2,7 @@
 <script type="text/javascript" src="assets/js/plugins/forms/validation/validate.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
+<script type="text/javascript" src="assets/js/core/libraries/jasny_bootstrap.min.js"></script>
 <?php
 $edit = 0;
 if (isset($account)) {
@@ -117,8 +118,6 @@ if (isset($account)) {
                                     echo '<label id="contact_name-error" class="validation-error-label" for="contact_name">' . form_error('contact_name') . '</label>';
                                     ?>
                                 </div>
-                                <!--                        </div>
-                                                        <div class="form-group">-->
                                 <label class="col-lg-1 control-label">Address <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" required="required"><?php echo (isset($account)) ? $account['address'] : set_value('address'); ?></textarea>
@@ -135,8 +134,6 @@ if (isset($account)) {
                                     echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
-                                <!--                            </div>
-                                                            <div class="form-group">-->
                                 <label class="col-lg-1 control-label">Email <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($account) && $account['email']) ? $account['email'] : set_value('email'); ?>">
@@ -148,7 +145,7 @@ if (isset($account)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control" required="required" value="<?php echo (isset($account) && $state_id) ? $state_id : set_value('state_id'); ?>">
+                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control" required="required" value="<?php echo (isset($account)) ? $account['state'] : set_value('state_id'); ?>">
 
                                     <?php
                                     echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
@@ -156,53 +153,13 @@ if (isset($account)) {
                                 </div>
                                 <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control" required="required" value="<?php echo (isset($account) && $city_id) ? $city_id : set_value('city_id'); ?>">
+                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control" required="required" value="<?php echo (isset($account)) ? $account['city'] : set_value('city_id'); ?>">
                                     <?php
                                     echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
                                     ?>
                                 </div>
-                                <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($account)) ? $state_short : set_value('state_short'); ?>"/>
+                                <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($account)) ? $account['state_short'] : set_value('state_short'); ?>"/>
                             </div>
-
-                            <!--                            <div class="form-group">
-                                                            <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
-                                                            <div class="col-lg-4">
-                                                                <select name="state_id" id="state_id" class="select2" required="required" data-placeholder="Select State">
-                                                                    <option value=""></option>
-                            <?php
-                            foreach ($states as $state) {
-                                $selected = '';
-                                if (isset($account) && $account['state_id'] == $state['id'])
-                                    $selected = 'selected';
-                                ?>
-                                                                                            <option value="<?php echo $state['id']; ?>" <?php echo $selected ?>><?php echo $state['name'] ?></option>
-                            <?php } ?>
-                                                                </select>
-                            <?php
-                            echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
-                            ?>
-                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="form-group">
-                                                            <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
-                                                            <div class="col-lg-4">
-                                                                <select name="city_id" id="city_id" class="select2" required="required" data-placeholder="Select City">
-                                                                    <option value=""></option>
-                            <?php
-                            foreach ($cities as $city) {
-                                $selected = '';
-                                if (isset($account) && $account['city_id'] == $city['id'])
-                                    $selected = 'selected';
-                                ?>
-                                                                                            <option value="<?php echo $city['id']; ?>" <?php echo $selected ?>><?php echo $city['name'] ?></option>
-                            <?php } ?>
-                                                                </select>
-                            <?php
-                            echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
-                            ?>
-                                                            </div>
-                                                        </div>-->
-
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Phone <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
@@ -211,17 +168,16 @@ if (isset($account)) {
                                     echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
                                     ?>
                                 </div>
-                                <!--                            </div>
-                                                            <div class="form-group program_div" <?php // echo $program_div_style         ?>>-->
                                 <div class="program_div" <?php echo $program_div_style ?>>
                                     <label class="col-lg-1 control-label">Tax ID <span class="text-danger">*</span></label>
                                     <div class="col-lg-4">
-                                        <input type="text" name="tax_id" id="tax_id" placeholder="Enter Tax ID" class="form-control" value="<?php echo (isset($account) && $account['tax_id']) ? $account['tax_id'] : set_value('tax_id'); ?>" <?php echo $program_required ?>>
+                                        <input type="text" name="tax_id" id="tax_id" placeholder="Enter Tax ID" class="form-control" value="<?php echo (isset($account) && $account['tax_id']) ? $account['tax_id'] : set_value('tax_id'); ?>" <?php echo $program_required ?> data-mask="99-9999999">
                                         <?php
                                         echo '<label id="tax_id-error" class="validation-error-label" for="tax_id">' . form_error('tax_id') . '</label>';
                                         ?>
                                     </div>
                                 </div>
+                            </div>
                         </fieldset>
                         <fieldset class="content-group">
                             <legend class="text-bold">Extra Account Details</legend>
@@ -243,8 +199,6 @@ if (isset($account)) {
                                     echo '<label id="program_type_id-error" class="validation-error-label" for="program_type_id">' . form_error('program_type_id') . '</label>';
                                     ?>
                                 </div>
-                                <!--</div>-->
-                                <!--<div class="form-group program_div" <?php echo $program_div_style ?>>-->
                                 <div class=" program_div" <?php echo $program_div_style ?>>
                                     <label class="col-lg-1 control-label">Program Status <span class="text-danger">*</span></label>
                                     <div class="col-lg-4">
@@ -270,11 +224,9 @@ if (isset($account)) {
                                 <div class="col-lg-4">
                                     <input type="text" name="website" id="website" placeholder="Enter website" class="form-control" value="<?php echo (isset($account) && $account['website']) ? $account['website'] : set_value('website'); ?>" required="required">
                                     <?php
-                                    echo '<label id="tax_id-error" class="validation-error-label" for="website">' . form_error('website') . '</label>';
+                                    echo '<label id="website-error" class="validation-error-label" for="website">' . form_error('website') . '</label>';
                                     ?>
                                 </div>
-                                <!--                            </div>
-                                                            <div class="form-group">-->
                                 <label class="col-lg-1 control-label">Is Active? <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <div class="checkbox checkbox-switch">
@@ -425,7 +377,7 @@ if (isset($account)) {
                 taxUS: true,
             },
             website: {
-                url: true,
+                validUrl: true,
             },
             zip: {
                 zipcodeUS: true
@@ -512,4 +464,10 @@ if (isset($account)) {
     $.validator.addMethod("zipcodeUS", function (value, element) {
         return this.optional(element) || /^\d{5}-\d{4}$|^\d{5}$/.test(value);
     }, "The specified US ZIP Code is invalid");
+
+    /*Validator method for valid URL*/
+    $.validator.addMethod('validUrl', function (value, element) {
+        var url = $.validator.methods.url.bind(this);
+        return url(value, element) || url('http://' + value, element);
+    }, 'Please enter a valid URL');
 </script>

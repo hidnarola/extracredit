@@ -32,7 +32,6 @@ class Donors extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors('count');
         $final['redraw'] = 1;
         $donors = $this->donors_model->get_donors('result');
-        $start = $this->input->get('start') + 1;
 
         foreach ($donors as $key => $val) {
             $donors[$key] = $val;
@@ -56,7 +55,6 @@ class Donors extends MY_Controller {
                 $data['donor'] = $donor;
                 $data['title'] = 'Extracredit | Edit Donor';
                 $data['heading'] = 'Edit Donor';
-                $data['cities'] = $this->donors_model->sql_select(TBL_CITIES, NULL, ['where' => ['state_id' => $donor['state_id']]]);
                 $data['accounts'] = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['fund_type_id' => $donor['fund_type_id']]]);
             } else {
                 show_404();
@@ -65,10 +63,7 @@ class Donors extends MY_Controller {
             checkPrivileges('donors', 'add');
             $data['title'] = 'Extracredit | Add Donor';
             $data['heading'] = 'Add Donor';
-            $data['cities'] = [];
             $data['accounts'] = [];
-            $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
-            $this->form_validation->set_rules('account_id', 'Program/AMC', 'trim|required');
         }
         $settings = $this->users_model->sql_select(TBL_SETTINGS);
         $settings_arr = [];
@@ -76,50 +71,69 @@ class Donors extends MY_Controller {
             $settings_arr[$val['setting_key']] = $val['setting_value'];
         }
         $data['settings'] = $settings_arr;
-        $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND (type=0 OR type=2)')->result_array();
+        $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND type!=1')->result_array();
         $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->donors_model->sql_select(TBL_STATES, NULL);
 
-        $this->form_validation->set_rules('date', 'Date', 'trim|required');
-        $this->form_validation->set_rules('post_date', 'Post Date', 'trim|required');
         $this->form_validation->set_rules('firstname', 'First Name', 'trim|required');
-        $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
-        $this->form_validation->set_rules('address', 'Address', 'trim|required');
+        $this->form_validation->set_rules('lastname', 'Last Name', 'trim');
+        $this->form_validation->set_rules('address', 'Address', 'trim');
+        $this->form_validation->set_rules('email', 'Email', 'trim|valid_email');
+        $this->form_validation->set_rules('zip', 'Zip', 'trim');
 
-        $this->form_validation->set_rules('state', 'State', 'trim|required|callback_state_validation');
-        $this->form_validation->set_rules('city', 'City', 'trim|required');
+        if ($this->input->post('zip') != '') {
+            $this->form_validation->set_rules('state', 'State', 'trim|required|callback_state_validation');
+            $this->form_validation->set_rules('city', 'City', 'trim|required');
+        }
 
-        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
-        $this->form_validation->set_rules('admin_percent', 'Admin Donation(%)', 'trim|required');
-        $this->form_validation->set_rules('account_percent', 'Program/AMC Donation(%)', 'trim|required');
-        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-        $this->form_validation->set_rules('amount', 'Amount', 'trim|required');
-        $this->form_validation->set_rules('payment_type_id', 'PAyment Type', 'trim|required');
-        $this->form_validation->set_rules('payment_number', 'Payment Number', 'trim|required');
+        if ($this->input->post('amount') != '') {
+            $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
+            $this->form_validation->set_rules('account_id', 'Program/AMC', 'trim|required');
+            $this->form_validation->set_rules('admin_percent', 'Admin Donation(%)', 'trim|required|callback_split_validation');
+            $this->form_validation->set_rules('account_percent', 'Program/AMC Donation(%)', 'trim|required');
+        }
 
         if ($this->form_validation->run() == TRUE) {
-            //-- Get state id from post value
-            $state_code = $this->input->post('state_short');
-            $post_city = $this->input->post('city');
-            $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-            $state_id = $state['id'];
-            $city = $this->donors_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
-            if (!empty($city)) {
-                $city_id = $city['id'];
-            } else {
-                $city_id = $this->donors_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+            $state_id = $city_id = NULL;
+            if ($this->input->post('zip') != '') {
+                //-- Get state id from post value
+                $state_code = $this->input->post('state_short');
+                $post_city = $this->input->post('city');
+                $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+                $state_id = $state['id'];
+                $city = $this->donors_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+                if (!empty($city)) {
+                    $city_id = $city['id'];
+                } else {
+                    $city_id = $this->donors_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                }
             }
 
+            $amount = $account_amount = $admin_amount = 0;
+            $fund_array = [];
+            if ($this->input->post('amount') != '') {
+                $amount = $this->input->post('amount');
+                $admin_donatoin = $this->input->post('admin_percent');
+                $program_donatoin = $this->input->post('account_percent');
 
-            $admin_donatoin = $this->input->post('admin_percent');
-            $program_donatoin = $this->input->post('account_percent');
-            $total = $admin_donatoin + $program_donatoin;
-            if ($total != 100) {
-                $this->session->set_flashdata('error', 'You have entered invalid data for Donation split settings. Please try again later');
-                redirect($this->agent->referrer());
+                $admin_amount = ($admin_donatoin * $amount) / 100;
+                $admin_amount = round($admin_amount, 2);
+                $account_amount = $amount - $admin_amount;
+
+                $fund_array = array(
+                    'account_id' => $this->input->post('account_id'),
+                    'admin_fund' => $admin_amount,
+                    'account_fund' => $account_amount,
+                    'admin_percent' => $admin_donatoin,
+                    'account_percent' => $program_donatoin,
+                    'date' => date('Y-m-d', strtotime($this->input->post('date'))),
+                    'post_date' => date('Y-m-d', strtotime($this->input->post('post_date'))),
+                    'payment_type_id' => $this->input->post('payment_type_id'),
+                    'payment_number' => $this->input->post('payment_number'),
+                    'memo' => $this->input->post('memo')
+                );
             }
             $dataArr = array(
-                'account_id' => $this->input->post('account_id'),
                 'firstname' => $this->input->post('firstname'),
                 'lastname' => $this->input->post('lastname'),
                 'address' => $this->input->post('address'),
@@ -127,39 +141,16 @@ class Donors extends MY_Controller {
                 'state_id' => $state_id,
                 'city_id' => $city_id,
                 'zip' => $this->input->post('zip'),
-                'date' => date('Y-m-d', strtotime($this->input->post('date'))),
-                'post_date' => date('Y-m-d', strtotime($this->input->post('post_date'))),
-                'amount' => $this->input->post('amount'),
-                'admin_percent' => $admin_donatoin,
-                'account_percent' => $program_donatoin,
-                'payment_type_id' => $this->input->post('payment_type_id'),
-                'payment_number' => $this->input->post('payment_number'),
-                'memo' => $this->input->post('memo')
             );
-            $amount = $this->input->post('amount');
-            $admin_amount = ($admin_donatoin * $amount) / 100;
-            $admin_amount = round($admin_amount, 2);
-            $account_amount = $amount - $admin_amount;
-            $fund_array = array('admin_fund' => $admin_amount, 'account_fund' => $account_amount);
+
 
             $this->db->trans_begin();
             if (is_numeric($id)) {
                 $account_id = $donor['account_id'];
-                $dataArr['account_id'] = $account_id;
                 $dataArr['modified'] = date('Y-m-d H:i:s');
+
                 $this->donors_model->common_insert_update('update', TBL_DONORS, $dataArr, ['id' => $id]);
-
-                $fund_array['account_id'] = $account_id;
-                $fund_array['donor_id'] = $id;
-                $fund_array['modified'] = date('Y-m-d H:i:s');
-                $this->donors_model->common_insert_update('update', TBL_FUNDS, $fund_array, ['account_id' => $account_id, 'donor_id' => $id, 'is_delete' => 0]);
                 $this->session->set_flashdata('success', 'Donor details has been updated successfully.');
-
-                //---get account's total fund 
-                $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
-                $total_fund = $account['total_fund'] - $donor['account_fund'];
-                $admin_fund = $account['admin_fund'] - $donor['admin_fund'];
-                $total_admin_fund = $this->admin_fund - $donor['admin_fund'];
 
                 if ($donor['email'] != $dataArr['email']) {
                     $subscriber = get_mailchimp_subscriber($donor['email']);
@@ -180,6 +171,43 @@ class Donors extends MY_Controller {
                         }
                     }
                     mailchimp($mailchimp_data);
+                    if (!empty($dataArr['email'])) {
+                        $mailchimp_data = array(
+                            'email_address' => $dataArr['email'],
+                            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                            'merge_fields' => [
+                                'FNAME' => $dataArr['firstname'],
+                                'LNAME' => $dataArr['lastname']
+                            ],
+                            'interests' => array(DONORS_GROUP_ID => true)
+                        );
+                        mailchimp($mailchimp_data);
+                    }
+                }
+            } else {
+                $account_id = $this->input->post('account_id');
+                $dataArr['amount'] = $amount;
+                $dataArr['created'] = date('Y-m-d H:i:s');
+
+                $id = $this->donors_model->common_insert_update('insert', TBL_DONORS, $dataArr);
+
+                if (!empty($fund_array)) {
+                    $fund_array['donor_id'] = $id;
+                    $fund_array['created'] = date('Y-m-d H:i:s');
+                    $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
+
+                    //---get account's total fund 
+                    $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
+                    $total_fund = $account['total_fund'];
+                    $admin_fund = $account['admin_fund'];
+                    $total_admin_fund = $this->admin_fund;
+                    $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
+                    $this->donors_model->update_admin_fund($total_admin_fund + $admin_amount);
+                }
+                $this->session->set_flashdata('success', 'Donor has been added successfully');
+
+
+                if (!empty($dataArr['email'])) {
                     $mailchimp_data = array(
                         'email_address' => $dataArr['email'],
                         'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
@@ -191,39 +219,9 @@ class Donors extends MY_Controller {
                     );
                     mailchimp($mailchimp_data);
                 }
-            } else {
-                $account_id = $this->input->post('account_id');
-                $dataArr['created'] = date('Y-m-d H:i:s');
-                $id = $this->donors_model->common_insert_update('insert', TBL_DONORS, $dataArr);
-
-                $fund_array['account_id'] = $account_id;
-                $fund_array['donor_id'] = $id;
-                $fund_array['created'] = date('Y-m-d H:i:s');
-                $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
-                $this->session->set_flashdata('success', 'Donor has been added successfully');
-                //---get account's total fund 
-                $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
-                $total_fund = $account['total_fund'];
-                $admin_fund = $account['admin_fund'];
-                $total_admin_fund = $this->admin_fund;
-
-                $mailchimp_data = array(
-                    'email_address' => $dataArr['email'],
-                    'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-                    'merge_fields' => [
-                        'FNAME' => $dataArr['firstname'],
-                        'LNAME' => $dataArr['lastname']
-                    ],
-                    'interests' => array(DONORS_GROUP_ID => true)
-                );
-                mailchimp($mailchimp_data);
             }
 
-            $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
-
-            $this->donors_model->update_admin_fund($total_admin_fund + $admin_amount);
             $this->db->trans_complete();
-
             redirect('donors');
         }
         $this->template->load('default', 'donors/form', $data);
@@ -248,6 +246,28 @@ class Donors extends MY_Controller {
         $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
         if (empty($state)) {
             $this->form_validation->set_message('state_validation', 'State does not exist in the database! Please enter correct zipcode');
+            return FALSE;
+        } else {
+            if ($this->input->post('city') == '') {
+                $this->form_validation->set_message('state_validation', 'City is empty! Please enter correct zipcode');
+                return FALSE;
+            } else {
+                return TRUE;
+            }
+        }
+    }
+
+    /**
+     * Callback Validate function to check donation split validation
+     * @return boolean
+     * @author KU
+     */
+    public function split_validation() {
+        $admin_donatoin = $this->input->post('admin_percent');
+        $program_donatoin = $this->input->post('account_percent');
+        $total = $admin_donatoin + $program_donatoin;
+        if ($total != 100) {
+            $this->form_validation->set_message('split_validation', 'You have entered invalid data for Donation split settings. Please try again later');
             return FALSE;
         } else {
             return TRUE;
@@ -306,8 +326,10 @@ class Donors extends MY_Controller {
                 $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $donor['account_id']]], ['single' => true]);
 
                 $this->db->trans_begin();
+
                 $this->donors_model->common_insert_update('update', TBL_DONORS, $update_array, ['id' => $id]);
                 $this->donors_model->common_insert_update('update', TBL_FUNDS, $update_array, ['account_id' => $donor['account_id'], 'donor_id' => $id, 'is_delete' => 0]);
+
                 $total_fund = $account['total_fund'] - $donor['account_fund'];
                 $admin_fund = $account['admin_fund'] - $donor['admin_fund'];
                 $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund, 'admin_fund' => $admin_fund], ['id' => $donor['account_id']]);
@@ -771,6 +793,166 @@ class Donors extends MY_Controller {
         } else {
             show_404();
         }
+    }
+
+    /**
+     * Listing of All Donors donations
+     * @author KU
+     */
+    public function donations($id = null) {
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $donor = $this->donors_model->sql_select(TBL_DONORS, 'id,firstname', ['where' => ['is_delete' => 0, 'id' => $id]], ['single' => TRUE]);
+            if (!empty($donor)) {
+                checkPrivileges('donors', 'view');
+                $data['perArr'] = checkPrivileges('donors');
+                $data['title'] = 'Extracredit | Donor\'s Donations';
+                $data['donor'] = $donor;
+                $this->template->load('default', 'donors/list_donations', $data);
+            } else {
+                $this->session->set_flashdata('error', "Invalid request. Please try again!");
+                redirect('donors');
+            }
+        } else {
+            show_404();
+        }
+    }
+
+    /**
+     * Get donor donation data for ajax table
+     * @param string $id base64 encoded
+     * @author KU
+     */
+    public function get_donations($id = NULL) {
+        $final = [];
+        if (!is_null($id)) {
+            $id = base64_decode($id);
+            $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donations('count', $id);
+            $final['redraw'] = 1;
+            $donations = $this->donors_model->get_donations('result', $id);
+
+            foreach ($donations as $key => $val) {
+                $donations[$key] = $val;
+                $donations[$key]['date'] = date('d M, Y', strtotime($val['date']));
+                $donations[$key]['post_date'] = date('d M, Y', strtotime($val['post_date']));
+            }
+
+            $final['data'] = $donations;
+        }
+        echo json_encode($final);
+    }
+
+    /**
+     * Add/edit donations data
+     * @param int $donor_id
+     * @param int $id
+     * @author KU
+     */
+    public function add_donation($donor_id = NULL, $id = NULL) {
+        $donor_id = base64_decode($donor_id);
+        $donor = $this->donors_model->sql_select(TBL_DONORS, 'id,firstname,amount', ['where' => ['is_delete' => 0, 'id' => $donor_id]], ['single' => TRUE]);
+        if (!is_null($donor_id) && !empty($donor)) {
+            $data['donor'] = $donor;
+            $id = base64_decode($id);
+            if (is_numeric($id)) {
+                $donation = $this->donors_model->get_donation_details($id);
+                if (!empty($donation)) {
+                    $data['donation'] = $donation;
+                    $data['title'] = 'Extracredit | Edit Donation';
+                    $data['heading'] = 'Edit ' . $donor['firstname'] . ' Donation';
+                    $data['accounts'] = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['fund_type_id' => $donation['fund_type_id']]]);
+                    $this->form_validation->set_rules('amount', 'Amount', 'trim');
+                } else {
+                    show_404();
+                }
+            } else {
+                checkPrivileges('donors', 'add');
+                $data['title'] = 'Extracredit | Add Donation';
+                $data['heading'] = 'Add ' . $donor['firstname'] . ' Donation';
+                $data['accounts'] = [];
+                $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
+                $this->form_validation->set_rules('account_id', 'Program/AMC', 'trim|required');
+                $this->form_validation->set_rules('amount', 'Amount', 'trim|required');
+                $this->form_validation->set_rules('admin_percent', 'Admin Donation(%)', 'trim|required|callback_split_validation');
+                $this->form_validation->set_rules('account_percent', 'Program/AMC Donation(%)', 'trim|required');
+            }
+            $settings = $this->users_model->sql_select(TBL_SETTINGS);
+            $settings_arr = [];
+            foreach ($settings as $val) {
+                $settings_arr[$val['setting_key']] = $val['setting_value'];
+            }
+            $data['settings'] = $settings_arr;
+            $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND type!=1')->result_array();
+            $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
+
+            if ($this->form_validation->run() == TRUE) {
+                $amount = $account_amount = $admin_amount = 0;
+                $fund_array = [];
+
+                $fund_array = array(
+                    'date' => date('Y-m-d', strtotime($this->input->post('date'))),
+                    'post_date' => date('Y-m-d', strtotime($this->input->post('post_date'))),
+                    'payment_type_id' => $this->input->post('payment_type_id'),
+                    'payment_number' => $this->input->post('payment_number'),
+                    'memo' => $this->input->post('memo')
+                );
+
+                $this->db->trans_begin();
+                if (is_numeric($id)) {
+                    $fund_array['modified'] = date('Y-m-d H:i:s');
+
+                    $this->donors_model->common_insert_update('update', TBL_FUNDS, $fund_array, ['id' => $id]);
+                    $this->session->set_flashdata('success', 'Donation details has been updated successfully.');
+                } else {
+                    $account_id = $this->input->post('account_id');
+
+                    $amount = $this->input->post('amount');
+                    $admin_donatoin = $this->input->post('admin_percent');
+                    $program_donatoin = $this->input->post('account_percent');
+
+                    $admin_amount = ($admin_donatoin * $amount) / 100;
+                    $admin_amount = round($admin_amount, 2);
+                    $account_amount = $amount - $admin_amount;
+
+                    $fund_array['account_id'] = $account_id;
+                    $fund_array['admin_fund'] = $admin_amount;
+                    $fund_array['account_fund'] = $account_amount;
+                    $fund_array['admin_percent'] = $admin_donatoin;
+                    $fund_array['account_percent'] = $program_donatoin;
+                    $fund_array['created'] = date('Y-m-d H:i:s');
+
+                    $id = $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
+
+                    //---get account's total fund 
+                    $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
+                    $total_fund = $account['total_fund'];
+                    $admin_fund = $account['admin_fund'];
+                    $total_admin_fund = $this->admin_fund;
+                    $this->donors_model->common_insert_update('update', TBL_DONORS, ['amount' => $donor['amount'] + $amount], ['id' => $donor_id]);
+                    $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
+                    $this->donors_model->update_admin_fund($total_admin_fund + $admin_amount);
+
+                    $this->session->set_flashdata('success', 'Donation has been added successfully');
+                }
+
+                $this->db->trans_complete();
+                redirect('donors/donations/' . base64_encode($donor_id));
+            }
+            $this->template->load('default', 'donors/donation_form', $data);
+        } else {
+            show_404();
+        }
+    }
+
+    /**
+     * Edit Donation details
+     * @param string $donor_id - bas64encoded donor id
+     * @param string $id - bas64encoded donation id
+     * @author KU
+     */
+    public function edit_donation($donor_id = NULL, $id = NULL) {
+        checkPrivileges('donors', 'edit');
+        $this->add_donation($donor_id, $id);
     }
 
 }

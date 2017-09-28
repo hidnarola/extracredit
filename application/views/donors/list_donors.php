@@ -54,12 +54,10 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Program/AMC</th>
                     <th>Firstname</th>
                     <th>Lastname</th>
                     <th>Email</th>
                     <th>City</th>
-                    <th>Payment Type</th>
                     <th>Amount</th>
                     <th>Added Date</th>
                     <th>Action</th>
@@ -132,24 +130,13 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[8, "desc"]],
+            order: [[6, "desc"]],
             ajax: site_url + 'donors/get_donors',
             columns: [
                 {
                     data: "id",
                     visible: true,
                     sortable: false,
-                },
-                {
-                    data: "action_matters_campaign",
-                    visible: true,
-                    render: function (data, type, full, meta) {
-                        if (full.type == 1) {
-                            return full.vendor_name;
-                        } else {
-                            return data
-                        }
-                    }
                 },
                 {
                     data: "firstname",
@@ -165,10 +152,6 @@
                 },
                 {
                     data: "city",
-                    visible: true
-                },
-                {
-                    data: "payment_type",
                     visible: true
                 },
                 {
@@ -189,6 +172,9 @@
                         if (full.refund == 0) {
                             if ($.inArray('edit', permissions) !== -1) {
                                 action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
+                            }
+                            if ($.inArray('edit', permissions) !== -1) {
+                                action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" title="View Donations"><i class="icon-credit-card2"></i></a>';
                             }
                             if ($.inArray('edit', permissions) !== -1) {
                                 action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-pink text-pink-600 btn-flat btn-icon btn-rounded btn-xs" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i></a>';
@@ -254,14 +240,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
 

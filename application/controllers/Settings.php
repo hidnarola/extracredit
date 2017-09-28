@@ -194,7 +194,7 @@ class Settings extends MY_Controller {
             $result = $this->users_model->sql_select(TBL_PAYMENT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
             if (!empty($result)) {
                 //-- check if it is assigned to any donor or not
-                $is_assigned = $this->users_model->sql_select(TBL_DONORS, NULL, ['where' => ['payment_type_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                $is_assigned = $this->users_model->sql_select(TBL_FUNDS, NULL, ['where' => ['payment_type_id' => $id, 'is_delete' => 0]], ['single' => true]);
                 if (!empty($is_assigned)) {
                     $this->session->set_flashdata('error', 'You can not delete ' . $result['type'] . ' payment type,It is assigned to donors');
                     redirect('settings/payment_types');

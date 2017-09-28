@@ -62,44 +62,6 @@ if (isset($donor)) {
             <div class="panel panel-flat">
                 <div class="panel-body">
                     <form class="form-horizontal form-validate-jquery" action="" id="add_donor_form" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Fund Type <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <select name="fund_type_id" id="fund_type_id" class="select2" required="required" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
-                                    <option value=""></option>
-                                    <?php
-                                    foreach ($fund_types as $type) {
-                                        $selected = '';
-                                        if (isset($donor) && $donor['fund_type_id'] == $type['id'])
-                                            $selected = 'selected';
-                                        ?>
-                                        <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['name'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';
-                                ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Program/AMC <span class="text-danger">*</span></label>
-                            <div class="col-lg-6">
-                                <select name="account_id" id="account_id" class="select2" required="required" data-placeholder="Select account" <?php echo $account_disabled ?>>
-                                    <option value=""></option>
-                                    <?php
-                                    foreach ($accounts as $account) {
-                                        $selected = '';
-                                        if (isset($donor) && $donor['account_id'] == $account['id'])
-                                            $selected = 'selected';
-                                        ?>
-                                        <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                <?php
-                                echo '<label id="account_id-error" class="validation-error-label" for="account_id">' . form_error('account_id') . '</label>';
-                                ?>
-                            </div>
-                        </div>
                         <fieldset class="content-group">
                             <legend class="text-bold">Basic Donor Details</legend>
                             <div class="form-group">
@@ -110,23 +72,23 @@ if (isset($donor)) {
                                     echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Last Name <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Last Name</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($donor)) ? $donor['lastname'] : set_value('lastname'); ?>">
+                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control text-capitalize" value="<?php echo (isset($donor)) ? $donor['lastname'] : set_value('lastname'); ?>">
                                     <?php
                                     echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Address <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Address</label>
                                 <div class="col-lg-4">
-                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" required="required"><?php echo (isset($donor)) ? $donor['address'] : set_value('address'); ?></textarea>
+                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize"><?php echo (isset($donor)) ? $donor['address'] : set_value('address'); ?></textarea>
                                     <?php
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Email <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Email</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($donor) && $donor['email']) ? $donor['email'] : set_value('email'); ?>">
                                     <?php
@@ -135,25 +97,25 @@ if (isset($donor)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Enter Zip <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Zip</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" required="required" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
+                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
                                     <?php
                                     echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">State</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state" id="state" placeholder="State" class="form-control" required="required" value="<?php echo (isset($donor) && $donor['state']) ? $donor['state'] : set_value('state'); ?>" readonly>
+                                    <input type="text" name="state" id="state" placeholder="State" class="form-control" value="<?php echo (isset($donor) && $donor['state']) ? $donor['state'] : set_value('state'); ?>" readonly>
                                     <?php
                                     echo '<label id="state-error" class="validation-error-label" for="state">' . form_error('state') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">City</label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city" id="city" placeholder="City" class="form-control" required="required" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>" readonly>
+                                    <input type="text" name="city" id="city" placeholder="City" class="form-control" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>" readonly>
                                     <?php
                                     echo '<label id="city-error" class="validation-error-label" for="city">' . form_error('city') . '</label>';
                                     ?>
@@ -161,116 +123,155 @@ if (isset($donor)) {
                             </div>
                             <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($donor)) ? $donor['state_short'] : set_value('state_short'); ?>"/>
                         </fieldset>
-                        <?php
-                        $split_settings_style = 'style="display: none;"';
-                        $split_checkbox = '';
-                        if (isset($donor)) {
-                            $split_settings_style = '';
-                            $split_checkbox = 'checked';
-                        }
-                        ?>
-                        <fieldset class="content-group">
-                            <legend class="text-bold">Donation Split Settings&nbsp;&nbsp;
-                                <input type="checkbox" class="styled" id="change_donation_split" <?php echo $split_checkbox ?>>
-                            </legend>
-                            <div class="content-group split_div" <?php echo $split_settings_style ?>>
+                        <?php if (!isset($donor)) { ?>
+                            <fieldset class="content-group">
+                                <legend class="text-bold">Payment Details</legend>
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Admin Donation(%)<span class="text-danger">*</span></label>
+                                    <label class="col-lg-1 control-label">Fund Type</label>
                                     <div class="col-lg-4">
-                                        <input type="number" name="admin_percent" id="admin-donation-percent" placeholder="Enter Admin Donation(%)" class="form-control" value="<?php echo (isset($donor)) ? $donor['admin_percent'] : $settings['admin-donation-percent']; ?>" required="required"/>
+                                        <select name="fund_type_id" id="fund_type_id" class="select2" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
+                                            <option value=""></option>
+                                            <?php
+                                            foreach ($fund_types as $type) {
+                                                $selected = '';
+                                                if (isset($donor) && $donor['fund_type_id'] == $type['id'])
+                                                    $selected = 'selected';
+                                                ?>
+                                                <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['name'] ?></option>
+                                            <?php } ?>
+                                        </select>
                                         <?php
-                                        echo '<label id="admin_percent-error" class="validation-error-label" for="admin_percent">' . form_error('admin_percent') . '</label>';
+                                        echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';
                                         ?>
                                     </div>
-                                    <label class="col-lg-1 control-label">Program/AMC Donation(%)<span class="text-danger">*</span></label>
+                                    <label class="col-lg-1 control-label">Program/AMC</label>
                                     <div class="col-lg-4">
-                                        <input type="number" name="account_percent" id="program-donation-percent" placeholder="Enter Program Donation(%)" class="form-control" value="<?php echo (isset($donor)) ? $donor['account_percent'] : $settings['program-donation-percent']; ?>" required="required" readonly/>
+                                        <select name="account_id" id="account_id" class="select2" data-placeholder="Select account" <?php echo $account_disabled ?>>
+                                            <option value=""></option>
+                                            <?php
+                                            foreach ($accounts as $account) {
+                                                $selected = '';
+                                                if (isset($donor) && $donor['account_id'] == $account['id'])
+                                                    $selected = 'selected';
+                                                ?>
+                                                <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?></option>
+                                            <?php } ?>
+                                        </select>
                                         <?php
-                                        echo '<label id="account_percent-error" class="validation-error-label" for="account_percent">' . form_error('account_percent') . '</label>';
+                                        echo '<label id="account_id-error" class="validation-error-label" for="account_id">' . form_error('account_id') . '</label>';
                                         ?>
                                     </div>
                                 </div>
-                            </div>
-                        </fieldset>
-                        <fieldset class="content-group">
-                            <legend class="text-bold">Payment Details</legend>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Date <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['date'])) : set_value('date'); ?>" required="required">
-                                    </div>
-                                    <?php
-                                    echo '<label id="date-error" class="validation-error-label" for="date">' . form_error('date') . '</label>';
-                                    ?>
-                                </div>
-                                <label class="col-lg-1 control-label">Post Date <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['post_date'])) : set_value('post_date'); ?>" required="required">
-                                    </div>
-                                    <?php
-                                    echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Amount <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['amount'] : set_value('amount'); ?>" required="required">
-                                    <?php
-                                    echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Admin Fund </label>
-                                <div class="col-lg-4">
-                                    <input type="number" name="admin_fund" id="admin_fund" placeholder="Admin Fund" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['admin_fund'] : set_value('admin_fund'); ?>" readonly>
-                                </div>
-                                <label class="col-lg-1 control-label">Account Fund </label>
-                                <div class="col-lg-4">
-                                    <input type="number" name="account_fund" id="account_fund" placeholder="Account Fund" class="form-control" value="<?php echo (isset($donor) && $donor['account_fund']) ? $donor['account_fund'] : set_value('account_fund'); ?>" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Pmt Type <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <select name="payment_type_id" id="payment_type_id" class="select2" data-placeholder="Select Payment Type" required="required">
-                                        <option value=""></option>
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Date</label>
+                                    <div class="col-lg-4">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                            <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['date'])) : set_value('date'); ?>">
+                                        </div>
                                         <?php
-                                        foreach ($payment_types as $payment_type) {
-                                            $selected = '';
-                                            if (isset($donor) && $donor['payment_type_id'] == $payment_type['id'])
-                                                $selected = 'selected';
+                                        echo '<label id="date-error" class="validation-error-label" for="date">' . form_error('date') . '</label>';
+                                        ?>
+                                    </div>
+                                    <label class="col-lg-1 control-label">Post Date</label>
+                                    <div class="col-lg-4">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                                            <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['post_date'])) : set_value('post_date'); ?>">
+                                        </div>
+                                        <?php
+                                        echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
+                                        ?>
+                                    </div>
+                                </div>
+                                <?php
+                                $split_settings_style = 'style="display: none;"';
+                                $split_checkbox = '';
+                                if (isset($donor) || form_error('admin_percent') != '') {
+                                    $split_settings_style = '';
+                                    $split_checkbox = 'checked';
+                                }
+                                ?>
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Amount <span class="text-danger">*</span></label>
+                                    <div class="col-lg-4">
+                                        <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['amount'] : set_value('amount'); ?>" required="required">
+                                        <?php
+                                        echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
+                                        ?>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label class="checkbox-inline checkbox-right">
+                                            <input type="checkbox" class="styled" id="change_donation_split" <?php echo $split_checkbox ?>>
+                                            Change Donation Split Settings
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="content-group split_div" <?php echo $split_settings_style ?>>
+                                    <div class="form-group">
+                                        <label class="col-lg-1 control-label">Admin Donation(%)<span class="text-danger">*</span></label>
+                                        <div class="col-lg-4">
+                                            <input type="number" name="admin_percent" id="admin-donation-percent" placeholder="Enter Admin Donation(%)" class="form-control" value="<?php echo (isset($donor)) ? $donor['admin_percent'] : $settings['admin-donation-percent']; ?>" required="required"/>
+                                            <?php
+                                            echo '<label id="admin_percent-error" class="validation-error-label" for="admin_percent">' . form_error('admin_percent') . '</label>';
                                             ?>
-                                            <option value="<?php echo $payment_type['id']; ?>" <?php echo $selected ?>><?php echo $payment_type['type'] ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <?php
-                                    echo '<label id="payment_type_id-error" class="validation-error-label" for="payment_type_id">' . form_error('payment_type_id') . '</label>';
-                                    ?>
+                                        </div>
+                                        <label class="col-lg-1 control-label">Program/AMC Donation(%)<span class="text-danger">*</span></label>
+                                        <div class="col-lg-4">
+                                            <input type="number" name="account_percent" id="program-donation-percent" placeholder="Enter Program Donation(%)" class="form-control" value="<?php echo (isset($donor)) ? $donor['account_percent'] : $settings['program-donation-percent']; ?>" required="required" readonly/>
+                                            <?php
+                                            echo '<label id="account_percent-error" class="validation-error-label" for="account_percent">' . form_error('account_percent') . '</label>';
+                                            ?>
+                                        </div>
+                                    </div>
                                 </div>
-                                <label class="col-lg-1 control-label">Pmt Number <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="payment_number" id="payment_number" placeholder="Enter Payment Number" class="form-control" value="<?php echo (isset($donor) && $donor['payment_number']) ? $donor['payment_number'] : set_value('payment_number'); ?>" required="required">
-                                    <?php
-                                    echo '<label id="payment_number-error" class="validation-error-label" for="payment_number">' . form_error('payment_number') . '</label>';
-                                    ?>
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Admin Fund </label>
+                                    <div class="col-lg-4">
+                                        <input type="number" name="admin_fund" id="admin_fund" placeholder="Admin Fund" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['admin_fund'] : set_value('admin_fund'); ?>" readonly>
+                                    </div>
+                                    <label class="col-lg-1 control-label">Account Fund </label>
+                                    <div class="col-lg-4">
+                                        <input type="number" name="account_fund" id="account_fund" placeholder="Account Fund" class="form-control" value="<?php echo (isset($donor) && $donor['account_fund']) ? $donor['account_fund'] : set_value('account_fund'); ?>" readonly>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Memo </label>
-                                <div class="col-lg-4">
-                                    <textarea name="memo" id="memo" placeholder="Enter Memo" class="form-control"><?php echo (isset($donor)) ? $donor['memo'] : set_value('memo'); ?></textarea>
-                                    <?php
-                                    echo '<label id="memo-error" class="validation-error-label" for="memo">' . form_error('memo') . '</label>';
-                                    ?>
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Pmt Type</label>
+                                    <div class="col-lg-4">
+                                        <select name="payment_type_id" id="payment_type_id" class="select2" data-placeholder="Select Payment Type">
+                                            <option value=""></option>
+                                            <?php
+                                            foreach ($payment_types as $payment_type) {
+                                                $selected = '';
+                                                if (isset($donor) && $donor['payment_type_id'] == $payment_type['id'])
+                                                    $selected = 'selected';
+                                                ?>
+                                                <option value="<?php echo $payment_type['id']; ?>" <?php echo $selected ?>><?php echo $payment_type['type'] ?></option>
+                                            <?php } ?>
+                                        </select>
+                                        <?php
+                                        echo '<label id="payment_type_id-error" class="validation-error-label" for="payment_type_id">' . form_error('payment_type_id') . '</label>';
+                                        ?>
+                                    </div>
+                                    <label class="col-lg-1 control-label">Pmt Number</label>
+                                    <div class="col-lg-4">
+                                        <input type="text" name="payment_number" id="payment_number" placeholder="Enter Payment Number" class="form-control" value="<?php echo (isset($donor) && $donor['payment_number']) ? $donor['payment_number'] : set_value('payment_number'); ?>">
+                                        <?php
+                                        echo '<label id="payment_number-error" class="validation-error-label" for="payment_number">' . form_error('payment_number') . '</label>';
+                                        ?>
+                                    </div>
                                 </div>
-                            </div>
-                        </fieldset>
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Memo </label>
+                                    <div class="col-lg-4">
+                                        <textarea name="memo" id="memo" placeholder="Enter Memo" class="form-control"><?php echo (isset($donor)) ? $donor['memo'] : set_value('memo'); ?></textarea>
+                                        <?php
+                                        echo '<label id="memo-error" class="validation-error-label" for="memo">' . form_error('memo') . '</label>';
+                                        ?>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        <?php } ?>
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="donor_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
@@ -292,7 +293,7 @@ if (isset($donor)) {
 
     //-- Initialize datepicker
     $('.pickadate').pickadate({
-        max: new Date()
+//        max: new Date()
     });
     var edit = <?php echo $edit ?>;
     var email_url = site_url + 'donors/checkUniqueEmail/';
@@ -329,7 +330,6 @@ if (isset($donor)) {
         }
     });
 
-
     //-- Donor Amount change eevent
     $("#amount").on("keyup keydown change", function (event) {
         if ($(this).val() != '' && Number($(this).val()) >= 0) {
@@ -337,7 +337,6 @@ if (isset($donor)) {
             admin_amt = (($(this).val()) * admin_donation) / 100;
             admin_amt = admin_amt.toFixed(2);
             account_amt = $(this).val() - admin_amt;
-
             $('#admin_fund').val(admin_amt);
             $('#account_fund').val(account_amt);
         }
@@ -365,27 +364,9 @@ if (isset($donor)) {
             }
         });
     });
-    $('#state_id').change(function () {
-        $.ajax({
-            url: '<?php echo site_url('donors/get_cities') ?>',
-            data: {id: btoa($(this).val())},
-            type: "POST",
-            dataType: 'json',
-            success: function (data) {
-                var options = "<option value=''></option>";
-                for (var i = 0; i < data.length; i++) {
-                    options += '<option value="' + data[i]['id'] + '">' + data[i]['name'] + '</option>';
-                }
-                $('#city_id').empty().append(options);
-                $("#city_id").select2("val", '');
-            }
-        });
-    });
-
     $("#add_donor_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
-        errorClass: 'validation-error-label',
-        successClass: 'validation-valid-label',
+        errorClass: 'validation-error-label', successClass: 'validation-valid-label',
         highlight: function (element, errorClass) {
             $(element).removeClass(errorClass);
         },
@@ -418,7 +399,6 @@ if (isset($donor)) {
             else if (element.parents('label').hasClass('checkbox-inline') || element.parents('label').hasClass('radio-inline')) {
                 error.appendTo(element.parent().parent());
             }
-
             // Input group, styled file input
             else if (element.parent().hasClass('uploader') || element.parents().hasClass('input-group')) {
                 error.appendTo(element.parent().parent());
@@ -429,10 +409,8 @@ if (isset($donor)) {
         validClass: "validation-valid-label",
         success: function (label) {
             label.addClass("validation-valid-label")
-        },
-        rules: {
+        }, rules: {
             email: {
-                required: true,
                 email: true,
                 remote: email_url,
             },
@@ -445,8 +423,7 @@ if (isset($donor)) {
         },
         messages: {
             email: {
-                remote: $.validator.format("Email address is already in use!")
-            }
+                remote: $.validator.format("Email address is already in use!")}
         },
         submitHandler: function (form) {
             $('#donor_btn_submit').attr('disabled', true);

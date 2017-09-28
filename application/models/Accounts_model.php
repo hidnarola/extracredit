@@ -49,8 +49,11 @@ class Accounts_model extends MY_Model {
      * @param int $id
      */
     public function get_account_details($id) {
-        $this->db->select('a.*,f.type');
+        $this->db->select('a.*,f.type,c.name as city,s.name as state,s.short_name as state_short');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'a.state_id=s.id', 'left');
+
         $this->db->where(['a.id' => $id, 'a.is_delete' => 0]);
         $query = $this->db->get(TBL_ACCOUNTS . ' a');
         return $query->row_array();

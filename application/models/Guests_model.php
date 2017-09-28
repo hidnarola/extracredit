@@ -52,8 +52,10 @@ class Guests_model extends MY_Model {
      * @param int $id
      */
     public function get_guest_details($id) {
-        $this->db->select('g.*,a.fund_type_id');
+        $this->db->select('g.*,a.fund_type_id,c.name as city,s.name as state,s.short_name as state_short');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
+        $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left');
         $this->db->where(['g.id' => $id, 'g.is_delete' => 0]);
         $query = $this->db->get(TBL_GUESTS . ' g');
         return $query->row_array();
