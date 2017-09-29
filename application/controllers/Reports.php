@@ -33,9 +33,9 @@ class Reports extends MY_Controller {
 
         foreach ($donors as $key => $val) {
             $donors[$key] = $val;
-            $donors[$key]['date'] = date('d M, Y', strtotime($val['date']));
-            $donors[$key]['post_date'] = date('d M, Y', strtotime($val['post_date']));
-            $donors[$key]['created'] = date('d M, Y', strtotime($val['created']));
+            $donors[$key]['date'] = date('m/d/Y', strtotime($val['date']));
+            $donors[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            $donors[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
 
         $final['data'] = $donors;
@@ -62,10 +62,10 @@ class Reports extends MY_Controller {
 
         foreach ($guests as $key => $val) {
             $guests[$key] = $val;
-            $guests[$key]['AIR_date'] = date('d M, Y', strtotime($val['AIR_date']));
-            $guests[$key]['invite_date'] = date('d M, Y', strtotime($val['invite_date']));
-            $guests[$key]['guest_date'] = date('d M, Y', strtotime($val['guest_date']));
-            $guests[$key]['created'] = date('d M, Y', strtotime($val['created']));
+            $guests[$key]['AIR_date'] = date('m/d/Y', strtotime($val['AIR_date']));
+            $guests[$key]['invite_date'] = date('m/d/Y', strtotime($val['invite_date']));
+            $guests[$key]['guest_date'] = date('m/d/Y', strtotime($val['guest_date']));
+            $guests[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
 
         $final['data'] = $guests;
@@ -93,7 +93,7 @@ class Reports extends MY_Controller {
 
         foreach ($programs as $key => $val) {
             $programs[$key] = $val;
-            $programs[$key]['created'] = date('d M, Y', strtotime($val['created']));
+            $programs[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
 
         $final['data'] = $programs;
@@ -121,7 +121,8 @@ class Reports extends MY_Controller {
 
         foreach ($awards as $key => $val) {
             $awards[$key] = $val;
-            $awards[$key]['created'] = date('d M, Y', strtotime($val['created']));
+            $awards[$key]['created'] = date('m/d/Y', strtotime($val['created']));
+            $awards[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
         }
 
         $final['data'] = $awards;
@@ -149,7 +150,8 @@ class Reports extends MY_Controller {
 
         foreach ($vendor_admin as $key => $val) {
             $vendor_admin[$key] = $val;
-            $vendor_admin[$key]['created'] = date('d M, Y', strtotime($val['created']));
+            $vendor_admin[$key]['created'] = date('m/d/Y', strtotime($val['created']));
+            $vendor_admin[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
         }
         $final['data'] = $vendor_admin;
         echo json_encode($final);
@@ -173,6 +175,11 @@ class Reports extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_amc_balance_report('count');
         $final['redraw'] = 1;
         $balance_report = $this->accounts_model->get_amc_balance_report('result');
+        foreach ($balance_report as $key => $val) {
+            $balance_report[$key] = $val;
+            $balance_report[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            $balance_report[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+        }
         $final['data'] = $balance_report;
         echo json_encode($final);
     }
@@ -195,6 +202,10 @@ class Reports extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->payments_model->get_payments_made_report('count');
         $final['redraw'] = 1;
         $payment_report = $this->payments_model->get_payments_made_report('result');
+         foreach ($payment_report as $key => $val) {
+            $payment_report[$key] = $val;
+            $payment_report[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+        }
         $final['data'] = $payment_report;
         echo json_encode($final);
     }

@@ -78,7 +78,13 @@
                 },
                 {
                     data: "income",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                         if (full.income == null) {
+                            return '';
+                        } else
+                        return '$' + full.income;
+                    }
                 },
                 {
                     data: "no_of_payments",
@@ -86,19 +92,45 @@
                 },
                 {
                     data: "payment_amount",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.payment_amount == null) {
+                            return '';
+                        } else
+                            return '$' + full.payment_amount;
+                    }
                 },
                 {
                     data: "balance_amount",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.balance_amount == null) {
+                            return '';
+                        } else
+                            return '$' + full.balance_amount;
+                    }
                 },
                 {
                     data: "post_date",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.post_date == '01/01/1970') {
+                            return ' ';
+                        } else {
+                            return full.post_date;
+                        }
+                    }
                 },
                 {
                     data: "check_date",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.check_date == '01/01/1970') {
+                            return ' ';
+                        } else {
+                            return full.check_date;
+                        }
+                    }
                 },
             ]
         });

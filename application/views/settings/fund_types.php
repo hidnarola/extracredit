@@ -128,7 +128,7 @@
                                     else
                                         echo 'Admin';
                                     ?></td>
-                                <td><?php echo date('d,M Y', strtotime($val['created'])); ?></td>
+                                <td><?php echo date('m/d/Y', strtotime($val['created'])); ?></td>
                                 <td>
                                     <?php if (in_array('edit', $perArr)) { ?>
                                         <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Fund Type"><i class="icon-pencil3"></i></a>

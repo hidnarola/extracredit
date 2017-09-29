@@ -104,8 +104,14 @@
                 },               
                 {
                     data: "amount",
-                    visible: true
-                }                
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.amount == null) {
+                            return '';
+                        } else
+                            return '$' + full.amount;
+                    }
+                },              
             ]
         });
 

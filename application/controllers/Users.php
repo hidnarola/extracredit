@@ -37,7 +37,7 @@ class Users extends MY_Controller {
         foreach ($users as $key => $val) {
             $users[$key] = $val;
             $users[$key]['sr_no'] = $start++;
-            $users[$key]['created'] = date('d,M Y', strtotime($val['created']));
+            $users[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
         $final['data'] = $users;
         echo json_encode($final);

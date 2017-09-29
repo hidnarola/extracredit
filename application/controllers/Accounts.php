@@ -36,7 +36,7 @@ class Accounts extends MY_Controller {
         foreach ($accounts as $key => $val) {
             $accounts[$key] = $val;
             $accounts[$key]['sr_no'] = $start++;
-            $accounts[$key]['created'] = date('d,M Y', strtotime($val['created']));
+            $accounts[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
 
         $final['data'] = $accounts;
@@ -73,13 +73,13 @@ class Accounts extends MY_Controller {
 
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
         $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
-        $this->form_validation->set_rules('address', 'Address', 'trim|required');
-        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
-        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
-        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
-        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-        $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
-        $this->form_validation->set_rules('website', 'Website', 'trim|required');
+//        $this->form_validation->set_rules('address', 'Address', 'trim|required');
+//        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
+//        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
+//        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
+//        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+//        $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
+//        $this->form_validation->set_rules('website', 'Website', 'trim|required');
 
         if ($this->input->post('fund_type_id') != '') {
             $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
@@ -87,8 +87,8 @@ class Accounts extends MY_Controller {
                 $this->form_validation->set_rules('vendor_name', 'Vendor Name', 'trim|required');
             } else {
                 $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
-                $this->form_validation->set_rules('tax_id', 'Tax ID', 'trim|required');
-                $this->form_validation->set_rules('program_type_id', 'Prgram Type', 'trim|required');
+//                $this->form_validation->set_rules('tax_id', 'Tax ID', 'trim|required');
+//                $this->form_validation->set_rules('program_type_id', 'Prgram Type', 'trim|required');
             }
         } else {
             $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
@@ -99,9 +99,15 @@ class Accounts extends MY_Controller {
 
             //-- Get state id from post value
             $state_code = $this->input->post('state_short');
+
             $post_city = $this->input->post('city_id');
-            $state = $this->accounts_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-            $state_id = $state['id'];
+            if ($state_code == '') {
+                $state_id = '';
+            } else {
+                $state = $this->accounts_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+                $state_id = $state['id'];
+            }
+
             $city = $this->accounts_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
             if (!empty($city)) {
                 $city_id = $city['id'];

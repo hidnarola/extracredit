@@ -71,10 +71,24 @@
                 {
                     data: "date",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.date == '01/01/1970') {
+                            return '-';
+                        } else {
+                            return full.date;
+                        }
+                    }
                 },
                 {
                     data: "post_date",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.date == '01/01/1970') {
+                            return '-';
+                        } else {
+                            return full.post_date;
+                        }
+                    }
                 },
                 {
                     data: "fund_type",
@@ -87,7 +101,7 @@
                         if (full.type == 1) {
                             return full.vendor_name;
                         } else {
-                            return data
+                            return data;
                         }
                     }
                 },
@@ -105,15 +119,33 @@
                 },
                 {
                     data: "admin_fund",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.admin_fund == null) {
+                            return '';
+                        } else
+                            return '$' + full.admin_fund;
+                    }
                 },
                 {
                     data: "amount",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.amount == null) {
+                            return '';
+                        } else
+                            return '$' + full.amount;
+                    }
                 },
                 {
                     data: "balance",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.balance == null) {
+                            return '';
+                        } else
+                            return '$' + full.balance;
+                    }
                 },
             ]
         });

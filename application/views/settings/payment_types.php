@@ -94,7 +94,7 @@
                             <tr>
                                 <td><?php echo $key + 1; ?></td>
                                 <td><?php echo $val['type']; ?></td>
-                                <td><?php echo date('d,M Y', strtotime($val['created'])); ?></td>
+                                <td><?php echo date('m/d/Y', strtotime($val['created'])); ?></td>
                                 <td>
                                     <?php if (in_array('edit', $perArr)) { ?>
                                         <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Payment Type"><i class="icon-pencil3"></i></a>

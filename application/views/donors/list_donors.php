@@ -50,20 +50,22 @@
             <br/>
             <br/>
         </div>
-        <table class="table datatable-basic">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Email</th>
-                    <th>City</th>
-                    <th>Amount</th>
-                    <th>Added Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-        </table>
+        <div class="table-responsive">
+            <table class="table datatable-basic">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Firstname</th>
+                        <th>Lastname</th>
+                        <th>Email</th>
+                        <th>City</th>
+                        <th>Amount</th>
+                        <th>Added Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
@@ -156,7 +158,10 @@
                 },
                 {
                     data: "amount",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        return '$' + full.amount;
+                    }
                 },
                 {
                     data: "created",
@@ -217,7 +222,7 @@
             dataType: 'json',
             success: function (data) {
                 if (data.type == 1) {
-                    window.location.href = site_url + '/donors';
+                    window.location.href = site_url + 'donors';
                 } else {
                     swal({
                         title: "Refund Alert",
@@ -240,14 +245,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 

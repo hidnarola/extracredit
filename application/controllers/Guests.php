@@ -36,8 +36,8 @@ class Guests extends MY_Controller {
 
         foreach ($guests as $key => $val) {
             $guests[$key] = $val;
-            $guests[$key]['invite_date'] = date('d M, Y', strtotime($val['invite_date']));
-            $guests[$key]['created'] = date('d M, Y', strtotime($val['created']));
+            $guests[$key]['invite_date'] = date('m/d/Y', strtotime($val['invite_date']));
+            $guests[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
 
         $final['data'] = $guests;
@@ -57,15 +57,33 @@ class Guests extends MY_Controller {
                 $data['guest'] = $guest;
                 $data['title'] = 'Extracredit | Edit Guest';
                 $data['heading'] = 'Edit Guest';
-                $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_check_email_edit[' . $id . ']');
-
+                if ($this->input->post('email')) {
+                    $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_check_email_edit[' . $id . ']');
+                }
                 $logo = $guest['logo'];
             } else {
                 show_404();
             }
         } else {
             checkPrivileges('guest', 'add');
-            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_is_uniquemail');
+            if ($this->input->post('email')) {
+                $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|callback_is_uniquemail');
+            }
+            if ($this->input->post('invite_date')) {
+                $invite_date = date('Y-m-d', strtotime($this->input->post('invite_date')));
+            } else {
+                $invite_date = null;
+            }
+            if ($this->input->post('guest_date')) {
+                $guest_date = date('Y-m-d', strtotime($this->input->post('guest_date')));
+            } else {
+                $guest_date = null;
+            }
+            if ($this->input->post('email')) {
+                $AIR_date = date('Y-m-d', strtotime($this->input->post('AIR_date')));
+            } else {
+                $AIR_date = null;
+            }
             $logo = NULL;
             $data['title'] = 'Extracredit | Add Guest';
             $data['heading'] = 'Add Guest';
@@ -73,20 +91,20 @@ class Guests extends MY_Controller {
         $data['accounts'] = $this->guests_model->get_amc_accounts();
 
         $this->form_validation->set_rules('firstname', 'First Name', 'trim|required');
-        $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
-        $this->form_validation->set_rules('address', 'Address', 'trim|required');
-        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
-        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
-        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
-        $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
-        $this->form_validation->set_rules('companyname', 'Company Name', 'trim|required');
-
-        $this->form_validation->set_rules('invite_date', 'Invite Date', 'trim|required');
-        $this->form_validation->set_rules('guest_date', 'Guest Date', 'trim|required');
-        $this->form_validation->set_rules('AIR_date', 'AIR Date', 'trim|required');
-        $this->form_validation->set_rules('assistant', 'Assisatnt', 'trim|required');
-        $this->form_validation->set_rules('assistant_email', 'Assisatnt Email', 'trim|required');
-        $this->form_validation->set_rules('assistant_phone', 'Assisatnt Phone', 'trim|required');
+//        $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
+//        $this->form_validation->set_rules('address', 'Address', 'trim|required');
+//        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
+//        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
+//        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
+//        $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
+//        $this->form_validation->set_rules('companyname', 'Company Name', 'trim|required');
+//
+//        $this->form_validation->set_rules('invite_date', 'Invite Date', 'trim|required');
+//        $this->form_validation->set_rules('guest_date', 'Guest Date', 'trim|required');
+//        $this->form_validation->set_rules('AIR_date', 'AIR Date', 'trim|required');
+//        $this->form_validation->set_rules('assistant', 'Assisatnt', 'trim|required');
+//        $this->form_validation->set_rules('assistant_email', 'Assisatnt Email', 'trim|required');
+//        $this->form_validation->set_rules('assistant_phone', 'Assisatnt Phone', 'trim|required');
 
 
         if ($this->form_validation->run() == TRUE) {
@@ -104,11 +122,16 @@ class Guests extends MY_Controller {
                 }
             }
 
+//            p($_POST);
             //-- Get state id from post value
             $state_code = $this->input->post('state_short');
             $post_city = $this->input->post('city_id');
-            $state = $this->guests_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-            $state_id = $state['id'];
+            if ($state_code == '') {
+                $state_id = '';
+            } else {
+                $state = $this->guests_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+                $state_id = $state['id'];
+            }
             $city = $this->guests_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
             if (!empty($city)) {
                 $city_id = $city['id'];
@@ -130,9 +153,9 @@ class Guests extends MY_Controller {
                     'zip' => $this->input->post('zip'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'invite_date' => date('Y-m-d', strtotime($this->input->post('invite_date'))),
-                    'guest_date' => date('Y-m-d', strtotime($this->input->post('guest_date'))),
-                    'AIR_date' => date('Y-m-d', strtotime($this->input->post('AIR_date'))),
+                    'invite_date' => $invite_date,
+                    'guest_date' => $invite_date,
+                    'AIR_date' => $AIR_date,
                     'AMC_created' => ($this->input->post('AMC_created') == 1) ? 1 : 0,
                     'assistant' => $this->input->post('assistant'),
                     'assistant_phone' => $this->input->post('assistant_phone'),
@@ -317,7 +340,9 @@ class Guests extends MY_Controller {
 
         foreach ($guests as $key => $val) {
             $guests[$key] = $val;
-            $guests[$key]['created'] = date('d M, Y', strtotime($val['created']));
+            $guests[$key]['created'] = date('m/d/Y', strtotime($val['created']));
+            $guests[$key]['follow_up_date'] = date('m/d/Y', strtotime($val['follow_up_date']));
+            $guests[$key]['communication_date'] = date('m/d/Y', strtotime($val['communication_date']));
         }
         $final['data'] = $guests;
         echo json_encode($final);
@@ -330,8 +355,8 @@ class Guests extends MY_Controller {
         $id = $this->input->post('id');
         $id = base64_decode($id);
         $guest_communication = $this->guests_model->get_guest_communication_details($id);
-        $guest_communication['follow_up_date'] = date('d F, Y', strtotime($guest_communication['follow_up_date']));
-        $guest_communication['communication_date'] = date('d F, Y', strtotime($guest_communication['communication_date']));
+        $guest_communication['follow_up_date'] = date('m/d/Y', strtotime($guest_communication['follow_up_date']));
+        $guest_communication['communication_date'] = date('m/d/Y', strtotime($guest_communication['communication_date']));
         echo json_encode($guest_communication);
     }
 
@@ -434,9 +459,9 @@ class Guests extends MY_Controller {
         $guest_id = base64_decode($this->input->post('id'));
         $guest = $this->guests_model->get_guest_details_view($guest_id);
         if ($guest) {
-            $guest['invite_date'] = date('d F, Y', strtotime($guest['invite_date']));
-            $guest['guest_date'] = date('d F, Y', strtotime($guest['guest_date']));
-            $guest['AIR_date'] = date('d F, Y', strtotime($guest['AIR_date']));
+            $guest['invite_date'] = date('m/d/Y', strtotime($guest['invite_date']));
+            $guest['guest_date'] = date('m/d/Y', strtotime($guest['guest_date']));
+            $guest['AIR_date'] = date('m/d/Y', strtotime($guest['AIR_date']));
             $data['guest_details'] = $guest;
             return $this->load->view('guests/guest_view', $data);
         } else {

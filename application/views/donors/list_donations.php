@@ -85,14 +85,31 @@
                 {
                     data: "amount",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        return '$' + full.amount;
+                    }
                 },
                 {
                     data: "date",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.date == '01/01/1970') {
+                            return '-';
+                        } else {
+                            return full.date;
+                        }
+                    }
                 },
                 {
                     data: "post_date",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.date == '01/01/1970') {
+                            return '-';
+                        } else {
+                            return full.post_date;
+                        }
+                    }
                 },
                 {
                     data: "payment_number",

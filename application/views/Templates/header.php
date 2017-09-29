@@ -34,4 +34,7 @@
 <script type="text/javascript" src="assets/js/plugins/pickers/daterangepicker.js"></script>-->
 
 <script type="text/javascript" src="assets/js/core/app.js"></script>
+<script>
+  
+</script>
 

@@ -4,6 +4,8 @@
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
+
 <?php
 $edit = 0;
 if (isset($guest)) {
@@ -65,29 +67,29 @@ if (isset($guest)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">First Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($guest)) ? $guest['firstname'] : set_value('firstname'); ?>">
+                                    <input type="text" name="firstname" id="firstname" required="" placeholder="Enter First Name" class="form-control text-capitalize" value="<?php echo (isset($guest)) ? $guest['firstname'] : set_value('firstname'); ?>">
                                     <?php
                                     echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
                                     ?>
                                 </div>
 
-                                <label class="col-lg-1 control-label">Last Name <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Last Name </label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($guest)) ? $guest['lastname'] : set_value('lastname'); ?>">
+                                    <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name" class="form-control text-capitalize" value="<?php echo (isset($guest)) ? $guest['lastname'] : set_value('lastname'); ?>">
                                     <?php
                                     echo '<label id="lastname-error" class="validation-error-label" for="lastname">' . form_error('lastname') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Address <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Address</label>
                                 <div class="col-lg-4">
-                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" required="required"><?php echo (isset($guest)) ? $guest['address'] : set_value('address'); ?></textarea>
+                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize"><?php echo (isset($guest)) ? $guest['address'] : set_value('address'); ?></textarea>
                                     <?php
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Email <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Email</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
                                     <?php
@@ -97,33 +99,33 @@ if (isset($guest)) {
 
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Zip <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Zip</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['zip']) ? $guest['zip'] : set_value('zip'); ?>">
+                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control"  value="<?php echo (isset($guest) && $guest['zip']) ? $guest['zip'] : set_value('zip'); ?>">
                                     <?php
                                     echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Phone <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Phone</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
                                     <?php
                                     echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">State</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control" required="required" value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
+                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
 
                                     <?php
                                     echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">City</label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control" required="required" value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
+                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
                                     <?php
                                     echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
                                     ?>
@@ -132,9 +134,9 @@ if (isset($guest)) {
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Company Name <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Company Name</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="companyname" id="companyname" placeholder="Enter Company Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($guest)) ? $guest['companyname'] : set_value('companyname'); ?>">
+                                    <input type="text" name="companyname" id="companyname" placeholder="Enter Company Name" class="form-control text-capitalize"  value="<?php echo (isset($guest)) ? $guest['companyname'] : set_value('companyname'); ?>">
                                     <?php
                                     echo '<label id="companyname-error" class="validation-error-label" for="companyname">' . form_error('companyname') . '</label>';
                                     ?>
@@ -177,9 +179,9 @@ if (isset($guest)) {
                         <fieldset>
                             <legend class="text-bold">Program/AMC</legend>  
                             <div class="form-group">
-                                <label class="col-lg-2 control-label">Program/AMC <span class="text-danger">*</span></label>
+                                <label class="col-lg-2 control-label">Program/AMC</label>
                                 <div class="col-lg-6">
-                                    <select name="account_id" id="account_id" class="select2" required="required">
+                                    <select name="account_id" id="account_id" class="select2" >
                                         <option value="">None</option>
                                         <?php
                                         foreach ($accounts as $account) {
@@ -199,21 +201,37 @@ if (isset($guest)) {
                         <fieldset class="content-group">
                             <legend class="text-bold">Extra Guest Details</legend>                          
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Invite Date <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Invite Date</label>
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="invite_date" id="invite_date" placeholder="Enter Invite Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F, Y', strtotime($guest['invite_date'])) : set_value('invite_date'); ?>" required="required">
+                                        <input type="text" name="invite_date" id="invite_date" placeholder="Enter Invite Date" class="form-control pickadate" value="<?php
+                                        if (isset($guest)) {
+                                            if ($guest['invite_date'] != null)
+                                                echo date('d F, Y', strtotime($guest['invite_date']));
+                                            else
+                                                echo '';
+                                        } else
+                                            echo set_value('invite_date');
+                                        ?>" >
                                     </div>
                                     <?php
                                     echo '<label id="invite_date-error" class="validation-error-label" for="invite_date">' . form_error('invite_date') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Guest Date <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Guest Date</label>
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F, Y', strtotime($guest['guest_date'])) : set_value('guest_date'); ?>" required="required">
+                                        <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php 
+                                        if (isset($guest)) {
+                                            if ($guest['guest_date'] != null)
+                                                echo date('d F, Y', strtotime($guest['guest_date']));
+                                            else
+                                                echo '';
+                                        } else
+                                            echo set_value('guest_date');
+                                        ?>" >
                                     </div>
                                     <?php
                                     echo '<label id="guest_date-error" class="validation-error-label" for="guest_date">' . form_error('guest_date') . '</label>';
@@ -221,50 +239,58 @@ if (isset($guest)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">AIR Date <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">AIR Date</label>
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="AIR_date" id="post_date" placeholder="Enter AIR Date" class="form-control pickadate" value="<?php echo (isset($guest)) ? date('d F, Y', strtotime($guest['AIR_date'])) : set_value('AIR_date'); ?>" required="required">
+                                        <input type="text" name="AIR_date" id="post_date" placeholder="Enter AIR Date" class="form-control pickadate" value="<?php 
+                                       if (isset($guest)) {
+                                            if ($guest['AIR_date'] != null)
+                                                echo date('d F, Y', strtotime($guest['AIR_date']));
+                                            else
+                                                echo '';
+                                        } else
+                                            echo set_value('AIR_date');
+                                       ?>" >
                                     </div>
                                     <?php
                                     echo '<label id="AIR_date-error" class="validation-error-label" for="AIR_date">' . form_error('AIR_date') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">AMC created? <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">AMC created?</label>
                                 <div class="col-lg-4">
                                     <div class="checkbox checkbox-switch">
                                         <label>
                                             <input type="checkbox" name="AMC_created" id="AMC_created" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
-                                            if (isset($guest) && $guest['AMC_created'] == 'NO')
-                                                echo '';
-                                            else
-                                                echo 'checked="checked"';
-                                            ?> value="1">
+                                    if (isset($guest) && $guest['AMC_created'] == 'NO')
+                                        echo '';
+                                    else
+                                        echo 'checked="checked"';
+                                    ?> value="1">
                                         </label>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Assistant <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Assistant</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="assistant" id="assistant" placeholder="Enter Assistant" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['assistant']) ? $guest['assistant'] : set_value('assistant'); ?>">
+                                    <input type="text" name="assistant" id="assistant" placeholder="Enter Assistant" class="form-control"  value="<?php echo (isset($guest) && $guest['assistant']) ? $guest['assistant'] : set_value('assistant'); ?>">
                                     <?php
                                     echo '<label id="assistant-error" class="validation-error-label" for="assistant">' . form_error('assistant') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Assistant Phone <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Assistant Phone</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="assistant_phone" id="assistant_phone" placeholder="Enter Assistant Phone" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['assistant_phone']) ? $guest['assistant_phone'] : set_value('assistant_phone'); ?>">
+                                    <input type="text" name="assistant_phone" id="assistant_phone" placeholder="Enter Assistant Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['assistant_phone']) ? $guest['assistant_phone'] : set_value('assistant_phone'); ?>">
                                     <?php
                                     echo '<label id="assistant_phone-error" class="validation-error-label" for="assistant_phone">' . form_error('assistant_phone') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Assistant Email <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Assistant Email</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="assistant_email" id="phone" placeholder="Enter Assistant Email" class="form-control" required="required" value="<?php echo (isset($guest) && $guest['assistant_email']) ? $guest['assistant_email'] : set_value('assistant_email'); ?>">
+                                    <input type="text" name="assistant_email" id="assistant_email" placeholder="Enter Assistant Email" class="form-control"  value="<?php echo (isset($guest) && $guest['assistant_email']) ? $guest['assistant_email'] : set_value('assistant_email'); ?>">
                                     <?php
                                     echo '<label id="assistant_email-error" class="validation-error-label" for="assistant_email">' . form_error('assistant_email') . '</label>';
                                     ?>
@@ -289,8 +315,10 @@ if (isset($guest)) {
     $(".file-styled").uniform({
         fileButtonClass: 'action btn bg-blue'
     });
+    $("#phone").mask("999-999-9999");
+    $("#assistant_phone").mask("999-999-9999");
     $('.pickadate').pickadate({
-        max: new Date()
+//        max: new Date()
     });
 
     var edit = <?php echo $edit ?>;
@@ -355,28 +383,28 @@ if (isset($guest)) {
             label.addClass("validation-valid-label")
         },
         rules: {
-            email: {
-                required: true,
-                email: true,
-            },
-            company_website: {
-                validUrl: true
-            },
-            assistant_email: {
-                required: true,
-                email: true,
-            },
-            phone: {
-                required: true,
-                phoneno: true
-            },
-            assistant_phone: {
-                required: true,
-                phoneno: true
-            },
-            zip: {
-                zipcodeUS: true
-            }
+//            email: {
+//                required: true,
+//                email: true,
+//            },
+//            company_website: {
+//                validUrl: true
+//            },
+//            assistant_email: {
+//                required: true,
+//                email: true,
+//            },
+//            phone: {
+//                required: true,
+//                phoneno: true
+//            },
+//            assistant_phone: {
+//                required: true,
+//                phoneno: true
+//            },
+//            zip: {
+//                zipcodeUS: true
+//            }
         },
         submitHandler: function (form) {
             $('#guest_btn_submit').attr('disabled', true);

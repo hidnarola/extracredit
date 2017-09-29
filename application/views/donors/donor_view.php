@@ -50,15 +50,23 @@
 
         <tr>
             <th>Date</th>
-            <td><?php echo $donor_details['date']; ?></td>
+            <td><?php 
+            if($donor_details['date'] == '01/01/1970')
+                echo '-';
+            else
+            echo $donor_details['date']; ?></td>
         </tr>                   
         <tr>
             <th>Post Date</th>
-            <td><?php echo $donor_details['post_date']; ?></td>
+            <td><?php
+            if($donor_details['post_date'] == '01/01/1970')
+                echo '-';
+            else
+            echo $donor_details['post_date']; ?></td>
         </tr>                   
         <tr>
             <th>Amount</th>
-            <td><?php echo $donor_details['amount']; ?></td>
+            <td><?php echo '$'.$donor_details['amount']; ?></td>
         </tr>                   
         <tr>
             <th>Refund</th>

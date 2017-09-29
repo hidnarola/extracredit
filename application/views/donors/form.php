@@ -129,7 +129,7 @@ if (isset($donor)) {
                                 <div class="form-group">
                                     <label class="col-lg-1 control-label">Fund Type</label>
                                     <div class="col-lg-4">
-                                        <select name="fund_type_id" id="fund_type_id" class="select2" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
+                                        <select name="fund_type_id" id="fund_type_id" class="select2" required="" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
                                             <option value=""></option>
                                             <?php
                                             foreach ($fund_types as $type) {
@@ -146,7 +146,7 @@ if (isset($donor)) {
                                     </div>
                                     <label class="col-lg-1 control-label">Program/AMC</label>
                                     <div class="col-lg-4">
-                                        <select name="account_id" id="account_id" class="select2" data-placeholder="Select account" <?php echo $account_disabled ?>>
+                                        <select name="account_id" id="account_id" class="select2" required="" data-placeholder="Select account" <?php echo $account_disabled ?>>
                                             <option value=""></option>
                                             <?php
                                             foreach ($accounts as $account) {
@@ -167,7 +167,15 @@ if (isset($donor)) {
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                            <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['date'])) : set_value('date'); ?>">
+                                            <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php
+                                            if (isset($donor)) {
+                                                if ($donor['date'] != null)
+                                                    echo date('d F, Y', strtotime($donor['date']));
+                                                else
+                                                    echo '';
+                                            } else
+                                                echo set_value('date');
+                                            ?>">
                                         </div>
                                         <?php
                                         echo '<label id="date-error" class="validation-error-label" for="date">' . form_error('date') . '</label>';
@@ -177,7 +185,15 @@ if (isset($donor)) {
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                            <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php echo (isset($donor)) ? date('d F, Y', strtotime($donor['post_date'])) : set_value('post_date'); ?>">
+                                            <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php
+                                    if (isset($donor)) {                                        
+                                    if ($donor['post_date'] != null || $donor['post_date'] !='0000-00-00')
+                                            echo date('d F, Y', strtotime($guest['post_date']));
+                                        else
+                                            echo '';
+                                    } else
+                                        echo set_value('post_date');
+                                        ?>">
                                         </div>
                                         <?php
                                         echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
@@ -185,6 +201,7 @@ if (isset($donor)) {
                                     </div>
                                 </div>
                                 <?php
+                                
                                 $split_settings_style = 'style="display: none;"';
                                 $split_checkbox = '';
                                 if (isset($donor) || form_error('admin_percent') != '') {
@@ -303,6 +320,9 @@ if (isset($donor)) {
     }
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
+      $('.select2').change(function () {
+          $(this).valid();
+    });
 
     $(document).on('click', '#change_donation_split', function () {
         if ($(this).prop("checked") == true) {

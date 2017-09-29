@@ -33,6 +33,7 @@ class Donors_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_DONORS . ' d');
+//            Qry();
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_DONORS . ' d');

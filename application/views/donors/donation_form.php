@@ -104,7 +104,16 @@ if (isset($donation)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php echo (isset($donation)) ? date('d F, Y', strtotime($donation['date'])) : set_value('date'); ?>">
+                                        <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php
+                                        if (isset($donation)) {
+                                            if ($donation['date'] != null && $donation['date'] != '0000-00-00')
+//                                                echo $donation['date'];
+                                                echo date('d F, Y', strtotime($donation['date']));
+                                            else
+                                                echo '';
+                                        } else
+                                            echo set_value('date');
+                                        ?>">
                                     </div>
                                     <?php
                                     echo '<label id="date-error" class="validation-error-label" for="date">' . form_error('date') . '</label>';
@@ -114,7 +123,15 @@ if (isset($donation)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php echo (isset($donation)) ? date('d F, Y', strtotime($donation['post_date'])) : set_value('post_date'); ?>">
+                                        <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php
+                                        if (isset($donation)) {
+                                            if ($donation['post_date'] != null && $donation['post_date'] != '0000-00-00')
+                                                echo date('d F, Y', strtotime($donation['post_date']));
+                                            else
+                                                echo '';
+                                        } else
+                                            echo set_value('post_date');
+                                        ?>">
                                     </div>
                                     <?php
                                     echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
@@ -128,6 +145,8 @@ if (isset($donation)) {
                                 $split_settings_style = '';
                                 $split_checkbox = 'checked';
                             }
+
+                            $donation['amount']
                             ?>
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Amount <span class="text-danger">*</span></label>
@@ -184,7 +203,7 @@ if (isset($donation)) {
                                                 $selected = 'selected';
                                             ?>
                                             <option value="<?php echo $payment_type['id']; ?>" <?php echo $selected ?>><?php echo $payment_type['type'] ?></option>
-                                        <?php } ?>
+                                    <?php } ?>
                                     </select>
                                     <?php
                                     echo '<label id="payment_type_id-error" class="validation-error-label" for="payment_type_id">' . form_error('payment_type_id') . '</label>';
@@ -219,7 +238,7 @@ if (isset($donation)) {
             </div>
         </div>
     </div>
-    <?php $this->load->view('Templates/footer'); ?>
+<?php $this->load->view('Templates/footer'); ?>
 </div>
 <script type="text/javascript">
     //-- Style checkbox

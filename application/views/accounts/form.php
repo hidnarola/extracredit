@@ -3,6 +3,7 @@
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/core/libraries/jasny_bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
 <?php
 $edit = 0;
 if (isset($account)) {
@@ -118,23 +119,23 @@ if (isset($account)) {
                                     echo '<label id="contact_name-error" class="validation-error-label" for="contact_name">' . form_error('contact_name') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Address <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Address </label>
                                 <div class="col-lg-4">
-                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" required="required"><?php echo (isset($account)) ? $account['address'] : set_value('address'); ?></textarea>
+                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" ><?php echo (isset($account)) ? $account['address'] : set_value('address'); ?></textarea>
                                     <?php
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Zip <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Zip </label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" required="required" value="<?php echo (isset($account) && $account['zip']) ? $account['zip'] : set_value('zip'); ?>">
+                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" value="<?php echo (isset($account) && $account['zip']) ? $account['zip'] : set_value('zip'); ?>">
                                     <?php
                                     echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Email <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Email </label>
                                 <div class="col-lg-4">
                                     <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($account) && $account['email']) ? $account['email'] : set_value('email'); ?>">
                                     <?php
@@ -143,17 +144,17 @@ if (isset($account)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">State <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">State </label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control" required="required" value="<?php echo (isset($account)) ? $account['state'] : set_value('state_id'); ?>">
+                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($account)) ? $account['state'] : set_value('state_id'); ?>">
 
                                     <?php
                                     echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">City <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">City </label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control" required="required" value="<?php echo (isset($account)) ? $account['city'] : set_value('city_id'); ?>">
+                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($account)) ? $account['city'] : set_value('city_id'); ?>">
                                     <?php
                                     echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
                                     ?>
@@ -161,17 +162,18 @@ if (isset($account)) {
                                 <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($account)) ? $account['state_short'] : set_value('state_short'); ?>"/>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Phone <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Phone </label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($account) && $account['phone']) ? $account['phone'] : set_value('phone'); ?>" required="required">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($account) && $account['phone']) ? $account['phone'] : set_value('phone'); ?>" >
                                     <?php
                                     echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
                                     ?>
                                 </div>
                                 <div class="program_div" <?php echo $program_div_style ?>>
-                                    <label class="col-lg-1 control-label">Tax ID <span class="text-danger">*</span></label>
+                                    <label class="col-lg-1 control-label">Tax ID </label>
                                     <div class="col-lg-4">
-                                        <input type="text" name="tax_id" id="tax_id" placeholder="Enter Tax ID" class="form-control" value="<?php echo (isset($account) && $account['tax_id']) ? $account['tax_id'] : set_value('tax_id'); ?>" <?php echo $program_required ?> data-mask="99-9999999">
+                                        <!--<input type="text" name="tax_id" id="tax_id" placeholder="Enter Tax ID" class="form-control" value="<?php // echo (isset($account) && $account['tax_id']) ? $account['tax_id'] : set_value('tax_id'); ?>" <?php // echo $program_required ?> data-mask="99-9999999">-->
+                                        <input type="text" name="tax_id" id="tax_id" placeholder="Enter Tax ID" class="form-control" value="<?php echo (isset($account) && $account['tax_id']) ? $account['tax_id'] : set_value('tax_id'); ?>" data-mask="99-9999999">
                                         <?php
                                         echo '<label id="tax_id-error" class="validation-error-label" for="tax_id">' . form_error('tax_id') . '</label>';
                                         ?>
@@ -182,9 +184,9 @@ if (isset($account)) {
                         <fieldset class="content-group">
                             <legend class="text-bold">Extra Account Details</legend>
                             <div class="form-group program_div" <?php echo $program_div_style ?>>
-                                <label class="col-lg-1 control-label">Program Types <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Program Types </label>
                                 <div class="col-lg-4">
-                                    <select name="program_type_id" id="program_type_id" class="select2" data-placeholder="Select Program Type" <?php echo $program_required ?>>
+                                    <select name="program_type_id" id="program_type_id" class="select2" data-placeholder="Select Program Type" <?php echo '' ?>>
                                         <option value=""></option>
                                         <?php
                                         foreach ($program_types as $program_type) {
@@ -200,9 +202,9 @@ if (isset($account)) {
                                     ?>
                                 </div>
                                 <div class=" program_div" <?php echo $program_div_style ?>>
-                                    <label class="col-lg-1 control-label">Program Status <span class="text-danger">*</span></label>
+                                    <label class="col-lg-1 control-label">Program Status </label>
                                     <div class="col-lg-4">
-                                        <select name="program_status_id" id="program_status_id" class="select2" data-placeholder="Select Program Status"  <?php echo $program_required ?>>
+                                        <select name="program_status_id" id="program_status_id" class="select2" data-placeholder="Select Program Status"  <?php echo '' ?>>
                                             <option value=""></option>
                                             <?php
                                             foreach ($program_status as $status) {
@@ -220,14 +222,14 @@ if (isset($account)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Website <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Website </label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="website" id="website" placeholder="Enter website" class="form-control" value="<?php echo (isset($account) && $account['website']) ? $account['website'] : set_value('website'); ?>" required="required">
+                                    <input type="text" name="website" id="website" placeholder="Enter website" class="form-control" value="<?php echo (isset($account) && $account['website']) ? $account['website'] : set_value('website'); ?>" >
                                     <?php
                                     echo '<label id="website-error" class="validation-error-label" for="website">' . form_error('website') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Is Active? <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Is Active? </label>
                                 <div class="col-lg-4">
                                     <div class="checkbox checkbox-switch">
                                         <label>
@@ -256,6 +258,7 @@ if (isset($account)) {
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script type="text/javascript">
+    $("#phone").mask("999-999-9999");
     var edit = <?php echo $edit ?>;
     var email_url = site_url + 'accounts/checkUniqueEmail/';
     var vendor_url = site_url + 'accounts/checkUniqueVendor/';
@@ -281,17 +284,17 @@ if (isset($account)) {
                     $('.program_div').hide();
                     $("#vendor_name").rules("add", "required");
                     $("#action_matters_campaign").rules("remove", "required");
-                    $("#tax_id").rules("remove", "required");
-                    $("#program_type_id").rules("remove", "required");
-                    $("#program_status_id").rules("remove", "required");
+//                    $("#tax_id").rules("remove", "required");
+//                    $("#program_type_id").rules("remove", "required");
+//                    $("#program_status_id").rules("remove", "required");
                 } else {
                     $('.vendor_div').hide();
                     $('.program_div').show();
                     $("#vendor_name").rules("remove", "required");
                     $("#action_matters_campaign").rules("add", "required");
-                    $("#tax_id").rules("add", "required");
-                    $("#program_type_id").rules("add", "required");
-                    $("#program_status_id").rules("add", "required");
+//                    $("#tax_id").rules("add", "required");
+//                    $("#program_type_id").rules("add", "required");
+//                    $("#program_status_id").rules("add", "required");
                 }
             }
         });
@@ -363,7 +366,7 @@ if (isset($account)) {
         },
         rules: {
             email: {
-                required: true,
+//                required: true,
                 email: true,
                 remote: email_url,
             },

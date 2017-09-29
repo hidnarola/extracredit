@@ -49,7 +49,7 @@
                     <th>Total Fund</th>
                     <th>Added Date</th>
                     <th>Active</th>
-                    <th>Action</th>
+                    <th style="width: 117px;">Action</th>
                 </tr>
             </thead>
         </table>
@@ -107,7 +107,10 @@
                 },
                 {
                     data: "total_fund",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        return '$' + full.total_fund;
+                    }
                 },
                 {
                     data: "created",

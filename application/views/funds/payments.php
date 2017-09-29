@@ -116,7 +116,15 @@
                 {
                     data: "check_date",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.date == '01/01/1970') {
+                            return '-';
+                        } else {
+                            return full.check_date;
+                        }
+                    }
                 },
+
                 {
                     data: "check_number",
                     visible: true,
@@ -124,6 +132,9 @@
                 {
                     data: "amount",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        return '$' + full.amount;
+                    }
                 },
             ]
         });

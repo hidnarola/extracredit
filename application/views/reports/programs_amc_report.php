@@ -124,11 +124,11 @@
                     visible: true
                 },
                 {
-                    data: "phone",
+                    data: "email",
                     visible: true
                 },
                 {
-                    data: "email",
+                    data: "phone",
                     visible: true
                 },                
                 {
@@ -144,9 +144,15 @@
                     visible: true
                 },
                 {
-                    data: "total_fund",
-                    visible: true
-                }
+                    data: "amount",
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.total_fund == null) {
+                            return '';
+                        } else
+                            return '$' + full.total_fund;
+                    }
+                },
             ]
         });
 

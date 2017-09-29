@@ -104,7 +104,7 @@ if ($get_date != '') {
     </div>
     <div class="row">               
         <!-- Admin Fund -->
-        <div class="col-lg-4">
+        <div class="col-lg-5">
             <div class="panel panel-flat">
                 <div class="panel-heading">
                     <h6 class="panel-title">Admin Fund</h6>
@@ -118,19 +118,19 @@ if ($get_date != '') {
                     <div class="row text-center">
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_admin_fund != '' && $today_admin_fund > 0) ? round($today_admin_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_admin_fund != '' && $today_admin_fund > 0) ?  '$'.round($today_admin_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">Today</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_admin_fund != '' && $week_admin_fund > 0) ? round($week_admin_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_admin_fund != '' && $week_admin_fund > 0) ?  '$'.round($week_admin_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">This week</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo round($this->admin_fund, 2); ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo '$'.round($this->admin_fund, 2); ?></h6>
                                 <span class="text-muted text-size-small">Total Fund</span>
                             </div>
                         </div>
@@ -140,7 +140,7 @@ if ($get_date != '') {
             </div>
         </div>
         <!-- Account Fund -->
-        <div class="col-lg-4">
+        <div class="col-lg-5">
             <div class="panel panel-flat">
                 <div class="panel-heading">
                     <h6 class="panel-title">Accounts Fund</h6>
@@ -154,19 +154,19 @@ if ($get_date != '') {
                     <div class="row text-center">
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_account_fund != '' && $today_account_fund > 0) ? round($today_account_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_account_fund != '' && $today_account_fund > 0) ?  '$'.round($today_account_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">Today</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_account_fund != '' && $week_account_fund > 0) ? round($week_account_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_account_fund != '' && $week_account_fund > 0) ?  '$'.round($week_account_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">This week</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo round($total_account_fund, 2); ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo  '$'.round($total_account_fund, 2); ?></h6>
                                 <span class="text-muted text-size-small">Total Fund</span>
                             </div>
                         </div>

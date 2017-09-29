@@ -30,6 +30,11 @@ class Funds extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_adminfund('count');
         $final['redraw'] = 1;
         $admin_fund = $this->funds_model->get_adminfund('result');
+        foreach ($admin_fund as $key => $val) {
+            $admin_fund[$key] = $val;
+            $admin_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
+            $admin_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+        }
         $final['data'] = $admin_fund;
         echo json_encode($final);
     }
@@ -51,6 +56,11 @@ class Funds extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_accountfund('count');
         $final['redraw'] = 1;
         $account_fund = $this->funds_model->get_accountfund('result');
+        foreach ($account_fund as $key => $val) {
+            $account_fund[$key] = $val;
+            $account_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
+            $account_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+        }
         $final['data'] = $account_fund;
         echo json_encode($final);
     }
@@ -72,6 +82,11 @@ class Funds extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_donorfund('count');
         $final['redraw'] = 1;
         $donor_fund = $this->funds_model->get_donorfund('result');
+        foreach ($donor_fund as $key => $val) {
+            $donor_fund[$key] = $val;
+            $donor_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
+            $donor_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+        }
         $final['data'] = $donor_fund;
         echo json_encode($final);
     }
@@ -93,6 +108,10 @@ class Funds extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_paymentfund('count');
         $final['redraw'] = 1;
         $donor_fund = $this->funds_model->get_paymentfund('result');
+        foreach ($donor_fund as $key => $val) {
+            $donor_fund[$key] = $val;
+            $donor_fund[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+        }
         $final['data'] = $donor_fund;
         echo json_encode($final);
     }
