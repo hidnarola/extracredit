@@ -106,9 +106,9 @@
         <div class="modal-content">
             <div class="modal-header bg-teal-400 custom_modal_header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h6 class="modal-title text-center">Guest's Details</h6>
+                <h6 class="modal-title text-center">Donor's Details</h6>
             </div>
-            <div class="modal-body panel-body custom_scrollbar" id="donor_view_body" style="height: 600px;overflow-y: auto;">
+            <div class="modal-body panel-body custom_scrollbar" id="donor_view_body" style="max-height: 600px;overflow-y: auto;">
             </div>
         </div>
     </div>
@@ -245,14 +245,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
 

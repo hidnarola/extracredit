@@ -32,8 +32,14 @@ class Funds extends MY_Controller {
         $admin_fund = $this->funds_model->get_adminfund('result');
         foreach ($admin_fund as $key => $val) {
             $admin_fund[$key] = $val;
-            $admin_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
-            $admin_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            if (!empty($val['date']))
+                $admin_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
+            else
+                $admin_fund[$key]['date'] = '-';
+            if (!empty($val['post_date']))
+                $admin_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            else
+                $admin_fund[$key]['post_date'] = '-';
         }
         $final['data'] = $admin_fund;
         echo json_encode($final);
@@ -58,8 +64,14 @@ class Funds extends MY_Controller {
         $account_fund = $this->funds_model->get_accountfund('result');
         foreach ($account_fund as $key => $val) {
             $account_fund[$key] = $val;
-            $account_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
-            $account_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            if (!empty($val['date']))
+                $account_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
+            else
+                $account_fund[$key]['date'] = '-';
+            if (!empty($val['post_date']))
+                $account_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            else
+                $account_fund[$key]['post_date'] = '-';
         }
         $final['data'] = $account_fund;
         echo json_encode($final);

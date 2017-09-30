@@ -804,8 +804,6 @@ class Donors extends MY_Controller {
         $donor = $this->donors_model->get_donor_details_view($donor_id);
         if ($donor) {
             $data['donor_details'] = $donor;
-            $data['donor_details']['date'] = date('m/d/Y', strtotime($donor['date']));
-            $data['donor_details']['post_date'] = date('m/d/Y', strtotime($donor['post_date']));
             return $this->load->view('donors/donor_view', $data);
         } else {
             show_404();
@@ -850,8 +848,14 @@ class Donors extends MY_Controller {
 
             foreach ($donations as $key => $val) {
                 $donations[$key] = $val;
-                $donations[$key]['date'] = date('m/d/Y', strtotime($val['date']));
-                $donations[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+                if (!empty($val['date']))
+                    $donations[$key]['date'] = date('m/d/Y', strtotime($val['date']));
+                else
+                    $donations[$key]['date'] = '-';
+                if (!empty($val['post_date']))
+                    $donations[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+                else
+                    $donations[$key]['post_date'] = '-';
             }
 
             $final['data'] = $donations;
@@ -874,12 +878,7 @@ class Donors extends MY_Controller {
             if (is_numeric($id)) {
                 $donation = $this->donors_model->get_donation_details($id);
                 if (!empty($donation)) {
-                    if ($donation['date'] != null || $donation['date'] != '0000-00-00')
-                        echo date('d F, Y', strtotime($donation['date']));
-                    else
-                        echo '';
                     $data['donation'] = $donation;
-//                    p($donation, 1);
                     $data['title'] = 'Extracredit | Edit Donation';
                     $data['heading'] = 'Edit ' . $donor['firstname'] . ' Donation';
                     $data['accounts'] = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['fund_type_id' => $donation['fund_type_id']]]);
@@ -912,6 +911,7 @@ class Donors extends MY_Controller {
                 $fund_array = [];
 
                 $fund_array = array(
+                    'donor_id' => $donor_id,
                     'date' => date('Y-m-d', strtotime($this->input->post('date'))),
                     'post_date' => date('Y-m-d', strtotime($this->input->post('post_date'))),
                     'payment_type_id' => $this->input->post('payment_type_id'),

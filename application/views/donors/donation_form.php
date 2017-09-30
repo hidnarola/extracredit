@@ -64,7 +64,7 @@ if (isset($donation)) {
                         <fieldset class="content-group">
                             <legend class="text-bold">Payment Details</legend>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Fund Type <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Fund Type</label>
                                 <div class="col-lg-4">
                                     <select name="fund_type_id" id="fund_type_id" class="select2" required="required" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
                                         <option value=""></option>
@@ -81,7 +81,7 @@ if (isset($donation)) {
                                     echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Program/AMC <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Program/AMC</label>
                                 <div class="col-lg-4">
                                     <select name="account_id" id="account_id" class="select2" required="required" data-placeholder="Select account" <?php echo $account_disabled ?>>
                                         <option value=""></option>
@@ -145,11 +145,9 @@ if (isset($donation)) {
                                 $split_settings_style = '';
                                 $split_checkbox = 'checked';
                             }
-
-                            $donation['amount']
                             ?>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Amount <span class="text-danger">*</span></label>
+                                <label class="col-lg-1 control-label">Amount</label>
                                 <div class="col-lg-4">
                                     <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" value="<?php echo (isset($donation) && $donation['amount']) ? $donation['amount'] : set_value('amount'); ?>" required="required" <?php echo $account_disabled ?>>
                                     <?php
@@ -203,7 +201,7 @@ if (isset($donation)) {
                                                 $selected = 'selected';
                                             ?>
                                             <option value="<?php echo $payment_type['id']; ?>" <?php echo $selected ?>><?php echo $payment_type['type'] ?></option>
-                                    <?php } ?>
+                                        <?php } ?>
                                     </select>
                                     <?php
                                     echo '<label id="payment_type_id-error" class="validation-error-label" for="payment_type_id">' . form_error('payment_type_id') . '</label>';
@@ -238,7 +236,7 @@ if (isset($donation)) {
             </div>
         </div>
     </div>
-<?php $this->load->view('Templates/footer'); ?>
+    <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script type="text/javascript">
     //-- Style checkbox

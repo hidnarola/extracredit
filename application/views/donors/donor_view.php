@@ -8,29 +8,15 @@
 </style>
 <table class="table table-striped table-bordered main_table" data-alert="" data-all="189">
     <tbody>
-        <tr class="alpha-teal">
-            <th>Fund Type</th>
-            <td><?php echo $donor_details['name']; ?></td>
-        </tr>
         <tr>
-            <th>Program/AMC</th>
-            <td><?php
-                if ($donor_details['action_matters_campaign'] != '') {
-                    echo $donor_details['action_matters_campaign'];
-                } else {
-                    echo $donor_details['vendor_name'];
-                }
-                ?></td>
-        </tr>
-        <tr class="alpha-teal">
-            <th style="width:32%">Name</th>
+            <th>Name</th>
             <td><?php echo $donor_details['firstname'] . ' ' . $donor_details['lastname']; ?></td>
         </tr>
         <tr>
             <th>Email</th>
             <td><?php echo $donor_details['email']; ?></td>
         </tr>      
-          
+
         <tr>
             <th>Address</th>
             <td><?php echo $donor_details['address']; ?></td>
@@ -47,45 +33,9 @@
             <th>Zip</th>
             <td><?php echo $donor_details['zip']; ?></td>
         </tr>      
-
-        <tr>
-            <th>Date</th>
-            <td><?php 
-            if($donor_details['date'] == '01/01/1970')
-                echo '-';
-            else
-            echo $donor_details['date']; ?></td>
-        </tr>                   
-        <tr>
-            <th>Post Date</th>
-            <td><?php
-            if($donor_details['post_date'] == '01/01/1970')
-                echo '-';
-            else
-            echo $donor_details['post_date']; ?></td>
-        </tr>                   
         <tr>
             <th>Amount</th>
-            <td><?php echo '$'.$donor_details['amount']; ?></td>
+            <td><?php echo '$' . $donor_details['amount']; ?></td>
         </tr>                   
-        <tr>
-            <th>Refund</th>
-            <td><?php echo $donor_details['refund']; ?></td>
-        </tr>                   
-        <tr>
-            <th>Payment Method</th>
-            <td><?php echo $donor_details['payment_type']; ?></td>
-        </tr>                   
-<!--        <tr>
-            <th>Refund</th>
-            <td><?php echo $donor_details['refund']; ?></td>
-        </tr>                   -->
-        <tr>
-            <th>Payment Number</th>
-            <td><?php echo $donor_details['payment_number']; ?></td>
-        </tr>                   
-                    
-       
-          
     </tbody>
 </table>

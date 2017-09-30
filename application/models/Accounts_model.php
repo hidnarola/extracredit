@@ -176,7 +176,7 @@ class Accounts_model extends MY_Model {
     public function get_amc_balance_report($type = 'result') {
         $columns = ['a.action_matters_campaign,a.vendor_name', 'inc.income', 'p.no_of_payments', 'p.payment_amount', 'a.total_fund', 'address', 'city', 'state', 'zip', 'total_fund'];
         $keyword = $this->input->get('search');
-        $select1 = '(SELECT post_date FROM ' . TBL_DONORS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) post_date';
+        $select1 = '(SELECT post_date FROM ' . TBL_FUNDS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) post_date';
         $select2 = '(SELECT check_date FROM ' . TBL_PAYMENTS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) check_date';
         $this->db->select('a.action_matters_campaign,a.vendor_name,inc.income,f.name as fund_type,f.type,a.total_fund as balance_amount,p.no_of_payments,p.payment_amount,' . $select1 . ',' . $select2);
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');

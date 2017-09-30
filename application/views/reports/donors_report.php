@@ -107,7 +107,6 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
-//            ajax: site_url + 'reports/get_donors_reports',
             ajax: {
                 url: site_url + 'reports/get_donors_reports',
                 data: {

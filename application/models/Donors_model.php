@@ -101,15 +101,16 @@ class Donors_model extends MY_Model {
      * @return type
      */
     public function get_donors_reports($type = 'result') {
-        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'd.date', 'd.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'state', 'city', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'd.payment_number', 'd.memo'];
+        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'fu.date', 'fu.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'state', 'city', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'fu.payment_number', 'fu.memo'];
         $keyword = $this->input->get('search');
-        $this->db->select('d.*,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,s.name as state,f.type,p.type as payment_type');
+        $this->db->select('d.*,fu.date,fu.post_date,fu.payment_type_id,fu.payment_number,fu.memo,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,s.name as state,f.type,p.type as payment_type');
 
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id', 'left');
+        $this->db->join(TBL_DONORS . ' as d', 'fu.donor_id=d.id', 'left');
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'fu.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'd.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'd.state_id=s.id', 'left');
-        $this->db->join(TBL_PAYMENT_TYPES . ' as p', 'd.payment_type_id=p.id', 'left');
+        $this->db->join(TBL_PAYMENT_TYPES . ' as p', 'fu.payment_type_id=p.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -128,18 +129,18 @@ class Donors_model extends MY_Model {
             $dates = explode('-', $post_date_filter);
             $startdate = date('Y-m-d', strtotime($dates[0]));
             $enddate = date('Y-m-d', strtotime($dates[1]));
-            $this->db->where('d.post_date >=', $startdate);
-            $this->db->where('d.post_date <=', $enddate);
+            $this->db->where('fu.post_date >=', $startdate);
+            $this->db->where('fu.post_date <=', $enddate);
         }
 
-        $this->db->where(['a.is_delete' => 0, 'd.is_delete' => 0]);
+        $this->db->where(['a.is_delete' => 0, 'd.is_delete' => 0, 'fu.is_delete' => 0]);
         $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
-            $query = $this->db->get(TBL_DONORS . ' d');
+            $query = $this->db->get(TBL_FUNDS . ' fu');
             return $query->result_array();
         } else {
-            $query = $this->db->get(TBL_DONORS . ' d');
+            $query = $this->db->get(TBL_FUNDS . ' fu');
             return $query->num_rows();
         }
     }
@@ -160,12 +161,9 @@ class Donors_model extends MY_Model {
      * @param int $id
      */
     public function get_donor_details_view($id) {
-        $this->db->select('d.*,a.fund_type_id,f.type,f.name,a.action_matters_campaign,a.vendor_name,c.name as cityname, s.name as statename,p.type as payment_type');
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'd.account_id=a.id', 'left');
-        $this->db->join(TBL_FUND_TYPES . ' as f', 'f.id=a.fund_type_id', 'left');
+        $this->db->select('d.*,c.name as cityname, s.name as statename');
         $this->db->join(TBL_CITIES . ' as c', 'd.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'd.state_id=s.id', 'left');
-        $this->db->join(TBL_PAYMENT_TYPES . ' as p', 'd.payment_type_id=p.id', 'left');
         $this->db->where(['d.id' => $id, 'd.is_delete' => 0]);
         $query = $this->db->get(TBL_DONORS . ' d');
         return $query->row_array();
