@@ -181,7 +181,13 @@
                 },
                 {
                     data: "refund",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (data == 1) {
+                            return 'Yes';
+                        } else
+                            return 'No';
+                    }
                 },
                 {
                     data: "payment_type",

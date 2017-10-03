@@ -66,46 +66,26 @@ class Guests extends MY_Controller {
             }
         } else {
             checkPrivileges('guest', 'add');
+
             if ($this->input->post('email')) {
                 $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|callback_is_uniquemail');
             }
+            $invite_date = $guest_date = $AIR_date = $logo = NULL;
             if ($this->input->post('invite_date')) {
                 $invite_date = date('Y-m-d', strtotime($this->input->post('invite_date')));
-            } else {
-                $invite_date = null;
             }
             if ($this->input->post('guest_date')) {
                 $guest_date = date('Y-m-d', strtotime($this->input->post('guest_date')));
-            } else {
-                $guest_date = null;
             }
             if ($this->input->post('email')) {
                 $AIR_date = date('Y-m-d', strtotime($this->input->post('AIR_date')));
-            } else {
-                $AIR_date = null;
             }
-            $logo = NULL;
             $data['title'] = 'Extracredit | Add Guest';
             $data['heading'] = 'Add Guest';
         }
         $data['accounts'] = $this->guests_model->get_amc_accounts();
 
         $this->form_validation->set_rules('firstname', 'First Name', 'trim|required');
-//        $this->form_validation->set_rules('lastname', 'Last Name', 'trim|required');
-//        $this->form_validation->set_rules('address', 'Address', 'trim|required');
-//        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
-//        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
-//        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
-//        $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
-//        $this->form_validation->set_rules('companyname', 'Company Name', 'trim|required');
-//
-//        $this->form_validation->set_rules('invite_date', 'Invite Date', 'trim|required');
-//        $this->form_validation->set_rules('guest_date', 'Guest Date', 'trim|required');
-//        $this->form_validation->set_rules('AIR_date', 'AIR Date', 'trim|required');
-//        $this->form_validation->set_rules('assistant', 'Assisatnt', 'trim|required');
-//        $this->form_validation->set_rules('assistant_email', 'Assisatnt Email', 'trim|required');
-//        $this->form_validation->set_rules('assistant_phone', 'Assisatnt Phone', 'trim|required');
-
 
         if ($this->form_validation->run() == TRUE) {
             $flag = 0;
@@ -122,21 +102,21 @@ class Guests extends MY_Controller {
                 }
             }
 
-//            p($_POST);
             //-- Get state id from post value
+            $state_id = $city_id = NULL;
             $state_code = $this->input->post('state_short');
             $post_city = $this->input->post('city_id');
-            if ($state_code == '') {
-                $state_id = '';
-            } else {
+            if (!empty($state_code)) {
                 $state = $this->guests_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
                 $state_id = $state['id'];
-            }
-            $city = $this->guests_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
-            if (!empty($city)) {
-                $city_id = $city['id'];
-            } else {
-                $city_id = $this->guests_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                if (!empty($post_city)) {
+                    $city = $this->guests_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+                    if (!empty($city)) {
+                        $city_id = $city['id'];
+                    } else {
+                        $city_id = $this->guests_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                    }
+                }
             }
 
             if ($flag == 0) {
@@ -154,7 +134,7 @@ class Guests extends MY_Controller {
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
                     'invite_date' => $invite_date,
-                    'guest_date' => $invite_date,
+                    'guest_date' => $guest_date,
                     'AIR_date' => $AIR_date,
                     'AMC_created' => ($this->input->post('AMC_created') == 1) ? 1 : 0,
                     'assistant' => $this->input->post('assistant'),
@@ -167,35 +147,39 @@ class Guests extends MY_Controller {
                     $this->guests_model->common_insert_update('update', TBL_GUESTS, $dataArr, ['id' => $id]);
 
                     if ($guest['email'] != $dataArr['email']) {
-                        $subscriber = get_mailchimp_subscriber($guest['email']);
-                        if (!empty($subscriber)) {
-                            $interests = $subscriber['interests'];
-                            if ($interests[DONORS_GROUP_ID] == 1 || $interests[ACCOUNTS_GROUP_ID] == 1) {
-                                $mailchimp_data = array(
-                                    'email_address' => $guest['email'],
-                                    'interests' => array(GUESTS_GROUP_ID => false)
-                                );
-                            } else {
-                                //-- Update old entry to unsubscribed and add new to subscribed
-                                $mailchimp_data = array(
-                                    'email_address' => $guest['email'],
-                                    'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                    'interests' => array(GUESTS_GROUP_ID => false)
-                                );
+                        if (!empty($guest['email'])) {
+                            $subscriber = get_mailchimp_subscriber($guest['email']);
+                            if (!empty($subscriber)) {
+                                $interests = $subscriber['interests'];
+                                if ($interests[DONORS_GROUP_ID] == 1 || $interests[ACCOUNTS_GROUP_ID] == 1) {
+                                    $mailchimp_data = array(
+                                        'email_address' => $guest['email'],
+                                        'interests' => array(GUESTS_GROUP_ID => false)
+                                    );
+                                } else {
+                                    //-- Update old entry to unsubscribed and add new to subscribed
+                                    $mailchimp_data = array(
+                                        'email_address' => $guest['email'],
+                                        'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                        'interests' => array(GUESTS_GROUP_ID => false)
+                                    );
+                                }
+                                mailchimp($mailchimp_data);
                             }
-                            mailchimp($mailchimp_data);
                         }
 
-                        $mailchimp_data = array(
-                            'email_address' => $dataArr['email'],
-                            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-                            'merge_fields' => [
-                                'FNAME' => $dataArr['firstname'],
-                                'LNAME' => $dataArr['lastname']
-                            ],
-                            'interests' => array(GUESTS_GROUP_ID => true)
-                        );
-                        mailchimp($mailchimp_data);
+                        if (!empty($dataArr['email'])) {
+                            $mailchimp_data = array(
+                                'email_address' => $dataArr['email'],
+                                'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                'merge_fields' => [
+                                    'FNAME' => $dataArr['firstname'],
+                                    'LNAME' => $dataArr['lastname']
+                                ],
+                                'interests' => array(GUESTS_GROUP_ID => true)
+                            );
+                            mailchimp($mailchimp_data);
+                        }
                     }
 
                     $this->session->set_flashdata('success', 'Guest details has been updated successfully.');
@@ -203,16 +187,18 @@ class Guests extends MY_Controller {
                     $dataArr['created'] = date('Y-m-d H:i:s');
                     $this->guests_model->common_insert_update('insert', TBL_GUESTS, $dataArr);
                     //-- Insert account email into mailchimp subscriber list
-                    $mailchimp_data = array(
-                        'email_address' => $dataArr['email'],
-                        'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-                        'merge_fields' => [
-                            'FNAME' => $dataArr['firstname'],
-                            'LNAME' => $dataArr['lastname'],
-                        ],
-                        'interests' => array(GUESTS_GROUP_ID => true)
-                    );
-                    mailchimp($mailchimp_data);
+                    if (!empty($dataArr['email'])) {
+                        $mailchimp_data = array(
+                            'email_address' => $dataArr['email'],
+                            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                            'merge_fields' => [
+                                'FNAME' => $dataArr['firstname'],
+                                'LNAME' => $dataArr['lastname'],
+                            ],
+                            'interests' => array(GUESTS_GROUP_ID => true)
+                        );
+                        mailchimp($mailchimp_data);
+                    }
                     $this->session->set_flashdata('success', 'Guest has been added successfully');
                 }
                 redirect('guests');
@@ -261,25 +247,26 @@ class Guests extends MY_Controller {
                 );
                 $this->guests_model->common_insert_update('update', TBL_GUESTS, $update_array, ['id' => $id]);
                 //--delete subscriber from list
-                $subscriber = get_mailchimp_subscriber($guest['email']);
-                if (!empty($subscriber)) {
-                    $interests = $subscriber['interests'];
-                    if ($interests[DONORS_GROUP_ID] == 1 || $interests[ACCOUNTS_GROUP_ID] == 1) {
-                        $mailchimp_data = array(
-                            'email_address' => $guest['email'],
-                            'interests' => array(GUESTS_GROUP_ID => false)
-                        );
-                    } else {
-                        //-- Update old entry to unsubscribed and add new to subscribed
-                        $mailchimp_data = array(
-                            'email_address' => $guest['email'],
-                            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                            'interests' => array(GUESTS_GROUP_ID => false)
-                        );
+                if (!empty($guest['email'])) {
+                    $subscriber = get_mailchimp_subscriber($guest['email']);
+                    if (!empty($subscriber)) {
+                        $interests = $subscriber['interests'];
+                        if ($interests[DONORS_GROUP_ID] == 1 || $interests[ACCOUNTS_GROUP_ID] == 1) {
+                            $mailchimp_data = array(
+                                'email_address' => $guest['email'],
+                                'interests' => array(GUESTS_GROUP_ID => false)
+                            );
+                        } else {
+                            //-- Update old entry to unsubscribed and add new to subscribed
+                            $mailchimp_data = array(
+                                'email_address' => $guest['email'],
+                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                'interests' => array(GUESTS_GROUP_ID => false)
+                            );
+                        }
+                        mailchimp($mailchimp_data);
                     }
-                    mailchimp($mailchimp_data);
                 }
-
                 $this->session->set_flashdata('success', $guest['firstname'] . ' ' . $guest['lastname'] . ' has been deleted successfully!');
             } else {
                 $this->session->set_flashdata('error', 'Invalid request. Please try again!');

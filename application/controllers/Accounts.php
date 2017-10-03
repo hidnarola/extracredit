@@ -73,13 +73,6 @@ class Accounts extends MY_Controller {
 
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
         $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
-//        $this->form_validation->set_rules('address', 'Address', 'trim|required');
-//        $this->form_validation->set_rules('state_id', 'State', 'trim|required|callback_state_validation');
-//        $this->form_validation->set_rules('city_id', 'City', 'trim|required');
-//        $this->form_validation->set_rules('zip', 'Zip', 'trim|required');
-//        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-//        $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
-//        $this->form_validation->set_rules('website', 'Website', 'trim|required');
 
         if ($this->input->post('fund_type_id') != '') {
             $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
@@ -87,8 +80,6 @@ class Accounts extends MY_Controller {
                 $this->form_validation->set_rules('vendor_name', 'Vendor Name', 'trim|required');
             } else {
                 $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
-//                $this->form_validation->set_rules('tax_id', 'Tax ID', 'trim|required');
-//                $this->form_validation->set_rules('program_type_id', 'Prgram Type', 'trim|required');
             }
         } else {
             $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
@@ -98,21 +89,21 @@ class Accounts extends MY_Controller {
         if ($this->form_validation->run() == TRUE) {
 
             //-- Get state id from post value
-            $state_code = $this->input->post('state_short');
+            $state_id = $city_id = NULL;
 
-            $post_city = $this->input->post('city_id');
-            if ($state_code == '') {
-                $state_id = '';
-            } else {
+            $state_code = $this->input->post('state_short');
+            if (!empty($state_code)) {
+                $post_city = $this->input->post('city_id');
                 $state = $this->accounts_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
                 $state_id = $state['id'];
-            }
-
-            $city = $this->accounts_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
-            if (!empty($city)) {
-                $city_id = $city['id'];
-            } else {
-                $city_id = $this->accounts_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                if (!empty($post_city)) {
+                    $city = $this->accounts_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+                    if (!empty($city)) {
+                        $city_id = $city['id'];
+                    } else {
+                        $city_id = $this->accounts_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                    }
+                }
             }
 
             $dataArr = array(
@@ -127,6 +118,7 @@ class Accounts extends MY_Controller {
                 'phone' => $this->input->post('phone'),
                 'website' => $this->input->post('website'),
             );
+
             $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
             if ($fund_type['type'] == 1) {
                 $dataArr['vendor_name'] = $this->input->post('vendor_name');
@@ -146,24 +138,45 @@ class Accounts extends MY_Controller {
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $dataArr, ['id' => $id]);
 
                 if ($account['email'] != $dataArr['email']) {
-                    $subscriber = get_mailchimp_subscriber($account['email']);
-                    if (!empty($subscriber)) {
-                        $interests = $subscriber['interests'];
-                        if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
-                            $mailchimp_data = array(
-                                'email_address' => $account['email'],
-                                'interests' => array(ACCOUNTS_GROUP_ID => false)
-                            );
-                        } else {
-                            //-- Update old entry to unsubscribed and add new to subscribed
-                            $mailchimp_data = array(
-                                'email_address' => $account['email'],
-                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                'interests' => array(ACCOUNTS_GROUP_ID => false)
-                            );
+                    if (!empty($account['email'])) {
+                        $subscriber = get_mailchimp_subscriber($account['email']);
+                        if (!empty($subscriber)) {
+                            $interests = $subscriber['interests'];
+                            if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                                $mailchimp_data = array(
+                                    'email_address' => $account['email'],
+                                    'interests' => array(ACCOUNTS_GROUP_ID => false)
+                                );
+                            } else {
+                                //-- Update old entry to unsubscribed and add new to subscribed
+                                $mailchimp_data = array(
+                                    'email_address' => $account['email'],
+                                    'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                    'interests' => array(ACCOUNTS_GROUP_ID => false)
+                                );
+                            }
+                            mailchimp($mailchimp_data);
                         }
+                    }
+                    if (!empty($dataArr['email'])) {
+                        $mailchimp_data = array(
+                            'email_address' => $dataArr['email'],
+                            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                            'merge_fields' => [
+                                'FNAME' => $dataArr['contact_name']
+                            ],
+                            'interests' => array(ACCOUNTS_GROUP_ID => true)
+                        );
                         mailchimp($mailchimp_data);
                     }
+                }
+                $this->session->set_flashdata('success', 'Account details has been updated successfully.');
+            } else {
+                $dataArr['created'] = date('Y-m-d H:i:s');
+                $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $dataArr);
+
+                //-- Insert account email into mailchimp subscriber list
+                if (!empty($dataArr['email'])) {
                     $mailchimp_data = array(
                         'email_address' => $dataArr['email'],
                         'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
@@ -174,21 +187,6 @@ class Accounts extends MY_Controller {
                     );
                     mailchimp($mailchimp_data);
                 }
-                $this->session->set_flashdata('success', 'Account details has been updated successfully.');
-            } else {
-                $dataArr['created'] = date('Y-m-d H:i:s');
-                $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $dataArr);
-
-                //-- Insert account email into mailchimp subscriber list
-                $mailchimp_data = array(
-                    'email_address' => $dataArr['email'],
-                    'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-                    'merge_fields' => [
-                        'FNAME' => $dataArr['contact_name']
-                    ],
-                    'interests' => array(ACCOUNTS_GROUP_ID => true)
-                );
-                mailchimp($mailchimp_data);
                 $this->session->set_flashdata('success', 'Account has been added successfully');
             }
             redirect('accounts');
@@ -264,23 +262,25 @@ class Accounts extends MY_Controller {
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $update_array, ['id' => $id]);
 
                 //--Delete subscriber from account list
-                $subscriber = get_mailchimp_subscriber($account['email']);
-                if (!empty($subscriber)) {
-                    $interests = $subscriber['interests'];
-                    if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
-                        $mailchimp_data = array(
-                            'email_address' => $account['email'],
-                            'interests' => array(ACCOUNTS_GROUP_ID => false)
-                        );
-                    } else {
-                        //-- Update old entry to unsubscribed and add new to subscribed
-                        $mailchimp_data = array(
-                            'email_address' => $account['email'],
-                            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                            'interests' => array(ACCOUNTS_GROUP_ID => false)
-                        );
+                if (!empty($account['email'])) {
+                    $subscriber = get_mailchimp_subscriber($account['email']);
+                    if (!empty($subscriber)) {
+                        $interests = $subscriber['interests'];
+                        if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                            $mailchimp_data = array(
+                                'email_address' => $account['email'],
+                                'interests' => array(ACCOUNTS_GROUP_ID => false)
+                            );
+                        } else {
+                            //-- Update old entry to unsubscribed and add new to subscribed
+                            $mailchimp_data = array(
+                                'email_address' => $account['email'],
+                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                'interests' => array(ACCOUNTS_GROUP_ID => false)
+                            );
+                        }
+                        mailchimp($mailchimp_data);
                     }
-                    mailchimp($mailchimp_data);
                 }
                 $this->session->set_flashdata('success', 'Account has been deleted successfully!');
             } else {
@@ -341,6 +341,28 @@ class Accounts extends MY_Controller {
             return FALSE;
         } else {
             return TRUE;
+        }
+    }
+
+    /**
+     * Get all accounts transactions
+     */
+    public function transactions($account_id = NULL) {
+        checkPrivileges('accounts', 'view');
+        $account_id = base64_decode($account_id);
+        if (is_numeric($account_id)) {
+            $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
+            if (!empty($account)) {
+                $data['account'] = $account;
+                $data['title'] = 'Extracredit | Account Transactions';
+                $data['transactions'] = $this->accounts_model->get_account_transactions($account_id);
+                $this->template->load('default', 'accounts/transactions', $data);
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+                redirect('accounts');
+            }
+        } else {
+            show_404();
         }
     }
 

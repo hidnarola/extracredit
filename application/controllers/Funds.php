@@ -29,9 +29,12 @@ class Funds extends MY_Controller {
         checkPrivileges('admin_fund', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_adminfund('count');
         $final['redraw'] = 1;
+        $start = $this->input->get('start') + 1;
+
         $admin_fund = $this->funds_model->get_adminfund('result');
         foreach ($admin_fund as $key => $val) {
             $admin_fund[$key] = $val;
+            $admin_fund[$key]['sr_no'] = $start++;
             if (!empty($val['date']))
                 $admin_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
             else
@@ -61,17 +64,12 @@ class Funds extends MY_Controller {
         checkPrivileges('account_fund', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->funds_model->get_accountfund('count');
         $final['redraw'] = 1;
+        $start = $this->input->get('start') + 1;
+
         $account_fund = $this->funds_model->get_accountfund('result');
         foreach ($account_fund as $key => $val) {
             $account_fund[$key] = $val;
-            if (!empty($val['date']))
-                $account_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
-            else
-                $account_fund[$key]['date'] = '-';
-            if (!empty($val['post_date']))
-                $account_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
-            else
-                $account_fund[$key]['post_date'] = '-';
+            $account_fund[$key]['sr_no'] = $start++;
         }
         $final['data'] = $account_fund;
         echo json_encode($final);
@@ -126,6 +124,29 @@ class Funds extends MY_Controller {
         }
         $final['data'] = $donor_fund;
         echo json_encode($final);
+    }
+
+    /**
+     * Get all accounts transactions
+     */
+    public function transactions($account_id = NULL) {
+        $this->load->model('accounts_model');
+        checkPrivileges('account_fund', 'view');
+        $account_id = base64_decode($account_id);
+        if (is_numeric($account_id)) {
+            $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
+            if (!empty($account)) {
+                $data['account'] = $account;
+                $data['title'] = 'Extracredit | Account Transactions';
+                $data['transactions'] = $this->accounts_model->get_account_transactions($account_id);
+                $this->template->load('default', 'funds/transactions', $data);
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+                redirect('accounts');
+            }
+        } else {
+            show_404();
+        }
     }
 
 }

@@ -38,73 +38,65 @@ if ($get_date != '') {
 <style>.dashboard_layout .dash-icon{margin-top: -5px;}</style>
 <div class="content">
     <div class="row dashboard_layout">
-        <?php if ($this->session->userdata('extracredit_user')['role'] == 'admin') { ?>
-        <?php } ?>
-        <div class="col-lg-3">
-            <!-- Total Donors -->
-            <div class="panel bg-indigo-400">
-                <div class="panel-body">
-                    <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white dash-icon"><i class="icon-coins"></i></div>
-                    </div>
-                    <a href="<?php echo site_url('donors') ?>"  style="color: white">
+        <div class="col-sm-6 col-md-3">
+            <div class="panel panel-body bg-teal-400 has-bg-image">
+            <!--<div class="panel panel-body bg-blue-400 has-bg-image">-->
+                <div class="media no-margin">
+                    <div class="media-body">
                         <h3 class="no-margin"><?php echo $donors; ?></h3>
-                        Donors
-                    </a>
+                        <span class="text-uppercase text-size-mini">Donors</span>
+                    </div>
+                    <div class="media-right media-middle">
+                        <i class="icon-coins icon-3x opacity-75"></i>
+                    </div>
                 </div>
             </div>
-            <!-- /Total Donors -->
         </div>
-
-        <div class="col-lg-3">
-            <!-- Total Guests -->
-            <div class="panel bg-warning-400">
-                <div class="panel-body">
-                    <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white dash-icon"><i class="icon-people"></i></div>
-                    </div>
-                    <a href="<?php echo site_url('guests') ?>"  style="color: white">
+        <div class="col-sm-6 col-md-3">
+            <!--<div class="panel panel-body bg-danger-400 has-bg-image">-->
+            <div class="panel panel-body bg-pink-400 has-bg-image">
+                <div class="media no-margin">
+                    <div class="media-body">
                         <h3 class="no-margin"><?php echo $guests; ?></h3>
-                        Guests
-                    </a>
+                        <span class="text-uppercase text-size-mini">Guests</span>
+                    </div>
+                    <div class="media-right media-middle">
+                        <i class="icon-people icon-3x opacity-75"></i>
+                    </div>
                 </div>
             </div>
-            <!-- /Total Guests -->
         </div>
-        <div class="col-lg-3">
-            <!-- Total Accounts -->
-            <div class="panel bg-teal-400">
-                <div class="panel-body">
-                    <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white dash-icon"><i class="icon-calculator3"></i></div>
-                    </div>
-                    <a href="<?php echo site_url('accounts') ?>"  style="color: white">
+        <div class="col-sm-6 col-md-3">
+            <!--<div class="panel panel-body bg-success-400 has-bg-image">-->
+            <div class="panel panel-body bg-slate-400 has-bg-image">
+                <div class="media no-margin">
+                    <div class="media-body">
                         <h3 class="no-margin"><?php echo $accounts; ?></h3>
-                        Accounts
-                    </a>
-                </div>
-            </div>
-            <!-- /Total Accounts -->
-        </div>
-        <div class="col-lg-3">
-            <!-- Total Payments -->
-            <div class="panel bg-pink-400">
-                <div class="panel-body">
-                    <div class="heading-elements icon-dasboard">
-                        <div class="icon-object border-white text-white dash-icon"><i class="icon-credit-card"></i></div>
+                        <span class="text-uppercase text-size-mini">Accounts</span>
                     </div>
-                    <a href="<?php echo site_url('payments') ?>"  style="color: white">
-                        <h3 class="no-margin"><?php echo $payments; ?></h3>
-                        Payments
-                    </a>
+                    <div class="media-right media-middle">
+                        <i class="icon-calculator3 icon-3x opacity-75"></i>
+                    </div>
                 </div>
             </div>
-            <!-- /Total Payments -->
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="panel panel-body bg-indigo-400 has-bg-image">
+                <div class="media no-margin">
+                    <div class="media-body">
+                        <h3 class="no-margin"><?php echo $payments; ?></h3>
+                        <span class="text-uppercase text-size-mini">Payments</span>
+                    </div>
+                    <div class="media-right media-middle">
+                        <i class="icon-credit-card icon-3x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">               
         <!-- Admin Fund -->
-        <div class="col-lg-5">
+        <div class="col-lg-5 col-lg-offset-1">
             <div class="panel panel-flat">
                 <div class="panel-heading">
                     <h6 class="panel-title">Admin Fund</h6>
@@ -118,19 +110,19 @@ if ($get_date != '') {
                     <div class="row text-center">
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_admin_fund != '' && $today_admin_fund > 0) ?  '$'.round($today_admin_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_admin_fund != '' && $today_admin_fund > 0) ? '$' . round($today_admin_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">Today</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_admin_fund != '' && $week_admin_fund > 0) ?  '$'.round($week_admin_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_admin_fund != '' && $week_admin_fund > 0) ? '$' . round($week_admin_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">This week</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo '$'.round($this->admin_fund, 2); ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo '$' . round($this->admin_fund, 2); ?></h6>
                                 <span class="text-muted text-size-small">Total Fund</span>
                             </div>
                         </div>
@@ -154,19 +146,19 @@ if ($get_date != '') {
                     <div class="row text-center">
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_account_fund != '' && $today_account_fund > 0) ?  '$'.round($today_account_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-clipboard3 position-left text-slate"></i> <?php echo ($today_account_fund != '' && $today_account_fund > 0) ? '$' . round($today_account_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">Today</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_account_fund != '' && $week_account_fund > 0) ?  '$'.round($week_account_fund, 2) : 0 ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-calendar3 position-left text-slate"></i> <?php echo ($week_account_fund != '' && $week_account_fund > 0) ? '$' . round($week_account_fund, 2) : 0 ?></h6>
                                 <span class="text-muted text-size-small">This week</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="content-group">
-                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo  '$'.round($total_account_fund, 2); ?></h6>
+                                <h6 class="text-semibold no-margin"><i class="icon-cash3 position-left text-slate"></i> <?php echo '$' . round($total_account_fund, 2); ?></h6>
                                 <span class="text-muted text-size-small">Total Fund</span>
                             </div>
                         </div>

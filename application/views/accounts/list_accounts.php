@@ -49,7 +49,7 @@
                     <th>Total Fund</th>
                     <th>Added Date</th>
                     <th>Active</th>
-                    <th style="width: 117px;">Action</th>
+                    <th>Action</th>
                 </tr>
             </thead>
         </table>
@@ -58,9 +58,10 @@
 </div>
 <script>
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
-     var permissions = <?php echo json_encode($perArr); ?>;
+    var permissions = <?php echo json_encode($perArr); ?>;
     $(function () {
         $('.datatable-basic').dataTable({
+            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
@@ -139,6 +140,9 @@
                         if ($.inArray('edit', permissions) !== -1) {
                             action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Account"><i class="icon-pencil3"></i></a>';
                         }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" class="btn border-teal text-teal-600 btn-flat btn-icon btn-rounded btn-xs" title="View Transactions"><i class="icon-coins"></i></a>';
+                        }
                         if ($.inArray('delete', permissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i></a>'
                         }
@@ -163,14 +167,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
 </script>

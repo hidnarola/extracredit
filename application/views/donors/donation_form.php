@@ -29,6 +29,7 @@ if (isset($donation)) {
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('donors'); ?>"><i class="icon-coins position-left"></i> Donors</a></li>
+            <li><a href="<?php echo site_url('donors/donations/' . base64_encode($donor['id'])); ?>"> Donations</a></li>
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>

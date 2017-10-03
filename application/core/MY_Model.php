@@ -247,6 +247,16 @@ class MY_Model extends CI_Model {
         return $query->result_array();
     }
 
+    /**
+     * Return current totalt admin fund
+     * @return decimal Total admin fund
+     * @author KU
+     */
+    public function get_admin_fund() {
+        $fund = $this->users_model->sql_select(TBL_USERS, 'total_fund', ['where' => ['role' => 'admin']], ['single' => true]);
+        return $fund['total_fund'];
+    }
+
 }
 
 /* End of file MY_Model.php */

@@ -54,7 +54,6 @@ class Donors extends MY_Controller {
                 $data['donor'] = $donor;
                 $data['title'] = 'Extracredit | Edit Donor';
                 $data['heading'] = 'Edit Donor';
-                $data['accounts'] = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['fund_type_id' => $donor['fund_type_id']]]);
             } else {
                 show_404();
             }
@@ -62,7 +61,6 @@ class Donors extends MY_Controller {
             checkPrivileges('donors', 'add');
             $data['title'] = 'Extracredit | Add Donor';
             $data['heading'] = 'Add Donor';
-            $data['accounts'] = [];
         }
         $settings = $this->users_model->sql_select(TBL_SETTINGS);
         $settings_arr = [];
@@ -94,23 +92,20 @@ class Donors extends MY_Controller {
 
         if ($this->form_validation->run() == TRUE) {
             $state_id = $city_id = NULL;
-            if ($this->input->post('zip') != '') {
+            $state_code = $this->input->post('state_short');
+
+            if (!empty($state_code)) {
                 //-- Get state id from post value
-                $state_code = $this->input->post('state_short');
                 $post_city = $this->input->post('city');
-                if ($state_code == '') {
-                    $state_id = '';
-                } else {
-                    $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-                    $state_id = $state['id'];
-                }
-//                $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-//                $state_id = $state['id'];
-                $city = $this->donors_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
-                if (!empty($city)) {
-                    $city_id = $city['id'];
-                } else {
-                    $city_id = $this->donors_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
+                $state_id = $state['id'];
+                if (!empty($post_city)) {
+                    $city = $this->donors_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+                    if (!empty($city)) {
+                        $city_id = $city['id'];
+                    } else {
+                        $city_id = $this->donors_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                    }
                 }
             }
 
@@ -168,24 +163,26 @@ class Donors extends MY_Controller {
                 $this->session->set_flashdata('success', 'Donor details has been updated successfully.');
 
                 if ($donor['email'] != $dataArr['email']) {
-                    $subscriber = get_mailchimp_subscriber($donor['email']);
-                    if (!empty($subscriber)) {
-                        $interests = $subscriber['interests'];
-                        if ($interests[ACCOUNTS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
-                            $mailchimp_data = array(
-                                'email_address' => $donor['email'],
-                                'interests' => array(DONORS_GROUP_ID => false)
-                            );
-                        } else {
-                            //-- Update old entry to unsubscribed and add new to subscribed
-                            $mailchimp_data = array(
-                                'email_address' => $donor['email'],
-                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                'interests' => array(DONORS_GROUP_ID => false)
-                            );
+                    if (!empty($donor['email'])) {
+                        $subscriber = get_mailchimp_subscriber($donor['email']);
+                        if (!empty($subscriber)) {
+                            $interests = $subscriber['interests'];
+                            if ($interests[ACCOUNTS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                                $mailchimp_data = array(
+                                    'email_address' => $donor['email'],
+                                    'interests' => array(DONORS_GROUP_ID => false)
+                                );
+                            } else {
+                                //-- Update old entry to unsubscribed and add new to subscribed
+                                $mailchimp_data = array(
+                                    'email_address' => $donor['email'],
+                                    'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                    'interests' => array(DONORS_GROUP_ID => false)
+                                );
+                            }
+                            mailchimp($mailchimp_data);
                         }
                     }
-                    mailchimp($mailchimp_data);
                     if (!empty($dataArr['email'])) {
                         $mailchimp_data = array(
                             'email_address' => $dataArr['email'],
@@ -208,13 +205,18 @@ class Donors extends MY_Controller {
                 if (!empty($fund_array)) {
                     $fund_array['donor_id'] = $id;
                     $fund_array['created'] = date('Y-m-d H:i:s');
-                    $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
 
                     //---get account's total fund 
                     $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
+
                     $total_fund = $account['total_fund'];
                     $admin_fund = $account['admin_fund'];
                     $total_admin_fund = $this->admin_fund;
+
+                    $fund_array['admin_balance'] = $total_admin_fund + $admin_amount;
+                    $fund_array['account_balance'] = $total_fund + $account_amount;
+
+                    $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
                     $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
                     $this->donors_model->update_admin_fund($total_admin_fund + $admin_amount);
                 }
@@ -353,24 +355,25 @@ class Donors extends MY_Controller {
                 $this->db->trans_complete();
 
                 //--Delete subscriber from donors list
-
-                $subscriber = get_mailchimp_subscriber($donor['email']);
-                if (!empty($subscriber)) {
-                    $interests = $subscriber['interests'];
-                    if ($interests[ACCOUNTS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
-                        $mailchimp_data = array(
-                            'email_address' => $donor['email'],
-                            'interests' => array(DONORS_GROUP_ID => false)
-                        );
-                    } else {
-                        //-- Update old entry to unsubscribed and add new to subscribed
-                        $mailchimp_data = array(
-                            'email_address' => $donor['email'],
-                            'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                            'interests' => array(DONORS_GROUP_ID => false)
-                        );
+                if (!empty($donor['email'])) {
+                    $subscriber = get_mailchimp_subscriber($donor['email']);
+                    if (!empty($subscriber)) {
+                        $interests = $subscriber['interests'];
+                        if ($interests[ACCOUNTS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                            $mailchimp_data = array(
+                                'email_address' => $donor['email'],
+                                'interests' => array(DONORS_GROUP_ID => false)
+                            );
+                        } else {
+                            //-- Update old entry to unsubscribed and add new to subscribed
+                            $mailchimp_data = array(
+                                'email_address' => $donor['email'],
+                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                'interests' => array(DONORS_GROUP_ID => false)
+                            );
+                        }
+                        mailchimp($mailchimp_data);
                     }
-                    mailchimp($mailchimp_data);
                 }
 
                 $this->session->set_flashdata('success', 'Donor has been deleted successfully!');
@@ -441,6 +444,7 @@ class Donors extends MY_Controller {
     public function add_communication($donor_id = null, $comm_id = null) {
         if (!is_null($donor_id))
             $donor_id = base64_decode($donor_id);
+
         $comm_id = base64_decode($comm_id);
         if (is_numeric($comm_id)) {
             checkPrivileges('donors_communication', 'edit');
@@ -715,20 +719,41 @@ class Donors extends MY_Controller {
 
                                 $this->db->trans_begin();
 
-                                $donor_id = $this->donors_model->common_insert_update('insert', TBL_DONORS, $val);
+                                $donor_arr = [
+                                    'firstname' => $val['firstname'],
+                                    'lastname' => $val['lastname'],
+                                    'address' => $val['address'],
+                                    'city_id' => $val['city_id'],
+                                    'state_id' => $val['state_id'],
+                                    'zip' => $val['zip'],
+                                    'email' => $val['email'],
+                                    'amount' => $val['amount'],
+                                    'created' => $val['created']
+                                ];
+                                $donor_id = $this->donors_model->common_insert_update('insert', TBL_DONORS, $donor_arr);
+                                $admin_total_fund = $this->donors_model->get_admin_fund();
 
                                 $fund_array = array(
                                     'account_id' => $account_id,
                                     'donor_id' => $donor_id,
                                     'admin_fund' => $admin_amount,
                                     'account_fund' => $account_amount,
+                                    'admin_balance' => $admin_total_fund + $admin_amount,
+                                    'account_balance' => $total_fund + $account_amount,
+                                    'admin_percent' => $settings_arr['admin-donation-percent'],
+                                    'account_percent' => $settings_arr['program-donation-percent'],
+                                    'date' => $val['date'],
+                                    'post_date' => $val['post_date'],
+                                    'payment_type_id' => $val['payment_type_id'],
+                                    'payment_number' => $val['payment_number'],
+                                    'memo' => $val['memo'],
                                     'created' => date('Y-m-d H:i:s')
                                 );
 
                                 $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
 
                                 $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
-                                $this->donors_model->update_admin_fund($this->admin_fund + $admin_amount);
+                                $this->donors_model->update_admin_fund($admin_total_fund + $admin_amount);
 
                                 $this->db->trans_complete();
                             }
@@ -908,7 +933,6 @@ class Donors extends MY_Controller {
 
             if ($this->form_validation->run() == TRUE) {
                 $amount = $account_amount = $admin_amount = 0;
-                $fund_array = [];
 
                 $fund_array = array(
                     'donor_id' => $donor_id,
@@ -943,13 +967,18 @@ class Donors extends MY_Controller {
                     $fund_array['account_percent'] = $program_donatoin;
                     $fund_array['created'] = date('Y-m-d H:i:s');
 
-                    $id = $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
 
                     //---get account's total fund 
                     $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
                     $total_fund = $account['total_fund'];
                     $admin_fund = $account['admin_fund'];
                     $total_admin_fund = $this->admin_fund;
+
+                    $fund_array['admin_balance'] = $total_admin_fund + $admin_amount;
+                    $fund_array['account_balance'] = $total_fund + $account_amount;
+
+                    $id = $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
+
                     $this->donors_model->common_insert_update('update', TBL_DONORS, ['amount' => $donor['amount'] + $amount], ['id' => $donor_id]);
                     $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
                     $this->donors_model->update_admin_fund($total_admin_fund + $admin_amount);

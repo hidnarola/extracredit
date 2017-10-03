@@ -97,7 +97,7 @@ class Payments extends MY_Controller {
                 $is_valid = 1;
                 if ($payment['type'] == 1) {
                     $admin_fund = $this->admin_fund + $payment['amount'];
-                    $dataArr['account_fund'] = $admin_fund;
+                    $dataArr['account_balance'] = $admin_fund - $this->input->post('amount');
                     if ($admin_fund >= $this->input->post('amount')) {
                         $admin_fund = $admin_fund - $this->input->post('amount');
                         $this->payments_model->update_admin_fund($admin_fund);
@@ -107,7 +107,7 @@ class Payments extends MY_Controller {
                     }
                 } else {
                     $account_fund = $payment['total_fund'] + $payment['amount'];
-                    $dataArr['account_fund'] = $account_fund;
+                    $dataArr['account_balance'] = $account_fund - $this->input->post('amount');
                     if ($account_fund >= $this->input->post('amount')) {
                         $account_fund = $account_fund - $this->input->post('amount');
                         $this->payments_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_fund], ['id' => $account_id]);
@@ -130,7 +130,7 @@ class Payments extends MY_Controller {
                 $is_valid = 1;
                 if ($account_details['type'] == 1) {
                     $admin_fund = $this->admin_fund;
-                    $dataArr['account_fund'] = $admin_fund;
+                    $dataArr['account_balance'] = $admin_fund - $this->input->post('amount');
 
                     if ($admin_fund >= $this->input->post('amount')) {
                         $admin_fund = $admin_fund - $this->input->post('amount');
@@ -141,7 +141,7 @@ class Payments extends MY_Controller {
                     }
                 } else {
                     $account_fund = $account_details['total_fund'];
-                    $dataArr['account_fund'] = $account_fund;
+                    $dataArr['account_balance'] = $account_fund - $this->input->post('amount');
 
                     if ($account_fund >= $this->input->post('amount')) {
                         $account_fund = $account_fund - $this->input->post('amount');

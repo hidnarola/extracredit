@@ -50,7 +50,6 @@
             <br/>
             <br/>
         </div>
-        <div class="table-responsive">
             <table class="table datatable-basic">
                 <thead>
                     <tr>
@@ -65,7 +64,6 @@
                     </tr>
                 </thead>
             </table>
-        </div>
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
@@ -122,7 +120,7 @@
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
-            scrollX: true,
+//            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
@@ -174,29 +172,41 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
+                        action += '<ul class="icons-list">';
+                        action += '<li class="dropdown">';
+                        action += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+                        action += '<i class="icon-menu9"></i>';
+                        action += '</a>';
+                        action += '<ul class="dropdown-menu dropdown-menu-right">';
+                        action += '<li>';
                         if (full.refund == 0) {
                             if ($.inArray('edit', permissions) !== -1) {
-                                action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donor"><i class="icon-pencil3"></i></a>';
+                                action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" title="Edit Donor"><i class="icon-pencil3"></i> Edit Donor</a>';
                             }
                             if ($.inArray('edit', permissions) !== -1) {
-                                action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" title="View Donations"><i class="icon-credit-card2"></i></a>';
+                                action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" title="View Donations"><i class="icon-coins"></i> View Donations</a>';
                             }
                             if ($.inArray('edit', permissions) !== -1) {
-                                action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-pink text-pink-600 btn-flat btn-icon btn-rounded btn-xs" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i></a>';
+                                action += '&nbsp;&nbsp;<a href="javascript:void(0)" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i> Refund</a>';
                             }
                         }
                         if ($.inArray('view', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs donor_view_btn" id=' + btoa(full.id) + ' title="View Details"><i class="icon-eye"></i></a>';
+                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" id=' + btoa(full.id) + ' title="View Details"><i class="icon-eye"></i> View Details</a>';
                         }
                         if ($.inArray('view', compermissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i></a>'
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i> Delete Donor</a>'
                         }
+                        action += '</li>';
+                        action += '</ul>';
+                        action += '</li>';
+                        action += '</ul>';
                         return action;
                     }
                 }
+
             ],
             createdRow: function (row, data, index) {
                 if (data.refund == 1) {

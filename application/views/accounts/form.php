@@ -172,7 +172,6 @@ if (isset($account)) {
                                 <div class="program_div" <?php echo $program_div_style ?>>
                                     <label class="col-lg-1 control-label">Tax ID </label>
                                     <div class="col-lg-4">
-                                        <!--<input type="text" name="tax_id" id="tax_id" placeholder="Enter Tax ID" class="form-control" value="<?php // echo (isset($account) && $account['tax_id']) ? $account['tax_id'] : set_value('tax_id'); ?>" <?php // echo $program_required ?> data-mask="99-9999999">-->
                                         <input type="text" name="tax_id" id="tax_id" placeholder="Enter Tax ID" class="form-control" value="<?php echo (isset($account) && $account['tax_id']) ? $account['tax_id'] : set_value('tax_id'); ?>" data-mask="99-9999999">
                                         <?php
                                         echo '<label id="tax_id-error" class="validation-error-label" for="tax_id">' . form_error('tax_id') . '</label>';
@@ -284,17 +283,11 @@ if (isset($account)) {
                     $('.program_div').hide();
                     $("#vendor_name").rules("add", "required");
                     $("#action_matters_campaign").rules("remove", "required");
-//                    $("#tax_id").rules("remove", "required");
-//                    $("#program_type_id").rules("remove", "required");
-//                    $("#program_status_id").rules("remove", "required");
                 } else {
                     $('.vendor_div').hide();
                     $('.program_div').show();
                     $("#vendor_name").rules("remove", "required");
                     $("#action_matters_campaign").rules("add", "required");
-//                    $("#tax_id").rules("add", "required");
-//                    $("#program_type_id").rules("add", "required");
-//                    $("#program_status_id").rules("add", "required");
                 }
             }
         });
@@ -366,7 +359,6 @@ if (isset($account)) {
         },
         rules: {
             email: {
-//                required: true,
                 email: true,
                 remote: email_url,
             },

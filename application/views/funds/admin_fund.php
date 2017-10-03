@@ -37,8 +37,11 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Date</th>
                     <th>Post Date</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
                     <th>Fund Type</th>
                     <th>Sub Category</th>
                     <th>Paymt Method</th>
@@ -56,6 +59,7 @@
 <script>
     $(function () {
         $('.datatable-basic').dataTable({
+            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,
@@ -69,6 +73,11 @@
             ajax: site_url + 'funds/get_adminfund',
             columns: [
                 {
+                    data: "sr_no",
+                    visible: true,
+                    sortable: false,
+                },
+                {
                     data: "date",
                     visible: true,
                 },
@@ -77,22 +86,23 @@
                     visible: true,
                 },
                 {
+                    data: "firstname",
+                    visible: true,
+                },
+                {
+                    data: "lastname",
+                    visible: true,
+                },
+                {
                     data: "fund_type",
                     visible: true,
                 },
                 {
-                    data: "action_matters_campaign",
+                    data: "sub_category",
                     visible: true,
-                    render: function (data, type, full, meta) {
-                        if (full.type == 1) {
-                            return full.vendor_name;
-                        } else {
-                            return data;
-                        }
-                    }
                 },
                 {
-                    data: "payment_type",
+                    data: "payment_method",
                     visible: true,
                 },
                 {
@@ -104,33 +114,33 @@
                     visible: true
                 },
                 {
-                    data: "admin_fund",
+                    data: "debit_amt",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.admin_fund == null) {
-                            return '';
+                        if (data != '') {
+                            return '-$' + data;
                         } else
-                            return '$' + full.admin_fund;
+                            return '';
                     }
                 },
                 {
-                    data: "amount",
+                    data: "credit_amt",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.amount == null) {
-                            return '';
+                        if (data != '') {
+                            return '$' + data;
                         } else
-                            return '$' + full.amount;
+                            return '';
                     }
                 },
                 {
                     data: "balance",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.balance == null) {
-                            return '';
+                        if (data != '') {
+                            return '$' + data;
                         } else
-                            return '$' + full.balance;
+                            return '';
                     }
                 },
             ]
