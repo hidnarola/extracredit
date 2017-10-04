@@ -16,7 +16,10 @@
             <th>Email</th>
             <td><?php echo $donor_details['email']; ?></td>
         </tr>      
-
+        <tr>
+            <th>Phone</th>
+            <td><?php echo $donor_details['phone']; ?></td>
+        </tr>      
         <tr>
             <th>Address</th>
             <td><?php echo $donor_details['address']; ?></td>

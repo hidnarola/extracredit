@@ -3,6 +3,7 @@
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+<script type="text/javascript" src="assets/js/core/libraries/jasny_bootstrap.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdyDSU074CCHVR2oygIqTLO9_ZOZEVrWE"  type="text/javascript"></script>
 <?php
 $edit = 0;
@@ -97,6 +98,13 @@ if (isset($donor)) {
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-lg-1 control-label">Phone </label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($donor) && $donor['phone']) ? $donor['phone'] : set_value('phone'); ?>" data-mask="999-999-9999">
+                                    <?php
+                                    echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
+                                    ?>
+                                </div>
                                 <label class="col-lg-1 control-label">Zip</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
@@ -186,14 +194,14 @@ if (isset($donor)) {
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                             <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php
-                                    if (isset($donor)) {                                        
-                                    if ($donor['post_date'] != null || $donor['post_date'] !='0000-00-00')
-                                            echo date('d F, Y', strtotime($guest['post_date']));
-                                        else
-                                            echo '';
-                                    } else
-                                        echo set_value('post_date');
-                                        ?>">
+                                            if (isset($donor)) {
+                                                if ($donor['post_date'] != null || $donor['post_date'] != '0000-00-00')
+                                                    echo date('d F, Y', strtotime($guest['post_date']));
+                                                else
+                                                    echo '';
+                                            } else
+                                                echo set_value('post_date');
+                                            ?>">
                                         </div>
                                         <?php
                                         echo '<label id="post_date-error" class="validation-error-label" for="post_date">' . form_error('post_date') . '</label>';
@@ -201,7 +209,6 @@ if (isset($donor)) {
                                     </div>
                                 </div>
                                 <?php
-                                
                                 $split_settings_style = 'style="display: none;"';
                                 $split_checkbox = '';
                                 if (isset($donor) || form_error('admin_percent') != '') {
@@ -320,8 +327,8 @@ if (isset($donor)) {
     }
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
-      $('.select2').change(function () {
-          $(this).valid();
+    $('.select2').change(function () {
+        $(this).valid();
     });
 
     $(document).on('click', '#change_donation_split', function () {

@@ -16,24 +16,25 @@ class Accounts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_accounts($type = 'result') {
-        $columns = ['id', 'fund_type', 'action_matters_campaign,vendor_name', 'email', 'contact_name', 'city', 'total_fund', 'created', 'is_active'];
+        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
         $keyword = $this->input->get('search');
-        $this->db->select('a.*,f.name as fund_type,c.name as city,f.type');
+        $this->db->select('a.*,f.name as fund_type,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
-        $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR contact_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR phone LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR total_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
 
         $this->db->where(['a.is_delete' => 0]);
-        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        if ($this->input->get('order')) {
+            $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        }
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_ACCOUNTS . ' a');
@@ -176,7 +177,7 @@ class Accounts_model extends MY_Model {
     public function get_amc_balance_report($type = 'result') {
         $columns = ['a.action_matters_campaign,a.vendor_name', 'inc.income', 'p.no_of_payments', 'p.payment_amount', 'a.total_fund', 'address', 'city', 'state', 'zip', 'total_fund'];
         $keyword = $this->input->get('search');
-        $select1 = '(SELECT post_date FROM ' . TBL_FUNDS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) post_date';
+        $select1 = '(SELECT post_date FROM ' . TBL_FUNDS . ' WHERE account_id=a.id AND is_delete=0 AND is_refund=0 order by id DESC LIMIT 1) post_date';
         $select2 = '(SELECT check_date FROM ' . TBL_PAYMENTS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) check_date';
         $this->db->select('a.action_matters_campaign,a.vendor_name,inc.income,f.name as fund_type,f.type,a.total_fund as balance_amount,p.no_of_payments,p.payment_amount,' . $select1 . ',' . $select2);
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
@@ -213,7 +214,7 @@ class Accounts_model extends MY_Model {
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
-                . 'WHERE f.is_delete=0 AND f.account_id=' . $account_id
+                . 'WHERE f.is_delete=0 AND f.is_refund=0 AND f.account_id=' . $account_id
                 . ' UNION ALL '
                 . 'SELECT p.created,p.check_date as date,"" as post_date,"" as firstname,"" as lastname,"" as payment_method,p.check_number as payment_number,"" as memo,p.amount as debit_amt,"" as credit_amt,p.account_balance as balance '
                 . 'FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' ac ON p.account_id=ac.id AND ac.is_delete=0 '

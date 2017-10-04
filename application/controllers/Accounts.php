@@ -30,16 +30,7 @@ class Accounts extends MY_Controller {
         checkPrivileges('accounts', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_accounts('count');
         $final['redraw'] = 1;
-        $accounts = $this->accounts_model->get_accounts('result');
-        $start = $this->input->get('start') + 1;
-
-        foreach ($accounts as $key => $val) {
-            $accounts[$key] = $val;
-            $accounts[$key]['sr_no'] = $start++;
-            $accounts[$key]['created'] = date('m/d/Y', strtotime($val['created']));
-        }
-
-        $final['data'] = $accounts;
+        $final['data'] = $this->accounts_model->get_accounts('result');
         echo json_encode($final);
     }
 

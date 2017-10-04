@@ -50,20 +50,19 @@
             <br/>
             <br/>
         </div>
-            <table class="table datatable-basic">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Firstname</th>
-                        <th>Lastname</th>
-                        <th>Email</th>
-                        <th>City</th>
-                        <th>Amount</th>
-                        <th>Added Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-            </table>
+        <table class="table datatable-basic">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Amount</th>
+                    <th>Added Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+        </table>
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
@@ -83,7 +82,7 @@
                                 <div class="media-body">
                                     <input type="file" name="import_donor" id="import_donor" class="file-styled">
                                     <span class="help-block">Accepted formats: CSV. Max file size 2Mb</span>
-                                    <span class="help-block"><code>File should be in this format <a href="<?php echo base_url(DEMO_CSV . 'donor_demo.csv') ?>">Download Demo File</a></code></span>
+                                    <span class="help-block"><code>File should be in this format </code><a href="<?php echo base_url(DEMO_CSV . 'donor_demo.csv') ?>">Download Demo File</a></span>
                                 </div>
                             </div>
                         </div>
@@ -130,14 +129,9 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[6, "desc"]],
+            order: [[5, "desc"]],
             ajax: site_url + 'donors/get_donors',
             columns: [
-                {
-                    data: "id",
-                    visible: true,
-                    sortable: false,
-                },
                 {
                     data: "firstname",
                     visible: true,
@@ -150,8 +144,8 @@
                     data: "email",
                     visible: true
                 },
-                {
-                    data: "city",
+                {  
+                  data: "phone",
                     visible: true
                 },
                 {
@@ -184,20 +178,20 @@
                                 action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" title="Edit Donor"><i class="icon-pencil3"></i> Edit Donor</a>';
                             }
                             if ($.inArray('edit', permissions) !== -1) {
-                                action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" title="View Donations"><i class="icon-coins"></i> View Donations</a>';
+                                action += '<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" title="View Donations"><i class="icon-coins"></i> View Donations</a>';
                             }
                             if ($.inArray('edit', permissions) !== -1) {
-                                action += '&nbsp;&nbsp;<a href="javascript:void(0)" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i> Refund</a>';
+                                action += '<a href="javascript:void(0)" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i> Refund</a>';
                             }
                         }
                         if ($.inArray('view', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" id=' + btoa(full.id) + ' title="View Details"><i class="icon-eye"></i> View Details</a>';
+                            action += '<a href="javascript:void(0)" id=' + btoa(full.id) + ' title="View Details" class="donor_view_btn"><i class="icon-eye"></i> View Details</a>';
                         }
                         if ($.inArray('view', compermissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
+                            action += '<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i> Delete Donor</a>'
+                            action += '<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i> Delete Donor</a>'
                         }
                         action += '</li>';
                         action += '</ul>';

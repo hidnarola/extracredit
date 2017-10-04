@@ -80,9 +80,9 @@ class Home extends MY_Controller {
         //-- Json data for chart
         $json_data = array(
             'donors' => $this->users_model->num_of_records_by_date(TBL_DONORS, array_merge($date_array, array('is_delete' => 0, 'refund' => 0))),
-            'incoming_money' => $this->funds_model->get_incoming_money(array_merge($date_array, array('is_delete' => 0, 'refund' => 0))),
+            'incoming_money' => $this->funds_model->get_incoming_money(array_merge($date_array, array('is_delete' => 0, 'is_refund' => 0))),
         );
-
+        
         $new_json_data = array();
         $key_arrays = array();
 

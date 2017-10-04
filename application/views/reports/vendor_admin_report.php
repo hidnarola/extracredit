@@ -4,13 +4,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-calculator3"></i> <span class="text-semibold">Awards 90%</span></h4>
+            <h4><i class="icon-calculator3"></i> <span class="text-semibold">Vendors/Admin</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Awards 90%</li>
+            <li class="active">Vendors/Admin</li>
         </ul>
     </div>
 </div>
@@ -75,7 +75,7 @@
                 },
                 {
                     data: "check_number",
-                    visible: true                   
+                    visible: true
                 },
                 {
                     data: "id",
@@ -101,7 +101,7 @@
                 {
                     data: "zip",
                     visible: true
-                },               
+                },
                 {
                     data: "amount",
                     visible: true,
@@ -111,7 +111,7 @@
                         } else
                             return '$' + full.amount;
                     }
-                },              
+                },
             ]
         });
 

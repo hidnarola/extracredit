@@ -149,6 +149,7 @@ class Donors extends MY_Controller {
                 'lastname' => $this->input->post('lastname'),
                 'address' => $this->input->post('address'),
                 'email' => $this->input->post('email'),
+                'phone' => $this->input->post('phone'),
                 'state_id' => $state_id,
                 'city_id' => $city_id,
                 'zip' => $this->input->post('zip'),
@@ -585,7 +586,7 @@ class Donors extends MY_Controller {
                 if ($data_format2 == $data2) {
                     while (($col_data = fgetcsv($handle)) !== FALSE) {
                         $donor = [];
-                        if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[4] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '') {
+                        if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '') {
                             fclose($handle);
                             $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
                             redirect('donors');
@@ -610,8 +611,8 @@ class Donors extends MY_Controller {
                             $imported_emails[] = $col_data[3];
 
                             //--check city is valid or not
-                            if (array_search(strtolower($col_data[5]), array_map('strtolower', $cities_arr)) != FALSE) {
-                                $donor['city_id'] = array_search(strtolower($col_data[5]), array_map('strtolower', $cities_arr));
+                            if (array_search(strtolower($col_data[6]), array_map('strtolower', $cities_arr)) != FALSE) {
+                                $donor['city_id'] = array_search(strtolower($col_data[6]), array_map('strtolower', $cities_arr));
                                 $donor['state_id'] = $states_arr[$donor['city_id']];
                             } else {
                                 $check_city[] = $row;
@@ -619,50 +620,51 @@ class Donors extends MY_Controller {
 
                             $donor['firstname'] = $col_data[1];
                             $donor['lastname'] = $col_data[2];
-                            $donor['address'] = $col_data[4];
-                            $donor['zip'] = $col_data[6];
+                            $donor['phone'] = $col_data[4];
+                            $donor['address'] = $col_data[5];
+                            $donor['zip'] = $col_data[7];
 
                             //-- Date and post date validation 
                             //-- Check date is valid or not
-                            $date_arr = explode('-', $col_data[7]);
+                            $date_arr = explode('-', $col_data[8]);
                             if (count($date_arr) == 3) {
-                                list($y, $m, $d) = explode('-', $col_data[7]);
+                                list($y, $m, $d) = explode('-', $col_data[8]);
                                 if (!checkdate($m, $d, $y)) {
                                     $check_date[] = $row;
                                 } else {
-                                    $donor['date'] = $col_data[7];
+                                    $donor['date'] = $col_data[8];
                                 }
                             } else {
                                 $check_date[] = $row;
                             }
 
                             //-- Check post date is valid or not
-                            $date_arr = explode('-', $col_data[8]);
+                            $date_arr = explode('-', $col_data[9]);
                             if (count($date_arr) == 3) {
-                                list($y, $m, $d) = explode('-', $col_data[8]);
+                                list($y, $m, $d) = explode('-', $col_data[9]);
                                 if (!checkdate($m, $d, $y)) {
                                     $check_postdate[] = $row;
                                 } else {
-                                    $donor['post_date'] = $col_data[8];
+                                    $donor['post_date'] = $col_data[9];
                                 }
                             } else {
                                 $check_postdate[] = $row;
                             }
                             //-- Check amount is valid or not
-                            if (is_numeric($col_data[9]) && $col_data[9] != 0) {
-                                $donor['amount'] = $col_data[9];
+                            if (is_numeric($col_data[10]) && $col_data[10] != 0) {
+                                $donor['amount'] = $col_data[10];
                             } else {
                                 $check_amount[] = $row;
                             }
 
                             //-- Check payment type is valid or not
-                            if (array_search(strtolower($col_data[10]), array_map('strtolower', $payments_type_arr)) != FALSE) {
-                                $donor['payment_type_id'] = array_search(strtolower($col_data[10]), array_map('strtolower', $payments_type_arr));
+                            if (array_search(strtolower($col_data[11]), array_map('strtolower', $payments_type_arr)) != FALSE) {
+                                $donor['payment_type_id'] = array_search(strtolower($col_data[11]), array_map('strtolower', $payments_type_arr));
                             } else {
                                 $check_payment[] = $row;
                             }
-                            $donor['payment_number'] = $col_data[11];
-                            $donor['memo'] = $col_data[12];
+                            $donor['payment_number'] = $col_data[12];
+                            $donor['memo'] = $col_data[13];
                             $donor['created'] = date('Y-m-d H:i:s');
 
 
@@ -727,6 +729,7 @@ class Donors extends MY_Controller {
                                     'state_id' => $val['state_id'],
                                     'zip' => $val['zip'],
                                     'email' => $val['email'],
+                                    'phone' => $val['phone'],
                                     'amount' => $val['amount'],
                                     'created' => $val['created']
                                 ];
@@ -786,31 +789,42 @@ class Donors extends MY_Controller {
         $id = $this->input->post('id');
         $id = base64_decode($id);
         if (is_numeric($id)) {
-            $data['perArr'] = checkPrivileges('donors');
-            $donor_detail = $this->donors_model->get_donor_details($id);
-            if ($donor_detail['account_total_fund'] >= $donor_detail['amount']) {
-                $account = $donor_detail['account_total_fund'] - $donor_detail['amount'];
-                $account_details = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund', ['where' => ['id' => $donor_detail['account_id']]], ['single' => TRUE]);
-                $total_fund = $account_details['total_fund'];
-                $total_fund = $total_fund - $donor_detail['account_fund'];
+            $donations = $this->donors_model->get_donor_donations($id, 'group');
+            $admin_fund = $this->donors_model->get_admin_fund();
+            $flag = 1;
+            $accounts = [];
+            foreach ($donations as $donor) {
+                if (($donor['total_fund'] >= $donor['account_fund']) && ($admin_fund >= $donor['admin_fund'])) {
+                    
+                } else {
+                    $flag = 0;
+                    $accounts[] = $donor['action_matters_campaign'];
+                }
+            }
+            if ($flag == 1) {
+                $donations = $this->donors_model->get_donor_donations($id, 'single');
                 $this->db->trans_begin();
-                $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund], ['id' => $donor_detail['account_id']]);
+                foreach ($donations as $donor) {
+                    $admin_fund = $this->donors_model->get_admin_fund();
 
-                $admin_fund = $this->admin_fund;
-                $admin_fund = $admin_fund - $donor_detail['admin_fund'];
+                    $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $donor['account_id']]], ['single' => TRUE]);
 
-                $this->donors_model->update_admin_fund($admin_fund);
+                    $account_amount = $account['total_fund'] - $donor['account_fund'];
+                    $admin_amount = $admin_fund - $donor['admin_fund'];
 
-                $this->donors_model->common_insert_update('update', TBL_DONORS, ['refund' => 1, 'refund_date' => date('Y-m-d H:i:s')], ['id' => $donor_detail['id']]);
-                $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_refund' => 1], ['account_id' => $donor_detail['account_id'], 'donor_id' => $donor_detail['id'], 'is_delete' => 0]);
+                    $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_amount, 'admin_fund' => $account['admin_fund'] - $donor['admin_fund']], ['id' => $donor['account_id']]);
+                    $this->donors_model->update_admin_fund($admin_amount);
+                    $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_refund' => 1], ['id' => $donor['id']]);
+                }
+                $this->donors_model->common_insert_update('update', TBL_DONORS, ['refund' => 1, 'refund_date' => date('Y-m-d H:i:s')], ['id' => $id]);
                 $this->db->trans_complete();
-
                 $type = 1;
                 $msg = 'success';
                 $this->session->set_flashdata('success', "Refund done successfully!");
             } else {
                 $type = 0;
-                $msg = 'Account is not having sufficient balance!';
+                $accounts = implode(",", $accounts);
+                $msg = $accounts . ' is not having sufficient balance!';
             }
             echo json_encode(['type' => $type, 'msg' => $msg]);
         } else {

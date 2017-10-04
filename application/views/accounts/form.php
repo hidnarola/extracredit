@@ -3,7 +3,7 @@
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/core/libraries/jasny_bootstrap.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>-->
 <?php
 $edit = 0;
 if (isset($account)) {
@@ -164,7 +164,7 @@ if (isset($account)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Phone </label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($account) && $account['phone']) ? $account['phone'] : set_value('phone'); ?>" >
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($account) && $account['phone']) ? $account['phone'] : set_value('phone'); ?>" data-mask="999-999-9999">
                                     <?php
                                     echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
                                     ?>
@@ -257,7 +257,6 @@ if (isset($account)) {
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script type="text/javascript">
-    $("#phone").mask("999-999-9999");
     var edit = <?php echo $edit ?>;
     var email_url = site_url + 'accounts/checkUniqueEmail/';
     var vendor_url = site_url + 'accounts/checkUniqueVendor/';

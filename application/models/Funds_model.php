@@ -26,7 +26,7 @@ class Funds_model extends MY_Model {
                     ' OR f.post_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR d.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR d.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR ft.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR ft.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR pt.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR f.payment_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR f.memo LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -39,12 +39,12 @@ class Funds_model extends MY_Model {
                     . ' OR p.account_balance LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')';
         }
 
-        $sql = 'SELECT f.created,f.date,f.post_date,d.firstname,d.lastname,ft.type as fund_type,a.action_matters_campaign as sub_category,pt.type as payment_method,f.payment_number,f.memo,"" as debit_amt,f.admin_fund as credit_amt,f.admin_balance as balance '
+        $sql = 'SELECT f.created,f.date,f.post_date,d.firstname,d.lastname,ft.name as fund_type,a.action_matters_campaign as sub_category,pt.type as payment_method,f.payment_number,f.memo,"" as debit_amt,f.admin_fund as credit_amt,f.admin_balance as balance '
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_FUND_TYPES . ' ft ON a.fund_type_id=ft.id AND ft.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
-                . 'WHERE f.is_delete=0 ' . $where
+                . 'WHERE f.is_delete=0 AND f.is_refund=0 ' . $where
                 . 'UNION ALL '
                 . 'SELECT p.created,p.check_date as date,"" as post_date,"" as firstname,"" as lastname,"" as fund_type,ac.vendor_name as sub_category,"" as payment_method,p.check_number as payment_number,"" as memo,p.amount as debit_amt,"" as credit_amt,p.account_balance as balance '
                 . 'FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' ac ON p.account_id=ac.id AND ac.is_delete=0 '
@@ -173,7 +173,7 @@ class Funds_model extends MY_Model {
             $this->db->where('f.date <=', $enddate);
         }
 
-        $this->db->where(['d.is_delete' => 0]);
+        $this->db->where(['d.is_delete' => 0, 'd.refund' => 0]);
         $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
@@ -235,12 +235,12 @@ class Funds_model extends MY_Model {
      * @author KU
      */
     public function get_incoming_money($where = NULL) {
-        $this->db->select("sum(amount) as count,DATE_FORMAT(created,'%Y-%m-%d') as date");
+        $this->db->select("sum(account_fund)+sum(admin_fund) as count,DATE_FORMAT(created,'%Y-%m-%d') as date");
         if (!is_null($where)) {
             $this->db->where($where);
         }
         $this->db->group_by("DATE_FORMAT(created,'%Y-%m-%d')");
-        $query = $this->db->get(TBL_DONORS);
+        $query = $this->db->get(TBL_FUNDS);
         return $query->result_array();
     }
 

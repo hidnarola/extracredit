@@ -16,27 +16,25 @@ class Guests_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_guests($type = 'result') {
-        $columns = ['id', 'logo', 'action_matters_campaign,vendor_name', 'g.firstname', 'g.lastname', 'g.companyname', 'g.email', 'c.name', 'g.created'];
+        $columns = ['logo', 'g.firstname', 'g.lastname', 'g.companyname', 'g.email', 'g.phone', 'g.created'];
         $keyword = $this->input->get('search');
-        $this->db->select('g.*,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,f.type');
+        $this->db->select('g.*,c.name as city');
 
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
-        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
 
         if (!empty($keyword['value'])) {
-            $this->db->where('(action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR g.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+            $this->db->where('(g.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.companyname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+                    ' OR g.phone LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ')');
         }
 
         $this->db->where(['g.is_delete' => 0]);
-        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        if ($this->input->get('order')) {
+            $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        }
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_GUESTS . ' g');

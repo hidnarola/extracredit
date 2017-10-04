@@ -40,14 +40,12 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>#</th>
                     <th>Fund Type</th>
                     <th>AMC/Vendor</th>
-                    <th>Email</th>
                     <th>Contact Name</th>
-                    <th>City</th>
+                    <th>Email</th>
+                    <th>Phone</th>
                     <th>Total Fund</th>
-                    <th>Added Date</th>
                     <th>Active</th>
                     <th>Action</th>
                 </tr>
@@ -65,20 +63,15 @@
             autoWidth: false,
             processing: true,
             serverSide: true,
+            "aaSorting": [],
             language: {
                 search: '<span>Filter:</span> _INPUT_',
                 lengthMenu: '<span>Show:</span> _MENU_',
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[7, "desc"]],
             ajax: site_url + 'accounts/get_accounts',
             columns: [
-                {
-                    data: "id",
-                    visible: true,
-                    sortable: false,
-                },
                 {
                     data: "fund_type",
                     visible: true,
@@ -95,15 +88,15 @@
                     }
                 },
                 {
-                    data: "email",
-                    visible: true
-                },
-                {
                     data: "contact_name",
                     visible: true
                 },
                 {
-                    data: "city",
+                    data: "email",
+                    visible: true
+                },
+                {
+                    data: "phone",
                     visible: true
                 },
                 {
@@ -112,10 +105,6 @@
                     render: function (data, type, full, meta) {
                         return '$' + full.total_fund;
                     }
-                },
-                {
-                    data: "created",
-                    visible: true,
                 },
                 {
                     data: "is_active",
@@ -137,15 +126,26 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
+                        action += '<ul class="icons-list">';
+                        action += '<li class="dropdown">';
+                        action += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+                        action += '<i class="icon-menu9"></i>';
+                        action += '</a>';
+                        action += '<ul class="dropdown-menu dropdown-menu-right">';
+                        action += '<li>';
                         if ($.inArray('edit', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Account"><i class="icon-pencil3"></i></a>';
+                            action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" title="Edit Account"><i class="icon-pencil3"></i> Edit Account</a>';
                         }
                         if ($.inArray('view', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" class="btn border-teal text-teal-600 btn-flat btn-icon btn-rounded btn-xs" title="View Transactions"><i class="icon-coins"></i></a>';
+                            action += '<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" title="View Transactions"><i class="icon-coins"></i> View Transactions</a>';
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i></a>'
+                            action += '<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i> Delete Account</a>'
                         }
+                        action += '</li>';
+                        action += '</ul>';
+                        action += '</li>';
+                        action += '</ul>';
                         return action;
                     }
                 }

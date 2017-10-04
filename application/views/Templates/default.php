@@ -96,7 +96,7 @@
                                     <?php if (checkPrivileges('admin_fund', 'view', 1) || (checkPrivileges('accounts_fund', 'view', 1)) || (checkPrivileges('donors_fund', 'view', 1)) || (checkPrivileges('payments_fund', 'view', 1))) { ?>
                                         <li class="<?php echo ($this->controller == 'funds') ? 'active' : ''; ?>">
                                             <a href="#" class="has-ul"><i class="icon-cash4"></i><span>Funds</span></a>
-                                            <ul class="hidden-ul" style="<?php echo ($this->controller == 'funds' || in_array($this->action, array('admin_fund', 'accounts', 'donors', 'payments', 'transactions'))) ? 'display: block;' : ''; ?>">
+                                            <ul class="hidden-ul" style="<?php echo ($this->controller == 'funds' && in_array($this->action, array('admin_fund', 'accounts', 'donors', 'payments', 'transactions'))) ? 'display: block;' : ''; ?>">
                                                 <?php if (checkPrivileges('admin_fund', 'view', 1)) { ?>
                                                     <li class="<?php echo ($this->controller == 'funds' && ($this->action == 'admin_fund')) ? 'active' : ''; ?>"><a href="<?php echo site_url('funds/admin_fund'); ?>">Admin Fund</a></li>
                                                 <?php } ?>

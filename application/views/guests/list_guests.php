@@ -51,16 +51,12 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>#</th>
                     <th>Logo</th>
-                    <th>Program/AMC</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Companyname</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Company</th>
                     <th>Email</th>
-                    <th>City</th>
-                    <!--<th>Invite Date</th>-->
-                    <th>Added Date</th>
+                    <th>Phone number</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -126,21 +122,16 @@
             autoWidth: false,
             processing: true,
             serverSide: true,
-             "bPaginate": true,
+            "bPaginate": true,
+            "aaSorting": [],
             language: {
                 search: '<span>Filter:</span> _INPUT_',
                 lengthMenu: '<span>Show:</span> _MENU_',
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[8, "desc"]],
             ajax: site_url + 'guests/get_guests',
             columns: [
-                {
-                    data: "id",
-                    visible: true,
-                    sortable: false,
-                },
                 {
                     data: "logo",
                     visible: true,
@@ -153,17 +144,6 @@
                             logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return logo;
-                    }
-                },
-                {
-                    data: "action_matters_campaign",
-                    visible: true,
-                    render: function (data, type, full, meta) {
-                        if (full.type == 1) {
-                            return full.vendor_name;
-                        } else {
-                            return data;
-                        }
                     }
                 },
                 {
@@ -183,12 +163,8 @@
                     visible: true
                 },
                 {
-                    data: "city",
+                    data: "phone",
                     visible: true
-                },
-                {
-                    data: "created",
-                    visible: true,
                 },
                 {
                     data: "is_delete",
@@ -197,18 +173,29 @@
                     sortable: false,
                     render: function (data, type, full, meta) {
                         var action = '';
+                        action += '<ul class="icons-list">';
+                        action += '<li class="dropdown">';
+                        action += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+                        action += '<i class="icon-menu9"></i>';
+                        action += '</a>';
+                        action += '<ul class="dropdown-menu dropdown-menu-right">';
+                        action += '<li>';
                         if ($.inArray('edit', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest"><i class="icon-pencil3"></i></a>';
+                            action += '<a href="' + site_url + 'guests/edit/' + btoa(full.id) + '" title="Edit Guest"><i class="icon-pencil3"></i> Edit Guest</a>';
                         }
                         if ($.inArray('view', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="javascript:void(0)" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs guest_view_btn" id=' + btoa(full.id) + ' title="View Details"><i class="icon-eye"></i></a>';
+                            action += '<a href="javascript:void(0)" class="guest_view_btn" id=' + btoa(full.id) + ' title="View Details"><i class="icon-eye"></i> View Details</a>';
                         }
                         if ($.inArray('view', compermissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Communication"><i class="icon-comment-discussion"></i></a>'
+                            action += '<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest"><i class="icon-trash"></i></a>'
+                            action += '<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Guest"><i class="icon-trash"></i> Delete Guest</a>'
                         }
+                        action += '</li>';
+                        action += '</ul>';
+                        action += '</li>';
+                        action += '</ul>';
                         return action;
                     }
                 }
@@ -230,14 +217,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
     $(document).on('click', '.guest_view_btn', function () {

@@ -31,16 +31,7 @@ class Guests extends MY_Controller {
         checkPrivileges('guest', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests('count');
         $final['redraw'] = 1;
-        $guests = $this->guests_model->get_guests('result');
-        $start = $this->input->get('start') + 1;
-
-        foreach ($guests as $key => $val) {
-            $guests[$key] = $val;
-            $guests[$key]['invite_date'] = date('m/d/Y', strtotime($val['invite_date']));
-            $guests[$key]['created'] = date('m/d/Y', strtotime($val['created']));
-        }
-
-        $final['data'] = $guests;
+        $final['data'] = $this->guests_model->get_guests('result');
         echo json_encode($final);
     }
 
