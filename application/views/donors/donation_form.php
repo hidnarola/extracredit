@@ -372,7 +372,7 @@ if (isset($donation)) {
 
     /*Validator method for positive number*/
     $.validator.addMethod('positiveNumber', function (value) {
-        return Number(value) >= 0;
-    }, 'Please enter positive number');
+        return Number(value) > 0;
+    }, 'Please enter valid amount');
 
 </script>

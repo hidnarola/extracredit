@@ -1,2 +1,2 @@
-amc,firstname,lastname,email,phone,address,city,zip,date,post_date,amount,payment_type,payment_number,memo
-Abc company,Kanani,Voegeli,kananivoegeli@gmail.com,480-580-3697,Abc colony,mesa,85001,2017-09-12,2019-09-12,20000,Paypal,BTC df3g54d65gd65f4gd6g,test
+firstname,lastname,email,phone,address,city,zip,amc,date,post_date,amount,payment_type,payment_number,memo
+Kanani,Voegeli,kananivoegeli@gmail.com,480-580-3697,Abc colony,mesa,85001,Abc company,2017-09-12,2019-09-12,20000,Paypal,BTC df3g54d65gd65f4gd6g,test

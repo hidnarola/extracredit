@@ -485,9 +485,13 @@ class Guests extends MY_Controller {
             $guest_emails = $this->guests_model->sql_select(TBL_GUESTS, 'email', ['where' => ['is_delete' => 0]]);
             $guest_emails_arr = array_column($guest_emails, 'email');
 
+            $account_name_arr = array_map('strtolower', $account_name_arr);
+            $guest_emails_arr = array_map('strtolower', $guest_emails_arr);
+            $cities_arr = array_map('strtolower', $cities_arr);
+
             $row = 1;
             $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-            $guest_data = $check_account = $check_email = $check_email_valid = $check_city = $check_invite_date = $check_guest_date = $check_AIR_date = $check_assiatnt_email = $check_phone = $check_assistant_phone = $check_assistant_email = $imported_emails = [];
+            $guest_data = $check_account = $check_email = $check_email_valid = $check_city = $check_invite_date = $check_guest_date = $check_AIR_date = $check_amc_created = $check_assiatnt_email = $check_phone = $check_assistant_phone = $check_assistant_email = $imported_emails = [];
             if (($data2 = fgetcsv($handle)) !== FALSE) {
                 $data_format2 = array('firstname', 'lastname', 'companyname', 'invite_date', 'guest_date', 'AIR_date', 'AMC_created', 'amc', 'address', 'city', 'zip', 'email', 'phone', 'assistant', 'assistant_phone', 'assistant_email');
 
@@ -495,106 +499,150 @@ class Guests extends MY_Controller {
                 if ($data_format2 == $data2) {
                     while (($col_data = fgetcsv($handle)) !== FALSE) {
                         $guest = [];
-//                        p($col_data);
-                        if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[4] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '' || $col_data[12] == '' || $col_data[12] == '' || $col_data[13] == '' || $col_data[14] == '' || $col_data[15] == '') {
+                        if ($col_data[0] == '') {
                             fclose($handle);
-                            $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
+                            $this->session->set_flashdata('error', 'First Name is missing in Row No. ' . $row);
                             redirect('guests');
                         } else {
                             $row++;
                             $guest['firstname'] = $col_data[0];
                             $guest['lastname'] = $col_data[1];
-                            $guest['companyname'] = $col_data[2];
+                            $guest['companyname'] = (!empty($col_data[2])) ? $col_data[2] : NULL;
 
                             //-- invite Date, guest date and AIR date validation 
                             //-- Check date is valid or not
-                            $date_arr = explode('-', $col_data[3]);
-                            if (count($date_arr) == 3) {
-                                list($y, $m, $d) = explode('-', $col_data[3]);
-                                if (!checkdate($m, $d, $y)) {
-                                    $check_invite_date[] = $row;
+                            if (!empty($col_data[3])) {
+                                $date_arr = explode('-', $col_data[3]);
+                                if (count($date_arr) == 3) {
+                                    list($y, $m, $d) = explode('-', $col_data[3]);
+                                    if (!checkdate($m, $d, $y)) {
+                                        $check_invite_date[] = $row;
+                                    } else {
+                                        $guest['invite_date'] = $col_data[3];
+                                    }
                                 } else {
-                                    $guest['invite_date'] = $col_data[3];
+                                    $check_invite_date[] = $row;
                                 }
                             } else {
-                                $check_invite_date[] = $row;
+                                $guest['invite_date'] = NULL;
                             }
 
                             //-- Check Guest date is valid or not
-                            $date_arr = explode('-', $col_data[4]);
-                            if (count($date_arr) == 3) {
-                                list($y, $m, $d) = explode('-', $col_data[4]);
-                                if (!checkdate($m, $d, $y)) {
-                                    $check_guest_date[] = $row;
+                            if (!empty($col_data[4])) {
+                                $date_arr = explode('-', $col_data[4]);
+                                if (count($date_arr) == 3) {
+                                    list($y, $m, $d) = explode('-', $col_data[4]);
+                                    if (!checkdate($m, $d, $y)) {
+                                        $check_guest_date[] = $row;
+                                    } else {
+                                        $guest['guest_date'] = $col_data[4];
+                                    }
                                 } else {
-                                    $guest['guest_date'] = $col_data[4];
+                                    $check_guest_date[] = $row;
                                 }
                             } else {
-                                $check_guest_date[] = $row;
+                                $guest['guest_date'] = NULL;
                             }
                             //-- Check post date is valid or not
-                            $date_arr = explode('-', $col_data[5]);
-                            if (count($date_arr) == 3) {
-                                list($y, $m, $d) = explode('-', $col_data[5]);
-                                if (!checkdate($m, $d, $y)) {
-                                    $check_AIR_date[] = $row;
+                            if (!empty($col_data[5])) {
+                                $date_arr = explode('-', $col_data[5]);
+                                if (count($date_arr) == 3) {
+                                    list($y, $m, $d) = explode('-', $col_data[5]);
+                                    if (!checkdate($m, $d, $y)) {
+                                        $check_AIR_date[] = $row;
+                                    } else {
+                                        $guest['AIR_date'] = $col_data[5];
+                                    }
                                 } else {
-                                    $guest['AIR_date'] = $col_data[5];
+                                    $check_AIR_date[] = $row;
                                 }
                             } else {
-                                $check_AIR_date[] = $row;
+                                $guest['AIR_date'] = NULL;
                             }
 
-                            $guest['AMC_created'] = $col_data[6];
+                            if (!empty($col_data[6])) {
+                                if ($col_data[6] == 'Yes' || $col_data[6] == 'No')
+                                    $guest['AMC_created'] = $col_data[6];
+                                else
+                                    $check_amc_created[] = $row;
+                            } else {
+                                $guest['AMC_created'] = NULL;
+                            }
+
                             //-- Check if program/amc name is valid or not if not then add it into array
-                            $account_name_arr = array_map('strtolower', $account_name_arr);
-                            if (array_search(strtolower($col_data[7]), $account_name_arr) != FALSE) {
-                                $guest['account_id'] = array_search(strtolower($col_data[7]), $account_name_arr);
+                            if (!empty($col_data[7])) {
+                                if (array_search(strtolower($col_data[7]), $account_name_arr) != FALSE) {
+                                    $guest['account_id'] = array_search(strtolower($col_data[7]), $account_name_arr);
+                                } else {
+                                    $check_account[] = $row;
+                                }
                             } else {
-                                $check_account[] = $row;
+                                $guest['account_id'] = NULL;
                             }
 
-                            $guest['address'] = $col_data[8];
+                            $guest['address'] = (!empty($col_data[8])) ? $col_data[8] : NULL;
                             //--check city is valid or not
-                            if (array_search(strtolower($col_data[9]), array_map('strtolower', $cities_arr)) != FALSE) {
-                                $guest['city_id'] = array_search(strtolower($col_data[9]), array_map('strtolower', $cities_arr));
-                                $guest['state_id'] = $states_arr[$guest['city_id']];
+                            if (!empty($col_data[9])) {
+                                if (array_search(strtolower($col_data[9]), $cities_arr) != FALSE) {
+                                    $guest['city_id'] = array_search(strtolower($col_data[9]), $cities_arr);
+                                    $guest['state_id'] = $states_arr[$guest['city_id']];
+                                } else {
+                                    $check_city[] = $row;
+                                }
                             } else {
-                                $check_city[] = $row;
+                                $guest['city_id'] = NULL;
+                                $guest['state_id'] = NULL;
                             }
 
-                            $guest['zip'] = $col_data[10];
+                            $guest['zip'] = (!empty($col_data[10])) ? $col_data[10] : NULL;
                             //--check email is unique or not
-                            $guest_emails_arr = array_map('strtolower', $guest_emails_arr);
-                            if (array_search(strtolower($col_data[11]), $guest_emails_arr) != FALSE) {
-                                $check_email[] = $row;
+                            if (!empty($col_data[11])) {
+                                if (filter_var($col_data[11], FILTER_VALIDATE_EMAIL)) {
+                                    if (array_search(strtolower($col_data[11]), $guest_emails_arr) != FALSE) {
+                                        $check_email[] = $row;
+                                    } else {
+                                        $guest['email'] = $col_data[11];
+                                    }
+                                } else {
+                                    $check_email_valid[] = $row;
+                                }
                             } else {
-                                $guest['email'] = $col_data[11];
-                            }
-                            if (filter_var($col_data[11], FILTER_VALIDATE_EMAIL)) {
-                                $guest['email'] = $col_data[11];
-                            } else {
-                                $check_email_valid[] = $row;
-                            }
-
-                            $imported_emails[] = $col_data[11];
-                            if (is_numeric($col_data[12])) {
-                                $guest['phone'] = $col_data[12];
-                            } else {
-                                $check_phone[] = $row;
+                                $guest['email'] = NULL;
                             }
 
-                            $guest['assistant'] = $col_data[13];
-                            if (is_numeric($col_data[14])) {
-                                $guest['assistant_phone'] = $col_data[14];
+
+                            $imported_emails[] = (!empty($col_data[11])) ? $col_data[11] : NULL;
+
+                            if (!empty($col_data[12])) {
+                                if (is_numeric($col_data[12])) {
+                                    $guest['phone'] = $col_data[12];
+                                } else {
+                                    $check_phone[] = $row;
+                                }
                             } else {
-                                $check_assistant_phone[] = $row;
+                                $guest['phone'] = NULL;
                             }
 
-                            if (filter_var($col_data[15], FILTER_VALIDATE_EMAIL)) {
-                                $guest['assistant_email'] = $col_data[15];
+                            $guest['assistant'] = (!empty($col_data[13])) ? $col_data[13] : NULL;
+
+                            if (!empty($col_data[14])) {
+                                if (is_numeric($col_data[14])) {
+                                    $guest['assistant_phone'] = $col_data[14];
+                                } else {
+                                    $check_assistant_phone[] = $row;
+                                }
                             } else {
-                                $check_assistant_email[] = $row;
+                                $guest['assistant_phone'] = NULL;
+                            }
+
+                            if (!empty($col_data[15])) {
+                                if (filter_var($col_data[15], FILTER_VALIDATE_EMAIL)) {
+                                    $guest['assistant_email'] = $col_data[15];
+                                } else {
+                                    $check_assistant_email[] = $row;
+                                }
+                            } else {
+                                $guest['assistant_email'] = NULL;
                             }
                             $guest['created'] = date('Y-m-d H:i:s');
                             $guest_data[] = $guest;
@@ -626,6 +674,9 @@ class Guests extends MY_Controller {
                     } else if (!empty($check_AIR_date)) {   //-- check post dates in column are valid or not
                         $rows = implode(',', $check_AIR_date);
                         $this->session->set_flashdata('error', "Invalid Air date in AIR_date column. Please check entries at row number - " . $rows);
+                    } elseif (!empty($check_amc_created)) {
+                        $rows = implode(',', $check_amc_created);
+                        $this->session->set_flashdata('error', "Invalid AMC_created value in AMC_created column. Only 'Yes/No' values are allowed. Please check entries at row number - " . $rows);
                     } else if (!empty($check_phone)) {   //-- check post dates in column are valid or not
                         $rows = implode(',', $check_phone);
                         $this->session->set_flashdata('error', "Invalid phone number in phone column. Please check entries at row number - " . $rows);
@@ -639,9 +690,20 @@ class Guests extends MY_Controller {
                         if (!empty($guest_data)) {
                             //-- Insert Guest details into database
                             foreach ($guest_data as $val) {
-                                $this->db->trans_begin();
+                                //-- if email is not empty then save it into mailchimp subscriber list
+                                if (!empty($val['email'])) {
+                                    $mailchimp_data = array(
+                                        'email_address' => $val['email'],
+                                        'status' => 'subscribed',
+                                        'merge_fields' => [
+                                            'FNAME' => $val['firstname'],
+                                            'LNAME' => $val['lastname']
+                                        ],
+                                        'interests' => array(GUESTS_GROUP_ID => true)
+                                    );
+                                    mailchimp($mailchimp_data);
+                                }
                                 $this->guests_model->common_insert_update('insert', TBL_GUESTS, $val);
-                                $this->db->trans_complete();
                             }
                             $this->session->set_flashdata('success', "CSV file imported successfully! Guest data added successfully");
                         } else {

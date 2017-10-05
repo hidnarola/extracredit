@@ -118,7 +118,7 @@
     var logo_img_url = '<?php echo base_url() . GUEST_IMAGES ?>';
     $(function () {
         $('.datatable-basic').dataTable({
-            scrollX: true,
+//            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,

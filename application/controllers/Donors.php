@@ -576,98 +576,130 @@ class Donors extends MY_Controller {
                 $payments_type_arr[$payment_type['id']] = $payment_type['type'];
             }
 
+            $account_name_arr = array_map('strtolower', $account_name_arr);
+            $donor_emails_arr = array_map('strtolower', $donor_emails_arr);
+            $cities_arr = array_map('strtolower', $cities_arr);
+            $payments_type_arr = array_map('strtolower', $payments_type_arr);
+
             $row = 1;
             $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
-            $donor_data = $check_account = $check_email = $check_city = $check_date = $check_postdate = $check_amount = $check_payment = $imported_emails = [];
+            $donor_data = $check_account = $check_email = $check_email_valid = $check_city = $check_date = $check_postdate = $check_amount = $check_payment = $imported_emails = [];
             if (($data2 = fgetcsv($handle)) !== FALSE) {
-                $data_format2 = array('amc', 'firstname', 'lastname', 'email', 'address', 'city', 'zip', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
+                $data_format2 = array('firstname', 'lastname', 'email', 'phone', 'address', 'city', 'zip', 'amc', 'date', 'post_date', 'amount', 'payment_type', 'payment_number', 'memo');
 
                 //-- check if first colums is according to predefined row
                 if ($data_format2 == $data2) {
                     while (($col_data = fgetcsv($handle)) !== FALSE) {
                         $donor = [];
-                        if ($col_data[0] == '' || $col_data[1] == '' || $col_data[2] == '' || $col_data[3] == '' || $col_data[5] == '' || $col_data[6] == '' || $col_data[7] == '' || $col_data[8] == '' || $col_data[9] == '' || $col_data[10] == '' || $col_data[11] == '') {
+                        if ($col_data[0] == '') {
                             fclose($handle);
-                            $this->session->set_flashdata('error', 'Some fields are missing in Row No. ' . $row);
+                            $this->session->set_flashdata('error', 'First Name is missing in Row No. ' . $row);
                             redirect('donors');
                         } else {
                             $row++;
-                            //-- Check if program/amc name is valid or not if not then add it into array
-                            $account_name_arr = array_map('strtolower', $account_name_arr);
-                            if (array_search(strtolower($col_data[0]), $account_name_arr) != FALSE) {
-                                $donor['account_id'] = array_search(strtolower($col_data[0]), $account_name_arr);
-                            } else {
-                                $check_account[] = $row;
-                            }
-
                             //--check email is unique or not
-                            $donor_emails_arr = array_map('strtolower', $donor_emails_arr);
-                            if (array_search(strtolower($col_data[3]), $donor_emails_arr) != FALSE) {
-                                $check_email[] = $row;
+                            if (!empty($col_data[2])) {
+                                if (!filter_var($col_data[2], FILTER_VALIDATE_EMAIL)) {
+                                    $check_email_valid[] = $row;
+                                } else if (array_search(strtolower($col_data[2]), $donor_emails_arr) != FALSE) {
+                                    $check_email[] = $row;
+                                } else {
+                                    $donor['email'] = $col_data[2];
+                                }
                             } else {
-                                $donor['email'] = $col_data[3];
+                                $donor['email'] = NULL;
                             }
-
-                            $imported_emails[] = $col_data[3];
+                            $imported_emails[] = $col_data[2];
 
                             //--check city is valid or not
-                            if (array_search(strtolower($col_data[6]), array_map('strtolower', $cities_arr)) != FALSE) {
-                                $donor['city_id'] = array_search(strtolower($col_data[6]), array_map('strtolower', $cities_arr));
-                                $donor['state_id'] = $states_arr[$donor['city_id']];
+                            if (!empty($col_data[5])) {
+                                if (array_search(strtolower($col_data[5]), $cities_arr) != FALSE) {
+                                    $donor['city_id'] = array_search(strtolower($col_data[5]), $cities_arr);
+                                    $donor['state_id'] = $states_arr[$donor['city_id']];
+                                } else {
+                                    $check_city[] = $row;
+                                }
                             } else {
-                                $check_city[] = $row;
+                                $donor['city_id'] = NULL;
+                                $donor['state_id'] = NULL;
                             }
 
-                            $donor['firstname'] = $col_data[1];
-                            $donor['lastname'] = $col_data[2];
-                            $donor['phone'] = $col_data[4];
-                            $donor['address'] = $col_data[5];
-                            $donor['zip'] = $col_data[7];
+                            //-- Check if program/amc name is valid or not if not then add it into array
+                            if (!empty($col_data[7])) {
+                                if (array_search(strtolower($col_data[7]), $account_name_arr) != FALSE) {
+                                    $donor['account_id'] = array_search(strtolower($col_data[7]), $account_name_arr);
+                                } else {
+                                    $check_account[] = $row;
+                                }
+                            } else {
+                                $donor['account_id'] = NULL;
+                            }
+
+
+                            $donor['firstname'] = $col_data[0];
+                            $donor['lastname'] = $col_data[1];
+                            $donor['phone'] = $col_data[3];
+                            $donor['address'] = $col_data[4];
+                            $donor['zip'] = $col_data[6];
 
                             //-- Date and post date validation 
                             //-- Check date is valid or not
-                            $date_arr = explode('-', $col_data[8]);
-                            if (count($date_arr) == 3) {
-                                list($y, $m, $d) = explode('-', $col_data[8]);
-                                if (!checkdate($m, $d, $y)) {
-                                    $check_date[] = $row;
+                            if (!empty($col_data[8])) {
+                                $date_arr = explode('-', $col_data[8]);
+                                if (count($date_arr) == 3) {
+                                    list($y, $m, $d) = explode('-', $col_data[8]);
+                                    if (!checkdate($m, $d, $y)) {
+                                        $check_date[] = $row;
+                                    } else {
+                                        $donor['date'] = $col_data[8];
+                                    }
                                 } else {
-                                    $donor['date'] = $col_data[8];
+                                    $check_date[] = $row;
                                 }
                             } else {
-                                $check_date[] = $row;
+                                $donor['date'] = NULL;
                             }
 
                             //-- Check post date is valid or not
-                            $date_arr = explode('-', $col_data[9]);
-                            if (count($date_arr) == 3) {
-                                list($y, $m, $d) = explode('-', $col_data[9]);
-                                if (!checkdate($m, $d, $y)) {
-                                    $check_postdate[] = $row;
+                            if (!empty($col_data[9])) {
+                                $date_arr = explode('-', $col_data[9]);
+                                if (count($date_arr) == 3) {
+                                    list($y, $m, $d) = explode('-', $col_data[9]);
+                                    if (!checkdate($m, $d, $y)) {
+                                        $check_postdate[] = $row;
+                                    } else {
+                                        $donor['post_date'] = $col_data[9];
+                                    }
                                 } else {
-                                    $donor['post_date'] = $col_data[9];
+                                    $check_postdate[] = $row;
                                 }
                             } else {
-                                $check_postdate[] = $row;
+                                $donor['post_date'] = NULL;
                             }
                             //-- Check amount is valid or not
-                            if (is_numeric($col_data[10]) && $col_data[10] != 0) {
-                                $donor['amount'] = $col_data[10];
+                            if (!empty($col_data[10])) {
+                                if (is_numeric($col_data[10]) && $col_data[10] != 0) {
+                                    $donor['amount'] = $col_data[10];
+                                } else {
+                                    $check_amount[] = $row;
+                                }
                             } else {
-                                $check_amount[] = $row;
+                                $donor['amount'] = NULL;
                             }
 
                             //-- Check payment type is valid or not
-                            if (array_search(strtolower($col_data[11]), array_map('strtolower', $payments_type_arr)) != FALSE) {
-                                $donor['payment_type_id'] = array_search(strtolower($col_data[11]), array_map('strtolower', $payments_type_arr));
+                            if (!empty($col_data[11])) {
+                                if (array_search(strtolower($col_data[11]), $payments_type_arr) != FALSE) {
+                                    $donor['payment_type_id'] = array_search(strtolower($col_data[11]), $payments_type_arr);
+                                } else {
+                                    $check_payment[] = $row;
+                                }
                             } else {
-                                $check_payment[] = $row;
+                                $donor['payment_type_id'] = NULL;
                             }
                             $donor['payment_number'] = $col_data[12];
                             $donor['memo'] = $col_data[13];
                             $donor['created'] = date('Y-m-d H:i:s');
-
-
                             $donor_data[] = $donor;
                         }
                     }
@@ -676,6 +708,9 @@ class Donors extends MY_Controller {
                     if (count(array_unique($imported_emails)) != count($imported_emails)) {
                         fclose($handle);
                         $this->session->set_flashdata('error', "Duplicate value in email column.");
+                    } else if (!empty($check_email_valid)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email_valid);
+                        $this->session->set_flashdata('error', "Donor Email is not in valid format. Please check entries at row number - " . $rows);
                     } else if (!empty($check_email)) { //-- check Account/Program in columns are valid or not
                         $rows = implode(',', $check_email);
                         $this->session->set_flashdata('error', "Donor Email already exist in the system. Please check entries at row number - " . $rows);
@@ -698,9 +733,7 @@ class Donors extends MY_Controller {
                         $rows = implode(',', $check_payment);
                         $this->session->set_flashdata('error', "Payment type doesn't exist. Please check entries at row number - " . $rows);
                     } else {
-
                         if (!empty($donor_data)) {
-
                             //-- Insert dnonor details into database
                             $settings = $this->donors_model->sql_select(TBL_SETTINGS);
                             $settings_arr = [];
@@ -708,18 +741,24 @@ class Donors extends MY_Controller {
                                 $settings_arr[$val['setting_key']] = $val['setting_value'];
                             }
                             foreach ($donor_data as $val) {
+
+                                //-- Save email id to mailchimp subscriber's donor list
+                                if (!empty($val['email'])) {
+                                    $mailchimp_data = array(
+                                        'email_address' => $val['email'],
+                                        'status' => 'subscribed',
+                                        'merge_fields' => [
+                                            'FNAME' => $val['firstname'],
+                                            'LNAME' => $val['lastname']
+                                        ],
+                                        'interests' => array(DONORS_GROUP_ID => true)
+                                    );
+                                    mailchimp($mailchimp_data);
+                                }
+
                                 $amount = $val['amount'];
-                                $account_id = $val['account_id'];
-
-                                $admin_amount = ($settings_arr['admin-donation-percent'] * $amount) / 100;
-                                $admin_amount = round($admin_amount, 2);
-                                $account_amount = $amount - $admin_amount;
-
-                                $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
-                                $total_fund = $account['total_fund'];
-                                $admin_fund = $account['admin_fund'];
-
-                                $this->db->trans_begin();
+                                if (is_null($amount))
+                                    $amount = 0;
 
                                 $donor_arr = [
                                     'firstname' => $val['firstname'],
@@ -730,35 +769,46 @@ class Donors extends MY_Controller {
                                     'zip' => $val['zip'],
                                     'email' => $val['email'],
                                     'phone' => $val['phone'],
-                                    'amount' => $val['amount'],
+                                    'amount' => $amount,
                                     'created' => $val['created']
                                 ];
                                 $donor_id = $this->donors_model->common_insert_update('insert', TBL_DONORS, $donor_arr);
-                                $admin_total_fund = $this->donors_model->get_admin_fund();
 
-                                $fund_array = array(
-                                    'account_id' => $account_id,
-                                    'donor_id' => $donor_id,
-                                    'admin_fund' => $admin_amount,
-                                    'account_fund' => $account_amount,
-                                    'admin_balance' => $admin_total_fund + $admin_amount,
-                                    'account_balance' => $total_fund + $account_amount,
-                                    'admin_percent' => $settings_arr['admin-donation-percent'],
-                                    'account_percent' => $settings_arr['program-donation-percent'],
-                                    'date' => $val['date'],
-                                    'post_date' => $val['post_date'],
-                                    'payment_type_id' => $val['payment_type_id'],
-                                    'payment_number' => $val['payment_number'],
-                                    'memo' => $val['memo'],
-                                    'created' => date('Y-m-d H:i:s')
-                                );
+                                if ($amount != 0) {
 
-                                $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
+                                    $account_id = $val['account_id'];
+                                    $admin_amount = ($settings_arr['admin-donation-percent'] * $amount) / 100;
+                                    $admin_amount = round($admin_amount, 2);
+                                    $account_amount = $amount - $admin_amount;
 
-                                $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
-                                $this->donors_model->update_admin_fund($admin_total_fund + $admin_amount);
+                                    $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $account_id]], ['single' => true]);
+                                    $total_fund = $account['total_fund'];
+                                    $admin_fund = $account['admin_fund'];
+                                    $admin_total_fund = $this->donors_model->get_admin_fund();
 
-                                $this->db->trans_complete();
+                                    $this->db->trans_begin();
+                                    $fund_array = array(
+                                        'account_id' => $account_id,
+                                        'donor_id' => $donor_id,
+                                        'admin_fund' => $admin_amount,
+                                        'account_fund' => $account_amount,
+                                        'admin_balance' => $admin_total_fund + $admin_amount,
+                                        'account_balance' => $total_fund + $account_amount,
+                                        'admin_percent' => $settings_arr['admin-donation-percent'],
+                                        'account_percent' => $settings_arr['program-donation-percent'],
+                                        'date' => $val['date'],
+                                        'post_date' => $val['post_date'],
+                                        'payment_type_id' => $val['payment_type_id'],
+                                        'payment_number' => $val['payment_number'],
+                                        'memo' => $val['memo'],
+                                        'created' => date('Y-m-d H:i:s')
+                                    );
+
+                                    $this->donors_model->common_insert_update('insert', TBL_FUNDS, $fund_array);
+                                    $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $total_fund + $account_amount, 'admin_fund' => $admin_fund + $admin_amount], ['id' => $account_id]);
+                                    $this->donors_model->update_admin_fund($admin_total_fund + $admin_amount);
+                                    $this->db->trans_complete();
+                                }
                             }
                             $this->session->set_flashdata('success', "CSV file imported successfully!Donor data added successfully");
                         } else {

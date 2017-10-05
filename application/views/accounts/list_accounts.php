@@ -59,7 +59,7 @@
     var permissions = <?php echo json_encode($perArr); ?>;
     $(function () {
         $('.datatable-basic').dataTable({
-            scrollX: true,
+//            scrollX: true,
             autoWidth: false,
             processing: true,
             serverSide: true,

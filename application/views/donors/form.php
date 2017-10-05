@@ -137,7 +137,7 @@ if (isset($donor)) {
                                 <div class="form-group">
                                     <label class="col-lg-1 control-label">Fund Type</label>
                                     <div class="col-lg-4">
-                                        <select name="fund_type_id" id="fund_type_id" class="select2" required="" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
+                                        <select name="fund_type_id" id="fund_type_id" class="select2" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
                                             <option value=""></option>
                                             <?php
                                             foreach ($fund_types as $type) {
@@ -154,7 +154,7 @@ if (isset($donor)) {
                                     </div>
                                     <label class="col-lg-1 control-label">Program/AMC</label>
                                     <div class="col-lg-4">
-                                        <select name="account_id" id="account_id" class="select2" required="" data-placeholder="Select account" <?php echo $account_disabled ?>>
+                                        <select name="account_id" id="account_id" class="select2" data-placeholder="Select account" <?php echo $account_disabled ?>>
                                             <option value=""></option>
                                             <?php
                                             foreach ($accounts as $account) {
@@ -217,9 +217,9 @@ if (isset($donor)) {
                                 }
                                 ?>
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Amount <span class="text-danger">*</span></label>
+                                    <label class="col-lg-1 control-label">Amount </label>
                                     <div class="col-lg-4">
-                                        <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['amount'] : set_value('amount'); ?>" required="required">
+                                        <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" value="<?php echo (isset($donor) && $donor['amount']) ? $donor['amount'] : set_value('amount'); ?>">
                                         <?php
                                         echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
                                         ?>
@@ -435,7 +435,12 @@ if (isset($donor)) {
         },
         validClass: "validation-valid-label",
         success: function (label) {
-            label.addClass("validation-valid-label")
+            label.addClass("validation-valid-label");
+            label_id = $(label).attr('id');
+            labid = label_id.split('-');
+            if ($('#' + labid).val() == '') {
+                $(label).remove();
+            }
         }, rules: {
             email: {
                 email: true,
@@ -512,8 +517,11 @@ if (isset($donor)) {
     });
     /*Validator method for positive number*/
     $.validator.addMethod('positiveNumber', function (value) {
-        return Number(value) >= 0;
-    }, 'Please enter positive number');
+        if (value != '')
+            return Number(value) > 0;
+        else
+            return true;
+    }, 'Please enter valid amount');
     /*Validator method for US Zipcode*/
     $.validator.addMethod("zipcodeUS", function (value, element) {
         return this.optional(element) || /^\d{5}-\d{4}$|^\d{5}$/.test(value);
