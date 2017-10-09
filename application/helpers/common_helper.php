@@ -256,6 +256,33 @@ function get_mailchimp_subscriber($email) {
 }
 
 /**
+ * Delete subscriber from MailChimp Account
+ * @param array $data
+ * @author KU
+ */
+function delete_mailchimp_subscriber($data) {
+    $CI = & get_instance();
+    $apiKey = $CI->config->item('Mailchimp_api_key');
+    $email = $data['email_address'];
+    $memberId = md5(strtolower($email));
+    $dataCenter = substr($apiKey, strpos($apiKey, '-') + 1);
+    $url = 'https://' . $dataCenter . '.api.mailchimp.com/3.0/lists/' . LIST_ID . '/members/' . $memberId;
+    $json = json_encode($data);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apiKey);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    $result = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $arr = json_decode($result, true);
+}
+
+/**
  * Set up configuration array for pagination
  * @return array - Configuration array for pagination
  */

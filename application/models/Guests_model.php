@@ -136,7 +136,7 @@ class Guests_model extends MY_Model {
      */
     public function get_guests_reports($type = 'result') {
         $columns = ['id', 'g.firstname', 'g.lastname', 'g.company_name', 'g.invite_date', 'g.guest_date', 'g.AIR_date', 'g.AMC_created', 'action_matters_campaign,vendor_name', 'g.address', 'city', 'state', 'g.zip', 'g.email', 'g.phone', 'g.assistant', 'g.assistant_phone', 'g.assistant_email'];
-        $keyword = $this->input->get('search');
+        $keyword = $this->input->post('search');
         $this->db->select('g.*,a.action_matters_campaign,a.vendor_name,c.name as city,s.name as state,f.type');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
@@ -154,7 +154,7 @@ class Guests_model extends MY_Model {
                     ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
 
-        $post_date_filter = $this->input->get('post_date_filter');
+        $post_date_filter = $this->input->post('post_date_filter');
         if ($post_date_filter != '') {
             $dates = explode('-', $post_date_filter);
             $startdate = date('Y-m-d', strtotime($dates[0]));
@@ -163,9 +163,9 @@ class Guests_model extends MY_Model {
             $this->db->where('g.guest_date <=', $enddate);
         }
         $this->db->where(['a.is_delete' => 0, 'g.is_delete' => 0]);
-        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        $this->db->order_by($columns[$this->input->post('order')[0]['column']], $this->input->post('order')[0]['dir']);
         if ($type == 'result') {
-            $this->db->limit($this->input->get('length'), $this->input->get('start'));
+            $this->db->limit($this->input->post('length'), $this->input->post('start'));
             $query = $this->db->get(TBL_GUESTS . ' g');
             return $query->result_array();
         } else {

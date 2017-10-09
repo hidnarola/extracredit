@@ -138,15 +138,20 @@ class Accounts extends MY_Controller {
                                     'email_address' => $account['email'],
                                     'interests' => array(ACCOUNTS_GROUP_ID => false)
                                 );
+                                mailchimp($mailchimp_data);
                             } else {
                                 //-- Update old entry to unsubscribed and add new to subscribed
+                                /*
+                                  $mailchimp_data = array(
+                                  'email_address' => $account['email'],
+                                  'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                  'interests' => array(ACCOUNTS_GROUP_ID => false)
+                                  ); */
                                 $mailchimp_data = array(
                                     'email_address' => $account['email'],
-                                    'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                    'interests' => array(ACCOUNTS_GROUP_ID => false)
                                 );
+                                delete_mailchimp_subscriber($mailchimp_data);
                             }
-                            mailchimp($mailchimp_data);
                         }
                     }
                     if (!empty($dataArr['email'])) {
@@ -242,7 +247,7 @@ class Accounts extends MY_Controller {
             $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,email', ['where' => ['id' => $id]], ['single' => true]);
             if ($account) {
                 //-- Check if account is assigned to donor then don't allow to delete that account
-                $is_assigned = $this->accounts_model->sql_select(TBL_DONORS, NULL, ['where' => ['account_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                $is_assigned = $this->accounts_model->sql_select(TBL_FUNDS, NULL, ['where' => ['account_id' => $id, 'is_delete' => 0, 'is_refund' => 0]], ['single' => true]);
                 if (!empty($is_assigned)) {
                     $this->session->set_flashdata('error', 'You can not delete account,It is assigned to donor');
                     redirect('accounts');
@@ -262,15 +267,20 @@ class Accounts extends MY_Controller {
                                 'email_address' => $account['email'],
                                 'interests' => array(ACCOUNTS_GROUP_ID => false)
                             );
+                            mailchimp($mailchimp_data);
                         } else {
                             //-- Update old entry to unsubscribed and add new to subscribed
+//                            $mailchimp_data = array(
+//                                'email_address' => $account['email'],
+//                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+//                                'interests' => array(ACCOUNTS_GROUP_ID => false)
+//                            );
+
                             $mailchimp_data = array(
                                 'email_address' => $account['email'],
-                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                'interests' => array(ACCOUNTS_GROUP_ID => false)
                             );
+                            delete_mailchimp_subscriber($mailchimp_data);
                         }
-                        mailchimp($mailchimp_data);
                     }
                 }
                 $this->session->set_flashdata('success', 'Account has been deleted successfully!');

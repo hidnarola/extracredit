@@ -147,15 +147,19 @@ class Guests extends MY_Controller {
                                         'email_address' => $guest['email'],
                                         'interests' => array(GUESTS_GROUP_ID => false)
                                     );
+                                    mailchimp($mailchimp_data);
                                 } else {
                                     //-- Update old entry to unsubscribed and add new to subscribed
+//                                    $mailchimp_data = array(
+//                                        'email_address' => $guest['email'],
+//                                        'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+//                                        'interests' => array(GUESTS_GROUP_ID => false)
+//                                    );
                                     $mailchimp_data = array(
                                         'email_address' => $guest['email'],
-                                        'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                        'interests' => array(GUESTS_GROUP_ID => false)
                                     );
+                                    delete_mailchimp_subscriber($mailchimp_data);
                                 }
-                                mailchimp($mailchimp_data);
                             }
                         }
 
@@ -247,15 +251,19 @@ class Guests extends MY_Controller {
                                 'email_address' => $guest['email'],
                                 'interests' => array(GUESTS_GROUP_ID => false)
                             );
+                            mailchimp($mailchimp_data);
                         } else {
                             //-- Update old entry to unsubscribed and add new to subscribed
+//                            $mailchimp_data = array(
+//                                'email_address' => $guest['email'],
+//                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
+//                                'interests' => array(GUESTS_GROUP_ID => false)
+//                            );
                             $mailchimp_data = array(
                                 'email_address' => $guest['email'],
-                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                'interests' => array(GUESTS_GROUP_ID => false)
                             );
+                            delete_mailchimp_subscriber($mailchimp_data);
                         }
-                        mailchimp($mailchimp_data);
                     }
                 }
                 $this->session->set_flashdata('success', $guest['firstname'] . ' ' . $guest['lastname'] . ' has been deleted successfully!');

@@ -202,7 +202,7 @@ class Reports extends MY_Controller {
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->payments_model->get_payments_made_report('count');
         $final['redraw'] = 1;
         $payment_report = $this->payments_model->get_payments_made_report('result');
-         foreach ($payment_report as $key => $val) {
+        foreach ($payment_report as $key => $val) {
             $payment_report[$key] = $val;
             $payment_report[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
         }
