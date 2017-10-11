@@ -206,11 +206,8 @@ if (isset($guest)) {
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                         <input type="text" name="invite_date" id="invite_date" placeholder="Enter Invite Date" class="form-control pickadate" value="<?php
-                                        if (isset($guest)) {
-                                            if ($guest['invite_date'] != null)
-                                                echo date('d F, Y', strtotime($guest['invite_date']));
-                                            else
-                                                echo '';
+                                        if (isset($guest) && !empty($guest['invite_date'])) {
+                                            echo date('d F, Y', strtotime($guest['invite_date']));
                                         } else
                                             echo set_value('invite_date');
                                         ?>" >
@@ -223,12 +220,9 @@ if (isset($guest)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php 
-                                        if (isset($guest)) {
-                                            if ($guest['guest_date'] != null)
-                                                echo date('d F, Y', strtotime($guest['guest_date']));
-                                            else
-                                                echo '';
+                                        <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php
+                                        if (isset($guest) && !empty($guest['guest_date'])) {
+                                            echo date('d F, Y', strtotime($guest['guest_date']));
                                         } else
                                             echo set_value('guest_date');
                                         ?>" >
@@ -243,15 +237,12 @@ if (isset($guest)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="AIR_date" id="post_date" placeholder="Enter AIR Date" class="form-control pickadate" value="<?php 
-                                       if (isset($guest)) {
-                                            if ($guest['AIR_date'] != null)
-                                                echo date('d F, Y', strtotime($guest['AIR_date']));
-                                            else
-                                                echo '';
+                                        <input type="text" name="AIR_date" id="post_date" placeholder="Enter AIR Date" class="form-control pickadate" value="<?php
+                                        if (isset($guest) && !empty($guest['AIR_date'])) {
+                                            echo date('d F, Y', strtotime($guest['AIR_date']));
                                         } else
                                             echo set_value('AIR_date');
-                                       ?>" >
+                                        ?>" >
                                     </div>
                                     <?php
                                     echo '<label id="AIR_date-error" class="validation-error-label" for="AIR_date">' . form_error('AIR_date') . '</label>';

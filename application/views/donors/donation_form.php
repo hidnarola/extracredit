@@ -107,8 +107,7 @@ if (isset($donation)) {
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                         <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php
                                         if (isset($donation)) {
-                                            if ($donation['date'] != null && $donation['date'] != '0000-00-00')
-//                                                echo $donation['date'];
+                                            if (!empty($donation['date']))
                                                 echo date('d F, Y', strtotime($donation['date']));
                                             else
                                                 echo '';
@@ -126,7 +125,7 @@ if (isset($donation)) {
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                         <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php
                                         if (isset($donation)) {
-                                            if ($donation['post_date'] != null && $donation['post_date'] != '0000-00-00')
+                                            if (!empty($donation['post_date']))
                                                 echo date('d F, Y', strtotime($donation['post_date']));
                                             else
                                                 echo '';
@@ -166,7 +165,7 @@ if (isset($donation)) {
                                 <div class="form-group">
                                     <label class="col-lg-1 control-label">Admin Donation(%)<span class="text-danger">*</span></label>
                                     <div class="col-lg-4">
-                                        <input type="number" name="admin_percent" id="admin-donation-percent" placeholder="Enter Admin Donation(%)" class="form-control" value="<?php echo (isset($donation)) ? $donation['admin_percent'] : $settings['admin-donation-percent']; ?>" required="required"/>
+                                        <input type="number" name="admin_percent" id="admin-donation-percent" placeholder="Enter Admin Donation(%)" class="form-control" value="<?php echo (isset($donation)) ? $donation['admin_percent'] : $settings['admin-donation-percent']; ?>" required="required" <?php echo $account_disabled ?>/>
                                         <?php
                                         echo '<label id="admin_percent-error" class="validation-error-label" for="admin_percent">' . form_error('admin_percent') . '</label>';
                                         ?>

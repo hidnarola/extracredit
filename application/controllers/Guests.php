@@ -61,18 +61,10 @@ class Guests extends MY_Controller {
             if ($this->input->post('email')) {
                 $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|callback_is_uniquemail');
             }
-            $invite_date = $guest_date = $AIR_date = $logo = NULL;
-            if ($this->input->post('invite_date')) {
-                $invite_date = date('Y-m-d', strtotime($this->input->post('invite_date')));
-            }
-            if ($this->input->post('guest_date')) {
-                $guest_date = date('Y-m-d', strtotime($this->input->post('guest_date')));
-            }
-            if ($this->input->post('email')) {
-                $AIR_date = date('Y-m-d', strtotime($this->input->post('AIR_date')));
-            }
+
             $data['title'] = 'Extracredit | Add Guest';
             $data['heading'] = 'Add Guest';
+            $logo = NULL;
         }
         $data['accounts'] = $this->guests_model->get_amc_accounts();
 
@@ -109,7 +101,16 @@ class Guests extends MY_Controller {
                     }
                 }
             }
-
+            $invite_date = $guest_date = $AIR_date = NULL;
+            if (!empty($this->input->post('invite_date'))) {
+                $invite_date = date('Y-m-d', strtotime($this->input->post('invite_date')));
+            }
+            if (!empty($this->input->post('guest_date'))) {
+                $guest_date = date('Y-m-d', strtotime($this->input->post('guest_date')));
+            }
+            if (!empty($this->input->post('AIR_date'))) {
+                $AIR_date = date('Y-m-d', strtotime($this->input->post('AIR_date')));
+            }
             if ($flag == 0) {
                 $dataArr = array(
                     'account_id' => $this->input->post('account_id'),
@@ -149,12 +150,7 @@ class Guests extends MY_Controller {
                                     );
                                     mailchimp($mailchimp_data);
                                 } else {
-                                    //-- Update old entry to unsubscribed and add new to subscribed
-//                                    $mailchimp_data = array(
-//                                        'email_address' => $guest['email'],
-//                                        'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-//                                        'interests' => array(GUESTS_GROUP_ID => false)
-//                                    );
+                                    //-- Delete old subscriber from mailchimp subscriber list
                                     $mailchimp_data = array(
                                         'email_address' => $guest['email'],
                                     );
@@ -253,12 +249,7 @@ class Guests extends MY_Controller {
                             );
                             mailchimp($mailchimp_data);
                         } else {
-                            //-- Update old entry to unsubscribed and add new to subscribed
-//                            $mailchimp_data = array(
-//                                'email_address' => $guest['email'],
-//                                'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-//                                'interests' => array(GUESTS_GROUP_ID => false)
-//                            );
+                            //-- Delete old entry from mailchimp subscriber's guest list
                             $mailchimp_data = array(
                                 'email_address' => $guest['email'],
                             );
@@ -327,8 +318,8 @@ class Guests extends MY_Controller {
         foreach ($guests as $key => $val) {
             $guests[$key] = $val;
             $guests[$key]['created'] = date('m/d/Y', strtotime($val['created']));
-            $guests[$key]['follow_up_date'] = date('m/d/Y', strtotime($val['follow_up_date']));
-            $guests[$key]['communication_date'] = date('m/d/Y', strtotime($val['communication_date']));
+            $guests[$key]['follow_up_date'] = ($val['follow_up_date'] != '') ? date('m/d/Y', strtotime($val['follow_up_date'])) : '';
+            $guests[$key]['communication_date'] = ($val['communication_date'] != '') ? date('m/d/Y', strtotime($val['communication_date'])) : '';
         }
         $final['data'] = $guests;
         echo json_encode($final);
@@ -341,14 +332,16 @@ class Guests extends MY_Controller {
         $id = $this->input->post('id');
         $id = base64_decode($id);
         $guest_communication = $this->guests_model->get_guest_communication_details($id);
-        $guest_communication['follow_up_date'] = date('m/d/Y', strtotime($guest_communication['follow_up_date']));
-        $guest_communication['communication_date'] = date('m/d/Y', strtotime($guest_communication['communication_date']));
+        $guest_communication['follow_up_date'] = ($guest_communication['follow_up_date'] != '') ? date('m/d/Y', strtotime($guest_communication['follow_up_date'])) : '';
+        $guest_communication['communication_date'] = ($guest_communication['communication_date'] != '') ? date('m/d/Y', strtotime($guest_communication['communication_date'])) : '';
         echo json_encode($guest_communication);
     }
 
     public function add_communication($guest_id = null, $comm_id = null) {
         if (!is_null($guest_id))
             $guest_id = base64_decode($guest_id);
+
+        $data['guest'] = $this->guests_model->sql_select(TBL_GUESTS, 'id,firstname,lastname', ['where' => ['id' => $guest_id]], ['single' => true]);
         $comm_id = base64_decode($comm_id);
         if (is_numeric($comm_id)) {
             checkPrivileges('guests_communication', 'edit');
@@ -387,8 +380,8 @@ class Guests extends MY_Controller {
             if ($flag == 0) {
                 $dataArr = array(
                     'note' => $this->input->post('note'),
-                    'communication_date' => date('Y-m-d', strtotime($this->input->post('communication_date'))),
-                    'follow_up_date' => date('Y-m-d', strtotime($this->input->post('follow_up_date'))),
+                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
+                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
                     'subject' => $this->input->post('subject'),
                     'guest_id' => $guest_id,
                     'donor_id' => 0,
@@ -445,9 +438,9 @@ class Guests extends MY_Controller {
         $guest_id = base64_decode($this->input->post('id'));
         $guest = $this->guests_model->get_guest_details_view($guest_id);
         if ($guest) {
-            $guest['invite_date'] = date('m/d/Y', strtotime($guest['invite_date']));
-            $guest['guest_date'] = date('m/d/Y', strtotime($guest['guest_date']));
-            $guest['AIR_date'] = date('m/d/Y', strtotime($guest['AIR_date']));
+            $guest['invite_date'] = ($guest['invite_date'] != '') ? date('m/d/Y', strtotime($guest['invite_date'])) : '';
+            $guest['guest_date'] = ($guest['guest_date'] != '') ? date('m/d/Y', strtotime($guest['guest_date'])) : '';
+            $guest['AIR_date'] = ($guest['AIR_date'] != '') ? date('m/d/Y', strtotime($guest['AIR_date'])) : '';
             $data['guest_details'] = $guest;
             return $this->load->view('guests/guest_view', $data);
         } else {

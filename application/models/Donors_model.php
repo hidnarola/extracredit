@@ -219,6 +219,8 @@ class Donors_model extends MY_Model {
     /**
      * Get donor's donations
      * @param int $id
+     * @param string $type
+     * @return array
      */
     public function get_donor_donations($id = NULL, $type) {
         if ($type == 'group')

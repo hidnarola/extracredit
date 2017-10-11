@@ -94,8 +94,8 @@ class Funds extends MY_Controller {
         $donor_fund = $this->funds_model->get_donorfund('result');
         foreach ($donor_fund as $key => $val) {
             $donor_fund[$key] = $val;
-            $donor_fund[$key]['date'] = date('m/d/Y', strtotime($val['date']));
-            $donor_fund[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            $donor_fund[$key]['date'] = ($val['date'] != '') ? date('m/d/Y', strtotime($val['date'])) : '';
+            $donor_fund[$key]['post_date'] = ($val['post_date'] != '') ? date('m/d/Y', strtotime($val['post_date'])) : '';
         }
         $final['data'] = $donor_fund;
         echo json_encode($final);
@@ -120,7 +120,7 @@ class Funds extends MY_Controller {
         $donor_fund = $this->funds_model->get_paymentfund('result');
         foreach ($donor_fund as $key => $val) {
             $donor_fund[$key] = $val;
-            $donor_fund[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+            $donor_fund[$key]['check_date'] = ($val['check_date'] != '') ? date('m/d/Y', strtotime($val['check_date'])) : '';
         }
         $final['data'] = $donor_fund;
         echo json_encode($final);

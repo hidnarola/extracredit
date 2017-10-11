@@ -36,7 +36,7 @@ class Payments extends MY_Controller {
         foreach ($payments as $key => $val) {
             $payments[$key] = $val;
             $payments[$key]['created'] = date('m/d/Y', strtotime($val['created']));
-            $payments[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+            $payments[$key]['check_date'] = ($val['check_date'] != '') ? date('m/d/Y', strtotime($val['check_date'])) : '';
         }
 
         $final['data'] = $payments;

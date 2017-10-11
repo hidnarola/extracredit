@@ -177,7 +177,7 @@ if (isset($donor)) {
                                             <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                             <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php
                                             if (isset($donor)) {
-                                                if ($donor['date'] != null)
+                                                if (!empty($donor['date']))
                                                     echo date('d F, Y', strtotime($donor['date']));
                                                 else
                                                     echo '';
@@ -195,7 +195,7 @@ if (isset($donor)) {
                                             <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                             <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php
                                             if (isset($donor)) {
-                                                if ($donor['post_date'] != null || $donor['post_date'] != '0000-00-00')
+                                                if (!empty($donor['post_date']))
                                                     echo date('d F, Y', strtotime($guest['post_date']));
                                                 else
                                                     echo '';

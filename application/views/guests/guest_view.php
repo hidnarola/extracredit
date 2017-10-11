@@ -12,13 +12,15 @@
         </tr>
         <tr>
             <th>Program/AMC</th>
-            <td><?php
+            <td>
+                <?php
                 if ($guest_details['action_matters_campaign'] != '') {
                     echo $guest_details['action_matters_campaign'];
                 } else {
                     echo $guest_details['vendor_name'];
                 }
-                ?></td>
+                ?>
+            </td>
         </tr>
         <tr>
             <th>Name</th>

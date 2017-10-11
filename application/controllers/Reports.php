@@ -33,8 +33,8 @@ class Reports extends MY_Controller {
 
         foreach ($donors as $key => $val) {
             $donors[$key] = $val;
-            $donors[$key]['date'] = date('m/d/Y', strtotime($val['date']));
-            $donors[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
+            $donors[$key]['date'] = ($val['date'] != '') ? date('m/d/Y', strtotime($val['date'])) : '';
+            $donors[$key]['post_date'] = ($val['post_date'] != '') ? date('m/d/Y', strtotime($val['post_date'])) : '';
             $donors[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
 
@@ -62,9 +62,9 @@ class Reports extends MY_Controller {
 
         foreach ($guests as $key => $val) {
             $guests[$key] = $val;
-            $guests[$key]['AIR_date'] = date('m/d/Y', strtotime($val['AIR_date']));
-            $guests[$key]['invite_date'] = date('m/d/Y', strtotime($val['invite_date']));
-            $guests[$key]['guest_date'] = date('m/d/Y', strtotime($val['guest_date']));
+            $guests[$key]['AIR_date'] = ($val['AIR_date'] != '') ? date('m/d/Y', strtotime($val['AIR_date'])) : '';
+            $guests[$key]['invite_date'] = ($val['invite_date'] != '') ? date('m/d/Y', strtotime($val['invite_date'])) : '';
+            $guests[$key]['guest_date'] = ($val['guest_date'] != '') ? date('m/d/Y', strtotime($val['guest_date'])) : '';
             $guests[$key]['created'] = date('m/d/Y', strtotime($val['created']));
         }
 
@@ -122,7 +122,7 @@ class Reports extends MY_Controller {
         foreach ($awards as $key => $val) {
             $awards[$key] = $val;
             $awards[$key]['created'] = date('m/d/Y', strtotime($val['created']));
-            $awards[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+            $awards[$key]['check_date'] = ($val['check_date'] != '') ? date('m/d/Y', strtotime($val['check_date'])) : '';
         }
 
         $final['data'] = $awards;
@@ -151,7 +151,7 @@ class Reports extends MY_Controller {
         foreach ($vendor_admin as $key => $val) {
             $vendor_admin[$key] = $val;
             $vendor_admin[$key]['created'] = date('m/d/Y', strtotime($val['created']));
-            $vendor_admin[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+            $vendor_admin[$key]['check_date'] = ($val['check_date'] != '') ? date('m/d/Y', strtotime($val['check_date'])) : '';
         }
         $final['data'] = $vendor_admin;
         echo json_encode($final);
@@ -177,8 +177,8 @@ class Reports extends MY_Controller {
         $balance_report = $this->accounts_model->get_amc_balance_report('result');
         foreach ($balance_report as $key => $val) {
             $balance_report[$key] = $val;
-            $balance_report[$key]['post_date'] = date('m/d/Y', strtotime($val['post_date']));
-            $balance_report[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+            $balance_report[$key]['post_date'] = ($val['post_date'] != '') ? date('m/d/Y', strtotime($val['post_date'])) : '';
+            $balance_report[$key]['check_date'] = ($val['check_date'] != '') ? date('m/d/Y', strtotime($val['check_date'])) : '';
         }
         $final['data'] = $balance_report;
         echo json_encode($final);
@@ -204,7 +204,7 @@ class Reports extends MY_Controller {
         $payment_report = $this->payments_model->get_payments_made_report('result');
         foreach ($payment_report as $key => $val) {
             $payment_report[$key] = $val;
-            $payment_report[$key]['check_date'] = date('m/d/Y', strtotime($val['check_date']));
+            $payment_report[$key]['check_date'] = ($val['check_date'] != '') ? date('m/d/Y', strtotime($val['check_date'])) : '';
         }
         $final['data'] = $payment_report;
         echo json_encode($final);

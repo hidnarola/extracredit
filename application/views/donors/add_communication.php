@@ -29,6 +29,8 @@ if (isset($donor_communication)) {
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('donors'); ?>"><i class="icon-coins position-left"></i> Donors</a></li>
+            <li><a href="<?php echo site_url('donors/communication/' . base64_encode($donor['id'])); ?>"><i class="icon-comment-discussion"></i> Communication</a></li>
+
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -66,7 +68,7 @@ if (isset($donor_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($donor_communication)) ? date('d F, Y', strtotime($donor_communication['communication_date'])) : set_value('communication_date'); ?>" required="required">
+                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($donor_communication) && $donor_communication['communication_date'] != '') ? date('d F, Y', strtotime($donor_communication['communication_date'])) : set_value('communication_date'); ?>" required="required">
                                 </div>
                                 <?php
                                 echo '<label id="communication_date-error" class="validation-error-label" for="communication_date">' . form_error('communication_date') . '</label>';
@@ -78,7 +80,7 @@ if (isset($donor_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($donor_communication)) ? date('d F, Y', strtotime($donor_communication['follow_up_date'])) : set_value('follow_up_date'); ?>">
+                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($donor_communication) && $donor_communication['follow_up_date'] != '') ? date('d F, Y', strtotime($donor_communication['follow_up_date'])) : set_value('follow_up_date'); ?>">
                                 </div>
                                 <?php
                                 echo '<label id="follow_up_date-error" class="validation-error-label" for="follow_up_date">' . form_error('follow_up_date') . '</label>';

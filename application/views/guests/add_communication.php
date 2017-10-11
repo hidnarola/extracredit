@@ -29,7 +29,7 @@ if (isset($guest_communication)) {
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('guests'); ?>"><i class="icon-people position-left"></i> Guests</a></li>
-            <!--<li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-comment-discussion position-left"></i> Guest Communication</a></li>-->
+            <li><a href="<?php echo site_url('guests/communication/'.  base64_encode($guest['id'])); ?>"><i class="icon-comment-discussion"></i> Communication</a></li>
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -67,7 +67,7 @@ if (isset($guest_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($guest_communication)) ? date('d F, Y', strtotime($guest_communication['communication_date'])) : set_value('communication_date'); ?>" required="required">
+                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($guest_communication) && !empty($guest_communication['communication_date'])) ? date('d F, Y', strtotime($guest_communication['communication_date'])) : set_value('communication_date'); ?>" required="required">
                                 </div>
                                 <?php
                                 echo '<label id="communication_date-error" class="validation-error-label" for="communication_date">' . form_error('communication_date') . '</label>';
@@ -79,7 +79,7 @@ if (isset($guest_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($guest_communication)) ? date('d F, Y', strtotime($guest_communication['follow_up_date'])) : set_value('follow_up_date'); ?>">
+                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($guest_communication) && !empty($guest_communication['follow_up_date'])) ? date('d F, Y', strtotime($guest_communication['follow_up_date'])) : set_value('follow_up_date'); ?>">
                                 </div>
                                 <?php
                                 echo '<label id="follow_up_date-error" class="validation-error-label" for="follow_up_date">' . form_error('follow_up_date') . '</label>';

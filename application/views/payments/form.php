@@ -114,7 +114,7 @@ if (isset($payment)) {
                                 <div class="col-lg-4">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="check_date" id="check_date" class="form-control pickadate" placeholder="Select Check Date" value="<?php echo (isset($payment)) ? date('d F, Y', strtotime($payment['check_date'])) : set_value('check_date'); ?>" required="required">
+                                        <input type="text" name="check_date" id="check_date" class="form-control pickadate" placeholder="Select Check Date" value="<?php echo (isset($payment) && !empty($payment['check_date'])) ? date('d F, Y', strtotime($payment['check_date'])) : set_value('check_date'); ?>" required="required">
                                     </div>
                                     <?php
                                     echo '<label id="check_date-error" class="validation-error-label" for="check_date">' . form_error('check_date') . '</label>';
