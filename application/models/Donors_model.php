@@ -16,10 +16,12 @@ class Donors_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_donors($type = 'result') {
-        $columns = ['d.firstname', 'd.lastname', 'd.email', 'd.phone', 'd.amount', 'd.created', 'd.is_active'];
+        $columns = ['d.firstname', 'd.lastname', 'd.email', 'd.phone', 'd.amount', 'd.created', 'd.is_active', 'last_donation_date','last_donation_category'];
         $keyword = $this->input->get('search');
-        $this->db->select('d.*');
-
+        $select1 = '(SELECT created FROM ' . TBL_FUNDS . ' WHERE donor_id=d.id AND is_delete=0 AND is_refund=0 order by id DESC LIMIT 1) as last_donation_date';
+        $select2 = '(SELECT GROUP_CONCAT(ft.name) as fundtypes, f.donor_id, f.account_id FROM funds f JOIN accounts a ON f.account_id=a.id JOIN fund_types ft on a.fund_type_id=ft.id WHERE f.is_delete=0 AND f.is_refund=0 group by f.account_id, f.donor_id) fundcat';
+        $this->db->select('d.*,fundcat.fundtypes as last_donation_category,' . $select1);
+        $this->db->join($select2,'d.id=fundcat.donor_id');
         if (!empty($keyword['value'])) {
             $this->db->where('(d.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR d.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -32,6 +34,7 @@ class Donors_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_DONORS . ' d');
+//            qry();
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_DONORS . ' d');
@@ -58,12 +61,12 @@ class Donors_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_donors_communication($type = 'result', $id) {
-        $columns = ['id', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
+        $columns = ['id', 'fullname', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
-        $this->db->select('c.*');
-
+        $this->db->select('c.*,CONCAT(d.firstname, " ",d.lastname) AS fullname');
+        $this->db->join(TBL_DONORS . ' as d', 'd.id=c.donor_id', 'left');
         if (!empty($keyword['value'])) {
-            $this->db->where('(note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+            $this->db->where('(c.note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $this->db->where(['c.is_delete' => 0]);
         $this->db->where(['c.donor_id' => $id]);

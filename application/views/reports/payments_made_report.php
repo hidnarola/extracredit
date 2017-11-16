@@ -11,13 +11,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-cash4"></i> <span class="text-semibold">Payments Made Report</span></h4>
+            <h4><i class="icon-cash4"></i> <span class="text-semibold">Ultimate Awards Report</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Payments Made Report</li>
+            <li class="active">Ultimate Awards Report</li>
         </ul>
     </div>
 </div>
@@ -56,6 +56,10 @@
             <thead>
                 <tr>
                     <th>Program Name</th>
+                    <th>Address</th>                   
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Zip</th>                    
                     <th>Payment</th>
                     <th>Check Date</th>                   
                     <th>Payment Number</th>                   
@@ -108,6 +112,22 @@
                         }
                     }
                 },
+                {
+                    data: "address",
+                    visible: true
+                },
+                {
+                    data: "city",
+                    visible: true
+                },
+                {
+                    data: "state",
+                    visible: true
+                },
+                {
+                    data: "zip",
+                    visible: true
+                },               
                 {
                     data: "amount",
                     visible: true,

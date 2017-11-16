@@ -21,7 +21,7 @@
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('donors'); ?>"><i class="icon-people position-left"></i> Donors</a></li>
-            <li class="active">Donors Conversation</li>
+            <li class="active">Donors Communication</li>
         </ul>
     </div>
 </div>
@@ -53,6 +53,7 @@
                 <tr>
                     <th>#</th>
                     <th>Media</th>  
+                    <th>Full Name</th>    
                     <th>Subject</th>                   
                     <th>Communication Date</th>                   
                     <th>Follow Up Date</th>
@@ -148,6 +149,10 @@
                         }
                         return logo;
                     }
+                },
+                {
+                    data: "fullname",
+                    visible: true
                 },
                 {
                     data: "subject",

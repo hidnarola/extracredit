@@ -106,15 +106,6 @@ if (isset($guest)) {
                                     echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Phone</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
-                                    <?php
-                                    echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="col-lg-1 control-label">State</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
@@ -123,13 +114,23 @@ if (isset($guest)) {
                                     echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">City</label>
-                                <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
-                                    <?php
-                                    echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
-                                    ?>
-                                </div>
+                                <!--                                <label class="col-lg-1 control-label">Phone</label>
+                                                                <div class="col-lg-4">
+                                                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
+                                <?php
+                                echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
+                                ?>
+                                                                </div>-->
+                            </div>
+                            <div class="form-group">
+
+                                <!--                                <label class="col-lg-1 control-label">City</label>
+                                                                <div class="col-lg-4" id="city_wrap">
+                                                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
+                                <?php
+                                echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
+                                ?>
+                                                                </div>-->
                                 <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $guest['state_short'] : set_value('state_short'); ?>"/>
                             </div>
 
@@ -253,11 +254,11 @@ if (isset($guest)) {
                                     <div class="checkbox checkbox-switch">
                                         <label>
                                             <input type="checkbox" name="AMC_created" id="AMC_created" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
-                                    if (isset($guest) && $guest['AMC_created'] == 'NO')
-                                        echo '';
-                                    else
-                                        echo 'checked="checked"';
-                                    ?> value="1">
+                                            if (isset($guest) && $guest['AMC_created'] == 'No')
+                                                echo '';
+                                            else
+                                                echo 'checked="checked"';
+                                            ?> value="1">
                                         </label>
                                     </div>
                                 </div>
@@ -270,13 +271,22 @@ if (isset($guest)) {
                                     echo '<label id="assistant-error" class="validation-error-label" for="assistant">' . form_error('assistant') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Assistant Phone</label>
+                                <label class="col-lg-1 control-label">AMC Active?</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="assistant_phone" id="assistant_phone" placeholder="Enter Assistant Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['assistant_phone']) ? $guest['assistant_phone'] : set_value('assistant_phone'); ?>">
-                                    <?php
-                                    echo '<label id="assistant_phone-error" class="validation-error-label" for="assistant_phone">' . form_error('assistant_phone') . '</label>';
-                                    ?>
+                                    <div class="checkbox checkbox-switch">
+                                        <label>
+                                            <input type="checkbox" name="AMC_active" id="AMC_active" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
+                                            if (isset($guest) && $guest['AMC_active'] == 'No')
+                                                echo '';
+                                            else if (isset($guest) && $guest['AMC_active'] == 'Yes')
+                                                echo 'checked="checked"';
+                                            else
+                                                echo '';
+                                            ?> value="1">
+                                        </label>
+                                    </div>
                                 </div>
+
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Assistant Email</label>
@@ -286,7 +296,15 @@ if (isset($guest)) {
                                     echo '<label id="assistant_email-error" class="validation-error-label" for="assistant_email">' . form_error('assistant_email') . '</label>';
                                     ?>
                                 </div>
+                                <label class="col-lg-1 control-label">Assistant Phone</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="assistant_phone" id="assistant_phone" placeholder="Enter Assistant Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['assistant_phone']) ? $guest['assistant_phone'] : set_value('assistant_phone'); ?>">
+                                    <?php
+                                    echo '<label id="assistant_phone-error" class="validation-error-label" for="assistant_phone">' . form_error('assistant_phone') . '</label>';
+                                    ?>
+                                </div>
                             </div>
+
                         </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">

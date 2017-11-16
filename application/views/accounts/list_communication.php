@@ -15,14 +15,14 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Guest Communication</span></h4>
+            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Account Communication</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('guests'); ?>"><i class="icon-people position-left"></i> Guests</a></li>
-            <li class="active">Guest Communication</li>
+            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> Accounts</a></li>
+            <li class="active">Account Communication</li>
         </ul>
     </div>
 </div>
@@ -47,16 +47,15 @@
     </div>
     <div class="panel panel-flat">
         <div class="panel-heading text-right">
-            <a href="<?php echo site_url('guests/add_communication' . '/' . $id); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Conversation</a>
+            <a href="<?php echo site_url('accounts/add_communication' . '/' . $id); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Conversation</a>
         </div>
         <table class="table datatable-basic">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>Media</th>    
-                    <th>Full Name</th>    
-                    <th>Company Name</th>    
-                    <th>AMC Active</th>    
+                    <th>Program</th>    
+                    <th>Contact Name</th>    
                     <th>Subject</th>                   
                     <th>Communication Date</th>                   
                     <th>Follow Up Date</th>                   
@@ -115,7 +114,7 @@
 <script>
     var permissions = <?php echo json_encode($perArr); ?>;
     var logo_img_url = '<?php echo base_url() . COMMUNICATION_IMAGES ?>';
-    var guest_id = '<?php echo $id; ?>';
+    var account_id = '<?php echo $id; ?>';
     $(function () {
         $('.datatable-basic').dataTable({
             autoWidth: false,
@@ -128,7 +127,7 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[6, "desc"]],
-            ajax: site_url + 'guests/get_guests_communication/' + guest_id,
+            ajax: site_url + 'accounts/get_accounts_communication/' + account_id,
             columns: [
                 {
                     data: "id",
@@ -155,15 +154,18 @@
                     }
                 },
                 {
-                    data: "fullname",
-                    visible: true
+                    data: "action_matters_campaign",
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.type == 3) {
+                            return full.vendor_name;
+                        } else {
+                            return data
+                        }
+                    }
                 },
                 {
-                    data: "companyname",
-                    visible: true
-                },
-                {
-                    data: "AMC_active",
+                    data: "contact_name",
                     visible: true
                 },
                 {
@@ -207,14 +209,14 @@
                     render: function (data, type, full, meta) {
                         var action = '';
                         if ($.inArray('edit', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'guests/add_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest Communication"><i class="icon-pencil3"></i></a>';
+                            action += '<a href="' + site_url + 'accounts/add_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest Communication"><i class="icon-pencil3"></i></a>';
                         }
                         if ($.inArray('view', permissions) !== -1) {
-//                        action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Conversation"><i class="icon-comment-discussion"></i></a>'
+//                        action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Conversation"><i class="icon-comment-discussion"></i></a>'
                             action += '&nbsp;&nbsp;<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation"><i class="icon-eye"></i></a>'
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'guests/delete_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest Communication"><i class="icon-trash"></i></a>'
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/delete_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest Communication"><i class="icon-trash"></i></a>'
                         }
                         return action;
                     }
@@ -229,7 +231,7 @@
     });
 
     function view_communication(e) {
-        var url = site_url + 'guests/get_communication_by_id';
+        var url = site_url + 'accounts/get_communication_by_id';
         var id = $(e).attr('data-id');
         $.ajax({
             type: 'POST',
@@ -260,7 +262,7 @@
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this guest communication!",
+            text: "You will not be able to recover this account communication!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",

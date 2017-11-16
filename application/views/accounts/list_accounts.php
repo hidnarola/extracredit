@@ -40,6 +40,7 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Fund Type</th>
                     <th>AMC/Vendor</th>
                     <th>Contact Name</th>
@@ -70,8 +71,13 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+             order: [[0, "desc"]],
             ajax: site_url + 'accounts/get_accounts',
             columns: [
+                {
+                    data: "id",
+                    visible: false,
+                },
                 {
                     data: "fund_type",
                     visible: true,
@@ -138,6 +144,9 @@
                         }
                         if ($.inArray('view', permissions) !== -1) {
                             action += '<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" title="View Transactions"><i class="icon-coins"></i> View Transactions</a>';
+                        }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'accounts/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>';
                         }
                         if ($.inArray('delete', permissions) !== -1) {
                             action += '<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i> Delete Account</a>'

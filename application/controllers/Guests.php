@@ -128,12 +128,13 @@ class Guests extends MY_Controller {
                     'invite_date' => $invite_date,
                     'guest_date' => $guest_date,
                     'AIR_date' => $AIR_date,
-                    'AMC_created' => ($this->input->post('AMC_created') == 1) ? 1 : 0,
+                    'AMC_created' => ($this->input->post('AMC_created') == 1) ? 'Yes' : 'No',
+                    'AMC_active' => ($this->input->post('AMC_active') == 1)? 'Yes' : 'No',
                     'assistant' => $this->input->post('assistant'),
                     'assistant_phone' => $this->input->post('assistant_phone'),
                     'assistant_email' => $this->input->post('assistant_email'),
                 );
-
+//                p($dataArr, 1);
                 if (is_numeric($id)) {
                     $dataArr['modified'] = date('Y-m-d H:i:s');
                     $this->guests_model->common_insert_update('update', TBL_GUESTS, $dataArr, ['id' => $id]);
@@ -294,7 +295,7 @@ class Guests extends MY_Controller {
     }
 
     /**
-     * Listing of All Guests
+     * Listing of All Guests communication
      */
     public function communication($id = null) {
         checkPrivileges('guests_communication', 'view');
@@ -385,6 +386,7 @@ class Guests extends MY_Controller {
                     'subject' => $this->input->post('subject'),
                     'guest_id' => $guest_id,
                     'donor_id' => 0,
+                    'account_id' => 0,
                     'type' => 2,
                     'media' => $media
                 );

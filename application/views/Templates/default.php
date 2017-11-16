@@ -120,27 +120,28 @@
                                             <a href="#" class="has-ul"><i class="icon-graph"></i><span>Reports</span></a>
                                             <ul class="hidden-ul" style="<?php echo ($this->controller == 'reports' || in_array($this->action, array('donors_report'))) ? 'display: block;' : ''; ?>">
                                                 <?php if (checkPrivileges('donor_report', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'donors_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/donors_report'); ?>"><span>Donors Reports</span></a></li>
+                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'donors_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/donors_report'); ?>"><span>Ultimate Donor Report</span></a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('guest_report', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'guests_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/guests_report'); ?>"><span>Guests Reports</span></a></li>
+                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'guests_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/guests_report'); ?>"><span>Ultimate Guest Reports</span></a></li>
                                                 <?php } ?>
-                                                <?php if (checkPrivileges('account_report', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'reports') && (in_array($this->action, array('programs_amc_report', 'awards_report', 'vendor_admin_report'))) ? 'active' : ''; ?>">
-                                                        <a href="#"><span>Accounts Reports</span></a>
-                                                        <ul class="hidden-ul" style="<?php echo (in_array($this->action, array('programs_amc_report', 'awards_report', 'vendor_admin_report'))) ? 'display: block;' : ''; ?>">
-                                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'programs_amc_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/programs_amc_report'); ?>"><span>Programs & AMCs</span></a></li>
-                                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'awards_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/awards_report'); ?>"><span>Awards 90%</span></a></li>
-                                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'vendor_admin_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/vendor_admin_report'); ?>"><span>Vendors/Admin</span></a></li>
-                                                        </ul>
-                                                    </li>
-                                                <?php } ?>
-                                                <?php if (checkPrivileges('amc_balance_report', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'amc_balance_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/amc_balance_report'); ?>"><span>AMC Balances Reports</span></a></li>
+                                                    <?php if (checkPrivileges('amc_balance_report', 'view', 1)) { ?>
+                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'amc_balance_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/amc_balance_report'); ?>"><span>Ultimate Program Report</span></a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('payments_made_report', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'payments_made_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/payments_made_report'); ?>"><span>Payments Made Reports</span></a></li>
+                                                    <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'payments_made_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/payments_made_report'); ?>"><span>Ultimate Awards Report</span></a></li>
                                                 <?php } ?>
+                                                <?php if (checkPrivileges('account_report', 'view', 1)) { ?>
+                                                    <!--<li class="<?php echo ($this->controller == 'reports') && (in_array($this->action, array('programs_amc_report', 'awards_report', 'vendor_admin_report'))) ? 'active' : ''; ?>">-->
+<!--                                                        <a href="#"><span>Accounts Reports</span></a>
+                                                        <ul class="hidden-ul" style="<?php echo (in_array($this->action, array('programs_amc_report', 'awards_report', 'vendor_admin_report'))) ? 'display: block;' : ''; ?>">-->
+                                                            <!--<li class="<?php echo ($this->controller == 'reports' && ($this->action == 'programs_amc_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/programs_amc_report'); ?>"><span>Ultimate Program Report</span></a></li>-->
+                                                            <!--<li class="<?php echo ($this->controller == 'reports' && ($this->action == 'awards_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/awards_report'); ?>"><span>Ultimate Awards Report</span></a></li>-->
+                                                            <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'vendor_admin_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/vendor_admin_report'); ?>"><span>Ultimate Vendors/Admin Report</span></a></li>
+                                                        <!--</ul>-->
+                                                    <!--</li>-->
+                                                <?php } ?>
+                                                
                                             </ul>
                                         </li>
                                     <?php } ?>

@@ -11,13 +11,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-coins"></i> <span class="text-semibold">Donors</span></h4>
+            <h4><i class="icon-coins"></i> <span class="text-semibold">Ultimate Donor Report</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Donors</li>
+            <li class="active">Ultimate Donor Report</li>
         </ul>
     </div>
 </div>

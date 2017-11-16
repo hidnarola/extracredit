@@ -366,7 +366,150 @@ class Accounts extends MY_Controller {
             show_404();
         }
     }
+    
+     /**
+     * Listing of All Accounts communication
+     * @author REP
+     */
+    public function communication($id = null) {
+        checkPrivileges('accounts_communication', 'view');
+        $data['perArr'] = checkPrivileges('accounts_communication');
+        $data['title'] = 'Extracredit | Accounts Communication';
+        $data['id'] = $id;
+        $this->template->load('default', 'accounts/list_communication', $data);
+    }
 
+    /**
+     * Get Accounts communication data for ajax table
+     * @author REP
+     * */
+    public function get_accounts_communication($id) {
+        checkPrivileges('accounts_communication', 'view');
+        $id = base64_decode($id);
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->accounts_model->get_accounts_communication('count', $id);
+        $final['redraw'] = 1;
+        $accounts = $this->accounts_model->get_accounts_communication('result', $id);
+        $start = $this->input->get('start') + 1;
+
+        foreach ($accounts as $key => $val) {
+            $accounts[$key] = $val;
+            $accounts[$key]['created'] = date('m/d/Y', strtotime($val['created']));
+            $accounts[$key]['follow_up_date'] = ($val['follow_up_date'] != '') ? date('m/d/Y', strtotime($val['follow_up_date'])) : '';
+            $accounts[$key]['communication_date'] = ($val['communication_date'] != '') ? date('m/d/Y', strtotime($val['communication_date'])) : '';
+        }
+        $final['data'] = $accounts;
+        echo json_encode($final);
+    }
+
+    /**
+     * Get Accounts communication data for ajax call for view
+     * @author REP
+     * */
+    public function get_communication_by_id() {
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        $accounts_communication = $this->accounts_model->get_account_communication_details($id);
+        $accounts_communication['follow_up_date'] = ($accounts_communication['follow_up_date'] != '') ? date('m/d/Y', strtotime($accounts_communication['follow_up_date'])) : '';
+        $accounts_communication['communication_date'] = ($accounts_communication['communication_date'] != '') ? date('m/d/Y', strtotime($accounts_communication['communication_date'])) : '';
+        echo json_encode($accounts_communication);
+    }
+
+    /**
+     * Add Accounts communication data for ajax call for view
+     * @author REP
+     * */
+    public function add_communication($account_id = null, $comm_id = null) {
+        if (!is_null($account_id))
+            $account_id = base64_decode($account_id);
+
+        $data['account'] = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
+        $comm_id = base64_decode($comm_id);
+        if (is_numeric($comm_id)) {
+            checkPrivileges('accounts_communication', 'edit');
+            $accounts_communication = $this->accounts_model->get_account_communication_details($comm_id);
+            $data['account_communication'] = $accounts_communication;
+            $data['title'] = 'Extracredit | Edit Communication';
+            $data['heading'] = 'Edit Communication';
+            if ($accounts_communication['media'] != '')
+                $media = $accounts_communication['media'];
+            else
+                $media = NULL;
+        } else {
+            checkPrivileges('accounts_communication', 'add');
+            $media = NULL;
+            $data['title'] = 'Extracredit | Add Communication';
+            $data['heading'] = 'Add Communication';
+            $data['cities'] = [];
+            $data['accounts'] = [];
+        }
+        $this->form_validation->set_rules('note', 'Note', 'trim|required');
+        if ($this->form_validation->run() == TRUE) {
+            $flag = 0;
+            if ($_FILES['media']['name'] != '') {
+                $image_data = upload_communication('media', COMMUNICATION_IMAGES);
+                if (is_array($image_data)) {
+                    $flag = 1;
+                    $data['media_validation'] = $image_data['errors'];
+                } else {
+                    if ($media != '') {
+                        unlink(COMMUNICATION_IMAGES . $media);
+                    }
+                    $media = $image_data;
+                }
+            }
+
+            if ($flag == 0) {
+                $dataArr = array(
+                    'note' => $this->input->post('note'),
+                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
+                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
+                    'subject' => $this->input->post('subject'),
+                    'account_id' => $account_id,
+                    'guest_id' => 0,
+                    'donor_id' => 0,
+                    'type' => 3,
+                    'media' => $media
+                );
+
+                if (is_numeric($comm_id)) {
+                    $dataArr['modified'] = date('Y-m-d H:i:s');
+                    $this->accounts_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
+                    $this->session->set_flashdata('success', 'Account communication details has been updated successfully.');
+                } else {
+                    $dataArr['created'] = date('Y-m-d H:i:s');
+                    $this->accounts_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    $this->session->set_flashdata('success', 'Account communication has been added successfully');
+                }
+                redirect('accounts/communication/' . base64_encode($account_id));
+            }
+        }
+        $this->template->load('default', 'accounts/add_communication', $data);
+    }
+    
+    /**
+     * Delete Guest Communication
+     * @param int $id
+     * @author REP
+     * */
+    public function delete_communication($account_id = null, $id = NULL) {
+        checkPrivileges('accounts_communication', 'delete');
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $accounts_communication = $this->accounts_model->get_account_communication_details($id);
+            if ($accounts_communication) {
+                $update_array = array(
+                    'is_delete' => 1
+                );
+                $this->accounts_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id, 'type' => 3]);
+                $this->session->set_flashdata('success', 'Account communication has been deleted successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+            }
+            redirect('accounts/communication/' . $account_id);
+        } else {
+            show_404();
+        }
+    }
 }
 
 /* End of file Accounts.php */

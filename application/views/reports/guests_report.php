@@ -11,13 +11,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-people"></i> <span class="text-semibold">Guests</span></h4>
+            <h4><i class="icon-people"></i> <span class="text-semibold">Ultimate Guest Report</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Guests</li>
+            <li class="active">Ultimate Guest Report</li>
         </ul>
     </div>
 </div>

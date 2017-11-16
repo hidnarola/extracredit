@@ -512,6 +512,7 @@ class Donors extends MY_Controller {
                     'subject' => $this->input->post('subject'),
                     'donor_id' => $donor_id,
                     'guest_id' => 0,
+                    'account_id' => 0,
                     'type' => 1,
                     'media' => $media
                 );

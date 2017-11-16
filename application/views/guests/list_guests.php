@@ -54,9 +54,10 @@
                     <th>Logo</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Company</th>
                     <th>Email</th>
-                    <th>Phone number</th>
+                    <th>Guest Date</th>
+                    <th>Air Date</th>
+                    <th>AMC Created</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -130,6 +131,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+             order: [[7, "desc"]],
             ajax: site_url + 'guests/get_guests',
             columns: [
                 {
@@ -155,16 +157,28 @@
                     visible: true,
                 },
                 {
-                    data: "companyname",
-                    visible: true,
-                },
-                {
                     data: "email",
                     visible: true
                 },
                 {
-                    data: "phone",
+                    data: "guest_date",
+                    visible: true,
+                },
+                {
+                    data: "AIR_date",
                     visible: true
+                },
+                {
+                    data: "AMC_active",
+                    visible: true,
+                    sortable: false,
+                    render: function (data, type, full, meta) {
+                        if (full.AMC_active == 'No') {
+                            var status = '<span class="label bg-warning">No</span>';
+                        } else
+                            var status = '<span class="label bg-success">Yes</span>';
+                        return status;
+                    }
                 },
                 {
                     data: "is_delete",
@@ -217,14 +231,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
     $(document).on('click', '.guest_view_btn', function () {

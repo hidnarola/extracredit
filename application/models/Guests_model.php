@@ -16,7 +16,7 @@ class Guests_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_guests($type = 'result') {
-        $columns = ['logo', 'g.firstname', 'g.lastname', 'g.companyname', 'g.email', 'g.phone', 'g.created'];
+        $columns = ['logo', 'g.firstname', 'g.lastname', 'g.email', 'g.guest_date','g.AIR_date','g.AMC_active', 'g.created'];
         $keyword = $this->input->get('search');
         $this->db->select('g.*,c.name as city');
 
@@ -32,12 +32,13 @@ class Guests_model extends MY_Model {
         }
 
         $this->db->where(['g.is_delete' => 0]);
-        if ($this->input->get('order')) {
+//        if ($this->input->get('order')) {
             $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
-        }
+//        }
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_GUESTS . ' g');
+//            qry();
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_GUESTS . ' g');
@@ -96,12 +97,12 @@ class Guests_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_guests_communication($type = 'result', $id) {
-        $columns = ['id', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
+        $columns = ['id', 'fullname', 'g.companyname', 'g.AMC_active', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
-        $this->db->select('c.*');
-
+        $this->db->select('c.*,CONCAT(g.firstname, " ",g.lastname) AS fullname,g.companyname,g.AMC_active');
+        $this->db->join(TBL_GUESTS . ' as g', 'g.id=c.guest_id', 'left');
         if (!empty($keyword['value'])) {
-            $this->db->where('(note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+            $this->db->where('(c.note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $this->db->where(['c.is_delete' => 0]);
         $this->db->where(['c.guest_id' => $id]);
@@ -110,6 +111,8 @@ class Guests_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
+//            echo $this->db->last_query();
+//            p($query->result_array(),1);
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
