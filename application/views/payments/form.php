@@ -82,7 +82,7 @@ if (isset($payment)) {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-2 control-label">Program/AMC <span class="text-danger">*</span></label>
+                            <label class="col-lg-2 control-label">Program <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
                                 <select name="account_id" id="account_id" class="select2" required="required" data-placeholder="Select account" <?php echo $account_disabled ?>>
                                     <option value=""></option>

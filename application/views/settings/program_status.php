@@ -6,7 +6,7 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Program/AMC Status</span></h4>
+            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Program Status</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
@@ -72,7 +72,7 @@
         <div class="col-md-8">
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h5 class="panel-title">Program/AMC Status List</h5>
+                    <h5 class="panel-title">Program Status List</h5>
                 </div>
                 <table class="table datatable-basic">
                     <thead>
@@ -245,14 +245,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 </script>

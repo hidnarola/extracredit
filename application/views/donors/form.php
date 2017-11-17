@@ -152,7 +152,7 @@ if (isset($donor)) {
                                         echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';
                                         ?>
                                     </div>
-                                    <label class="col-lg-1 control-label">Program/AMC</label>
+                                    <label class="col-lg-1 control-label">Program</label>
                                     <div class="col-lg-4">
                                         <select name="account_id" id="account_id" class="select2" data-placeholder="Select account" <?php echo $account_disabled ?>>
                                             <option value=""></option>

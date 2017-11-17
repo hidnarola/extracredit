@@ -11,6 +11,7 @@ class Guests extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('guests_model');
+        $this->load->model('communication_manager_model');
     }
 
     /**
@@ -398,6 +399,15 @@ class Guests extends MY_Controller {
                 } else {
                     $dataArr['created'] = date('Y-m-d H:i:s');
                     $this->guests_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    if (!empty($this->input->post('follow_up_date'))) {
+                        $communication_ManagerArr = array(
+                            'user_id' => $this->session->userdata('extracredit_user')['id'],
+                            'communication_id'=> $this->db->insert_id(),
+                            'follow_up_date' => $this->input->post('follow_up_date'),
+                            'category' => 'guest',
+                        );
+                        $this->communication_manager_model->common_insert_update('insert', TBL_COMMUNICATIONS_MANAGER, $communication_ManagerArr);
+                    }
                     $this->session->set_flashdata('success', 'Guest communication has been added successfully');
                 }
                 redirect('guests/communication/' . base64_encode($guest_id));

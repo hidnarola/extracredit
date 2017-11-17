@@ -11,6 +11,7 @@ class Donors extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('donors_model');
+        $this->load->model('communication_manager_model');
     }
 
     /**
@@ -35,8 +36,13 @@ class Donors extends MY_Controller {
         foreach ($donors as $key => $val) {
             $donors[$key] = $val;
             $donors[$key]['created'] = date('m/d/Y', strtotime($val['created']));
+            if ($val['last_donation_date'] != NULL)
+                $donors[$key]['last_donation_date'] = date('m/d/Y', strtotime($val['last_donation_date']));
+            else
+                $donors[$key]['last_donation_date'] = '';
         }
-
+//        qry();
+//        p($donors, 1);
         $final['data'] = $donors;
         echo json_encode($final);
     }
@@ -154,7 +160,6 @@ class Donors extends MY_Controller {
                 'city_id' => $city_id,
                 'zip' => $this->input->post('zip'),
             );
-
 
             $this->db->trans_begin();
             if (is_numeric($id)) {
@@ -524,6 +529,15 @@ class Donors extends MY_Controller {
                 } else {
                     $dataArr['created'] = date('Y-m-d H:i:s');
                     $this->donors_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    if (!empty($this->input->post('follow_up_date'))) {
+                        $communication_ManagerArr = array(
+                            'user_id' => $this->session->userdata('extracredit_user')['id'],
+                            'communication_id'=> $this->db->insert_id(),
+                            'follow_up_date' => $follow_up_date,
+                            'category' => 'donor',
+                        );
+                        $this->communication_manager_model->common_insert_update('insert', TBL_COMMUNICATIONS_MANAGER, $communication_ManagerArr);
+                    }
                     $this->session->set_flashdata('success', 'Donor communication has been added successfully');
                 }
                 redirect('donors/communication/' . base64_encode($donor_id));

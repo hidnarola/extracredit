@@ -58,8 +58,8 @@
                     <th>Email</th>
                     <th>Phone</th>
                     <th>Amount</th>
-<!--                    <th>Last Donation Date</th>
-                    <th>Donation category</th>-->
+                    <th>Last Donation Date</th>
+                    <th>Donation category</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -156,14 +156,14 @@
                         return '$' + full.amount;
                     }
                 },
-//                {
-//                    data: "last_donation_date",
-//                    visible: true,
-//                },
-//                {
-//                    data: "last_donation_category",
-//                    visible: true,
-//                },
+                {
+                    data: "last_donation_date",
+                    visible: true,
+                },
+                {
+                    data: "last_donation_category",
+                    visible: true
+                },
                 {
                     data: "is_delete",
                     visible: true,

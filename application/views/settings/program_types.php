@@ -6,7 +6,7 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Program/AMC Types</span></h4>
+            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Program Types</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
@@ -63,13 +63,7 @@
                                     <button type="submit" name="save" class="btn bg-teal custom_save_button" id="programtype_submit_btn">Save<i class="icon-arrow-right14 position-right"></i></button>
                                     <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
-                            </div>  
-                            <!--                            <div class="col-md-12">
-                                                            <div class="form-group">
-                                                                <button type="submit" class="btn btn-success custom_save_button" id="programtype_submit_btn">Save</button>
-                                                                <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
-                                                            </div>
-                                                        </div>-->
+                            </div> 
                         </div>
                     </div>
                 </div>
@@ -78,7 +72,7 @@
         <div class="col-md-8">
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h5 class="panel-title">Program/AMC Types List</h5>
+                    <h5 class="panel-title">Program Types List</h5>
                 </div>
                 <table class="table datatable-basic">
                     <thead>
@@ -147,8 +141,7 @@
             if (element.parents('div').hasClass("checker") || element.parents('div').hasClass("choice") || element.parent().hasClass('bootstrap-switch-container')) {
                 if (element.parents('label').hasClass('checkbox-inline') || element.parents('label').hasClass('radio-inline')) {
                     error.appendTo(element.parent().parent().parent().parent());
-                }
-                else {
+                } else {
                     error.appendTo(element.parent().parent().parent().parent().parent());
                 }
             }
@@ -171,9 +164,7 @@
             // Input group, styled file input
             else if (element.parent().hasClass('uploader') || element.parents().hasClass('input-group')) {
                 error.appendTo(element.parent().parent());
-            }
-
-            else {
+            } else {
                 error.insertAfter(element);
             }
         },
@@ -254,14 +245,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 </script>

@@ -93,6 +93,9 @@
                                     <?php if (checkPrivileges('accounts', 'view', 1)) { ?>
                                         <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3"></i> <span>Accounts</span></a></li>
                                     <?php } ?>
+                                    <?php if (checkPrivileges('communication_manager', 'view', 1)) { ?>
+                                        <li class="<?php echo ($this->controller == 'communication_manager') ? 'active' : ''; ?>"><a href="<?php echo site_url('communication_manager'); ?>"><i class="icon-bubbles9"></i> <span>Communication Manager</span></a></li>
+                                    <?php } ?>
                                     <?php if (checkPrivileges('admin_fund', 'view', 1) || (checkPrivileges('accounts_fund', 'view', 1)) || (checkPrivileges('donors_fund', 'view', 1)) || (checkPrivileges('payments_fund', 'view', 1))) { ?>
                                         <li class="<?php echo ($this->controller == 'funds') ? 'active' : ''; ?>">
                                             <a href="#" class="has-ul"><i class="icon-cash4"></i><span>Funds</span></a>
@@ -162,10 +165,10 @@
                                                     <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'payment_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/payment_types'); ?>">Payment Types</a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('program_types', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_types'); ?>">Program/AMC Types</a></li>
+                                                    <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_types'); ?>">Program Types</a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('program_status', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_status')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_status'); ?>">Program/AMC Stauts</a></li>
+                                                    <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'program_status')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/program_status'); ?>">Program Status</a></li>
                                                 <?php } ?>
                                             </ul>
                                         </li>

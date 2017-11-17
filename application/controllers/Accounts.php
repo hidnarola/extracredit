@@ -11,6 +11,7 @@ class Accounts extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('accounts_model');
+        $this->load->model('communication_manager_model');
     }
 
     /**
@@ -478,6 +479,15 @@ class Accounts extends MY_Controller {
                 } else {
                     $dataArr['created'] = date('Y-m-d H:i:s');
                     $this->accounts_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    if (!empty($this->input->post('follow_up_date'))) {
+                        $communication_ManagerArr = array(
+                            'user_id' => $this->session->userdata('extracredit_user')['id'],
+                            'communication_id'=> $this->db->insert_id(),
+                            'follow_up_date' => $this->input->post('follow_up_date'),
+                            'category' => 'account',
+                        );
+                        $this->communication_manager_model->common_insert_update('insert', TBL_COMMUNICATIONS_MANAGER, $communication_ManagerArr);
+                    }
                     $this->session->set_flashdata('success', 'Account communication has been added successfully');
                 }
                 redirect('accounts/communication/' . base64_encode($account_id));

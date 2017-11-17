@@ -42,7 +42,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Fund Type</th>
-                    <th>AMC/Vendor</th>
+                    <th>Program/Vendor</th>
                     <th>Contact Name</th>
                     <th>Email</th>
                     <th>Phone</th>
@@ -71,7 +71,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-             order: [[0, "desc"]],
+            order: [[0, "desc"]],
             ajax: site_url + 'accounts/get_accounts',
             columns: [
                 {
@@ -89,7 +89,7 @@
                         if (full.type == 1) {
                             return full.vendor_name;
                         } else {
-                            return data
+                            return data;
                         }
                     }
                 },

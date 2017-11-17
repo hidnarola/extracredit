@@ -86,8 +86,6 @@ if (isset($user)) {
                                                     else
                                                         echo '';
                                                     ?>>Financier</option>
-
-
                                                 </select>
                                                 <?php
                                                 echo '<label id="role-error" class="validation-error-label" for="role">' . form_error('role') . '</label>';

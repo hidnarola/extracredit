@@ -40,7 +40,7 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>Program/AMC</th>
+                    <th>Program</th>
                     <th>Amount</th>
                     <th>Date</th>
                     <th>Post Date</th>

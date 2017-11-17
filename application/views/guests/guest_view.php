@@ -11,7 +11,7 @@
             <td><?php echo $guest_details['name']; ?></td>
         </tr>
         <tr>
-            <th>Program/AMC</th>
+            <th>Program</th>
             <td>
                 <?php
                 if ($guest_details['action_matters_campaign'] != '') {

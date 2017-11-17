@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Manage aacounts table related database operations
+ * Manage accounts table related database operations
  * @author KU
  */
 class Accounts_model extends MY_Model {
@@ -30,7 +30,6 @@ class Accounts_model extends MY_Model {
                     ' OR total_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
-
         $this->db->where(['a.is_delete' => 0]);
 //        if ($this->input->get('order')) {
             $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);

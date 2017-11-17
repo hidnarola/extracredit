@@ -178,9 +178,9 @@ if (isset($guest)) {
                             </div>
                         </fieldset>
                         <fieldset>
-                            <legend class="text-bold">Program/AMC</legend>  
+                            <legend class="text-bold">Program</legend>  
                             <div class="form-group">
-                                <label class="col-lg-2 control-label">Program/AMC</label>
+                                <label class="col-lg-2 control-label">Program</label>
                                 <div class="col-lg-6">
                                     <select name="account_id" id="account_id" class="select2" >
                                         <option value="">None</option>

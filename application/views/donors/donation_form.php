@@ -82,7 +82,7 @@ if (isset($donation)) {
                                     echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Program/AMC</label>
+                                <label class="col-lg-1 control-label">Program</label>
                                 <div class="col-lg-4">
                                     <select name="account_id" id="account_id" class="select2" required="required" data-placeholder="Select account" <?php echo $account_disabled ?>>
                                         <option value=""></option>
@@ -170,7 +170,7 @@ if (isset($donation)) {
                                         echo '<label id="admin_percent-error" class="validation-error-label" for="admin_percent">' . form_error('admin_percent') . '</label>';
                                         ?>
                                     </div>
-                                    <label class="col-lg-1 control-label">Program/AMC Donation(%)<span class="text-danger">*</span></label>
+                                    <label class="col-lg-1 control-label">Program Donation(%)<span class="text-danger">*</span></label>
                                     <div class="col-lg-4">
                                         <input type="number" name="account_percent" id="program-donation-percent" placeholder="Enter Program Donation(%)" class="form-control" value="<?php echo (isset($donation)) ? $donation['account_percent'] : $settings['program-donation-percent']; ?>" required="required" readonly/>
                                         <?php

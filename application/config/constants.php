@@ -104,6 +104,7 @@ define('TBL_STATES', 'states');
 define('TBL_USERS', 'users');
 define('TBL_PAGES', 'pages');
 define('TBL_USER_PERMISSION', 'user_permissions');
+define('TBL_COMMUNICATIONS_MANAGER', 'communication_manager');
 /**
  * Constants for User Images
  */
