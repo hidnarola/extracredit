@@ -44,7 +44,7 @@
     <div class="panel panel-flat">
         <div class="panel-heading">
             <div class="row">
-<!--                <div class="col-md-6">
+                <div class="col-md-6">
                     <label>Check date filter: </label>
                     <div class="input-group">
                         <span class="input-group-addon"><i class="icon-calendar22"></i></span>
@@ -53,7 +53,7 @@
                         ?>
                         <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo $date_filter; ?>"> 
                     </div>
-                </div>-->
+                </div>
                 <div class="text-right">
                     <a href="<?php echo site_url('payments/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Make Payment</a>
                 </div>

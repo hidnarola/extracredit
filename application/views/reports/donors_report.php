@@ -1,4 +1,13 @@
-<script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
+<!--<script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>-->
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"></script>-->
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/ui/moment/moment.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/daterangepicker.js"></script>
@@ -8,6 +17,32 @@
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.time.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/legacy.js"></script>
 <script type="text/javascript" src="assets/js/pages/picker_date.js"></script>
+<style>
+    .dt-button {
+        display: block;
+        width: 60px;
+        height: 35px;
+        background: #26A69A;
+        padding: 6px;
+        text-align: center;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        margin-right: 4px;
+        transition: all 0.3s ease-in-out;
+        -webkit-transition: all 0.3s ease-in-out;
+        -moz-transition: all 0.3s ease-in-out;
+        text-decoration:none;
+        border: 2px solid #fff;
+    }
+
+    a:hover,.dt-button a:focus {
+        color: #26A69A !important;
+        background: #fff !important;
+        border: 2px solid #26A69A;
+        text-decoration:none;
+    }
+</style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -107,6 +142,18 @@
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
+           /* dom: 'Bfrtip',
+            buttons: [
+//                'copy',
+                'excel',
+                'csv',
+//                'pdf',
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL'
+                },
+            ], */
             ajax: {
                 url: site_url + 'reports/get_donors_reports',
                 data: {
@@ -131,15 +178,15 @@
                 },
                 {
                     data: "date",
-                    visible: true,
+                    visible: true
                 },
                 {
                     data: "post_date",
-                    visible: true,
+                    visible: true
                 },
                 {
                     data: "id",
-                    visible: true,
+                    visible: true
                 },
                 {
                     data: "firstname",

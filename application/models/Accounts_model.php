@@ -243,7 +243,7 @@ class Accounts_model extends MY_Model {
      * @author KU
      */
     public function get_account_transactions($account_id) {
-        $sql = 'SELECT f.created,f.date,f.post_date,d.firstname,d.lastname,pt.type as payment_method,f.payment_number,f.memo,"" as debit_amt,f.admin_fund as credit_amt,f.admin_balance as balance '
+        $sql = 'SELECT f.created,f.date,f.post_date,d.firstname,d.lastname,pt.type as payment_method,f.payment_number,f.memo,"" as debit_amt,f.account_fund as credit_amt,f.account_balance as balance '
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
