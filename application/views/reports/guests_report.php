@@ -107,7 +107,7 @@
                 data: {
                     post_date_filter: post_date_filter
                 },
-                type:'post',
+                type: 'post',
             },
             columns: [
                 {

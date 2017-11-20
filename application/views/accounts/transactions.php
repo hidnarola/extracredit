@@ -50,9 +50,10 @@
                 </tr>
             </thead>
             <tbody>
-                <?php 
-                $total =0;
-                foreach ($transactions as $key => $val) { ?>
+                <?php
+                $total = 0;
+                foreach ($transactions as $key => $val) {
+                    ?>
                     <tr>
                         <td><?php echo ($val['date'] != '') ? date('m/d/Y', strtotime($val['date'])) : ''; ?></td>
                         <td><?php echo($val['post_date'] != '') ? date('m/d/Y', strtotime($val['post_date'])) : ''; ?></td>
@@ -63,14 +64,15 @@
                         <td><?php echo $val['memo'] ?></td>
                         <td><?php echo ($val['debit_amt'] != '') ? '-$' . $val['debit_amt'] : '' ?></td>
                         <td><?php echo ($val['credit_amt'] != '') ? '$' . $val['credit_amt'] : '' ?></td>
-                        <?php 
-                        if($val['credit_amt'] !=''){
-                            $total+= $val['credit_amt'];
-                        } elseif($val['debit_amt'] !=''){
-                            $total-= $val['debit_amt'];                            
-                        }?>
-                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : '' ?></td>-->
-                        <td><?php echo '$'.$total ?></td>
+                        <?php
+                        if ($val['credit_amt'] != '') {
+                            $total += $val['credit_amt'];
+                        } elseif ($val['debit_amt'] != '') {
+                            $total -= $val['debit_amt'];
+                        }
+                        ?>
+                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''   ?></td>-->
+                        <td><?php echo '$' . $total ?></td>
                     </tr>
                 <?php }
                 ?>

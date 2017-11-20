@@ -532,7 +532,7 @@ class Donors extends MY_Controller {
                     if (!empty($this->input->post('follow_up_date'))) {
                         $communication_ManagerArr = array(
                             'user_id' => $this->session->userdata('extracredit_user')['id'],
-                            'communication_id'=> $this->db->insert_id(),
+                            'communication_id' => $this->db->insert_id(),
                             'follow_up_date' => $follow_up_date,
                             'category' => 'donor',
                         );

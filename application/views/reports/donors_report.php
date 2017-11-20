@@ -36,11 +36,16 @@
         border: 2px solid #fff;
     }
 
-    a:hover,.dt-button a:focus {
+    .dt-buttons a:hover,.dt-buttons a:focus {
         color: #26A69A !important;
         background: #fff !important;
         border: 2px solid #26A69A;
         text-decoration:none;
+    }
+    .custom_perpage_dropdown .dataTables_length {
+        float: right;
+        display: inline-block;
+        margin: 0 18px 20px 20px;
     }
 </style>
 <div class="page-header page-header-default">
@@ -75,7 +80,7 @@
             <?php } ?>
         </div>
     </div>
-    <div class="panel panel-flat">
+    <div class="panel panel-flat custom_perpage_dropdown">
         <div class="panel-heading">
             <div class="row">
                 <div class="col-md-6">
@@ -140,9 +145,9 @@
                 lengthMenu: '<span>Show:</span> _MENU_',
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
-            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+//            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
-           /* dom: 'Bfrtip',
+            dom: 'lBfrtipx',
             buttons: [
 //                'copy',
                 'excel',
@@ -151,9 +156,27 @@
                 {
                     extend: 'pdfHtml5',
                     orientation: 'landscape',
-                    pageSize: 'LEGAL'
-                },
-            ], */
+                    pageSize: 'LEGAL',
+
+                    customize: function (win) {
+                        console.log(win);
+                        var tblBody = win.content[1].table.body;
+                        $("#table_occurrences").find('tr').each(function (ix, row) {
+                            var index = ix;
+                            var rowElt = row;
+                            $(row).find('th,td').each(function (ind, elt) {
+                                if (elt.tagName === "TH")
+                                    return;
+                                if (tblBody[index][ind].text == "in Bearbeitung") {
+                                    tblBody[index][ind].fillColor = "#FFA500";
+                                } else if (tblBody[index][ind].text == "erledigt") {
+                                    tblBody[index][ind].fillColor = "#7CFC00";
+                                }
+                            });
+                        });
+                    }
+                }
+            ],
             ajax: {
                 url: site_url + 'reports/get_donors_reports',
                 data: {
