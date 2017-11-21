@@ -483,7 +483,7 @@ class Accounts extends MY_Controller {
                         $communication_ManagerArr = array(
                             'user_id' => $this->session->userdata('extracredit_user')['id'],
                             'communication_id'=> $this->db->insert_id(),
-                            'follow_up_date' => $this->input->post('follow_up_date'),
+                            'follow_up_date' => date('Y-m-d', strtotime($this->input->post('follow_up_date'))),
                             'category' => 'account',
                         );
                         $this->communication_manager_model->common_insert_update('insert', TBL_COMMUNICATIONS_MANAGER, $communication_ManagerArr);

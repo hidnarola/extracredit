@@ -67,19 +67,47 @@
                             </td>
                         </tr>
                         <tr>
-                            <td align='center'><p>This is the reminder to follow up date coming for the <?php echo $category; ?>. Click on below link to login.</p></td>
+                            <td><p><strong><?php echo $category; ?> Name:</strong> <?php echo $fullname; ?></p></td>
                         </tr>
                         <tr>
-                            <td align='center' style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
+                            <td style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
                                 <p style='margin: 1em 0;'>
-                                    <strong>Follow up date:</strong>
+                                    <strong>Requested a follow up on </strong>
                                     <?php echo $follow_up_date; ?>
                                 </p>                                
                             </td>
                         </tr>
+                        <?php if($phone_number !=''){ ?>
                         <tr>
-                            <td align='center' bgcolor='#26A69A' valign='top'>
-                                <h3><a href="<?php echo $url ?>" style="color: #ffffff !important">Click here to Login</a></h3>
+                            <td style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
+                                <p style='margin: 1em 0;'>
+                                    <strong>Phone Number: </strong>
+                                    <?php echo $phone_number; ?>
+                                </p>                                
+                            </td>
+                        </tr>
+                        <?php } ?>
+                        <?php if($ofemail !=''){ ?>
+                        <tr>
+                            <td style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
+                                <p style='margin: 1em 0;'>
+                                    <strong>Email Address: </strong>
+                                    <?php echo $ofemail; ?>
+                                </p>                                
+                            </td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <td style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
+                                <p style='margin: 1em 0;'>
+                                    <strong>Communication Content: </strong><?php echo $note; ?>
+                                </p>                                
+                            </td>
+                        </tr>
+                        <br>
+                        <tr>
+                            <td align='center' bgcolor='#26A69A' style=" text-align: center !important;">
+                                <h3><a href="<?php echo $url ?>" style="color: #ffffff !important;vertical-align: middle !important; text-align: center !important;">Click here to Login</a></h3>
                             </td>
                         </tr>                        
                     </table>

@@ -47,9 +47,14 @@ class Communication_manager_model extends MY_Model {
      * @param type $id
      */
     public function get_communication_manager_details($id) {
-        $this->db->select('c.*');
-        $this->db->where('c.id', $id);
-        $query = $this->db->get(TBL_COMMUNICATIONS_MANAGER . ' c');
+        $this->db->select('cm.*,c.note,CONCAT(d.firstname, " ",d.lastname) AS donor_fullname,d.email as donor_email,d.phone as donor_phone,CONCAT(g.firstname, " ",g.lastname) AS guest_fullname,g.email as guest_email,g.phone as guest_phone,a.action_matters_campaign,a.vendor_name,a.email as account_email,a.phone as account_phone');
+        $this->db->join(TBL_COMMUNICATIONS . ' as c', 'cm.communication_id=c.id', 'left');
+//        $this->db->join(TBL_USERS . ' as u', 'cm.user_id=u.id', 'left');
+        $this->db->join(TBL_DONORS . ' as d', 'c.donor_id=d.id', 'left');
+        $this->db->join(TBL_GUESTS . ' as g', 'c.guest_id=g.id', 'left');
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'c.account_id=a.id', 'left');
+        $this->db->where('cm.id', $id);
+        $query = $this->db->get(TBL_COMMUNICATIONS_MANAGER . ' cm');
         return $query->row_array();
     }
 

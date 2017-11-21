@@ -42,6 +42,7 @@ class Communication_manager extends MY_Controller {
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $communication_manager = $this->communication_manager_model->get_communication_manager_details($id);
+//            p($communication_manager, 1);
             if ($communication_manager) {
                 $update_array = array(
                     'status' => 1
@@ -51,8 +52,52 @@ class Communication_manager extends MY_Controller {
                 $follow_up_date = $communication_manager['follow_up_date'];
                 $user = $this->users_model->get_user_detail(['id' => $user_id]);
                 $user_email = $user['email'];
-                $email_data = ['firstname' => $user['firstname'], 'lastname' => $user['lastname'], 'email' => $user_email,'category' => $communication_manager['category'], 'follow_up_date' => $follow_up_date, 'url' => site_url('login'), 'subject' => 'Follow Up Date Reminder - Extracredit'];
-                send_email($user_email, 'check_communication_manager', $email_data);
+                //----- Donor, Guest, Account Name
+                if ($communication_manager['donor_fullname'] != '') {
+                    $fullname = $communication_manager['donor_fullname'];
+                } elseif ($communication_manager['guest_fullname'] != '') {
+                    $fullname = $communication_manager['guest_fullname'];
+                } elseif ($communication_manager['action_matters_campaign'] != '') {                    
+                    $fullname = $communication_manager['action_matters_campaign'];
+                } else {
+                    $fullname = $communication_manager['vendor_name'];
+                }
+                
+                //----- Donor, Guest, Account Email
+                if ($communication_manager['donor_email'] != '') {
+                    $ofemail = $communication_manager['donor_email'];
+                } elseif ($communication_manager['guest_email'] != '') {
+                    $ofemail = $communication_manager['guest_email'];
+                } elseif ($communication_manager['account_email'] != '') {                    
+                    $ofemail = $communication_manager['account_email'];
+                } else {
+                    $ofemail = '';
+                }
+                
+                //----- Donor, Guest, Account Phone Number
+                if ($communication_manager['donor_phone'] != '') {
+                    $phone_number = $communication_manager['donor_phone'];
+                } elseif ($communication_manager['guest_phone'] != '') {
+                    $phone_number = $communication_manager['guest_phone'];
+                } elseif ($communication_manager['account_phone'] != '') {                    
+                    $phone_number = $communication_manager['account_phone'];
+                } else {
+                 $phone_number='';   
+                }
+                $email_data = array(
+                    'firstname'=>$user['firstname'],
+                    'lastname'=>$user['lastname'],
+                    'fullname' => $fullname,
+                    'ofemail' => $ofemail,
+                    'phone_number' => $phone_number,
+                    'note' => $communication_manager['note'],
+                    'email' => $user_email,
+                    'category' => $communication_manager['category'],
+                    'follow_up_date' => date('m/d/Y', strtotime($follow_up_date)),
+                    'url' => site_url('login'),
+                    'subject' => 'Follow-up Reminder',
+                );
+              send_email($user_email, 'check_communication_manager', $email_data);
 
                 $this->session->set_flashdata('success', 'Communication has been checked and email sent successfully!');
             } else {

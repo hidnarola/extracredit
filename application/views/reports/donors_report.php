@@ -156,25 +156,7 @@
                 {
                     extend: 'pdfHtml5',
                     orientation: 'landscape',
-                    pageSize: 'LEGAL',
-
-                    customize: function (win) {
-                        console.log(win);
-                        var tblBody = win.content[1].table.body;
-                        $("#table_occurrences").find('tr').each(function (ix, row) {
-                            var index = ix;
-                            var rowElt = row;
-                            $(row).find('th,td').each(function (ind, elt) {
-                                if (elt.tagName === "TH")
-                                    return;
-                                if (tblBody[index][ind].text == "in Bearbeitung") {
-                                    tblBody[index][ind].fillColor = "#FFA500";
-                                } else if (tblBody[index][ind].text == "erledigt") {
-                                    tblBody[index][ind].fillColor = "#7CFC00";
-                                }
-                            });
-                        });
-                    }
+                    pageSize: 'LEGAL'
                 }
             ],
             ajax: {

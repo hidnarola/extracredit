@@ -57,7 +57,7 @@
                     <th>Email</th>
                     <th>Guest Date</th>
                     <th>Air Date</th>
-                    <th>AMC Created</th>
+                    <th>AMC Active</th>
                     <th>Action</th>
                 </tr>
             </thead>

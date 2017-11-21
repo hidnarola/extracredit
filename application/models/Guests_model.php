@@ -16,7 +16,7 @@ class Guests_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_guests($type = 'result') {
-        $columns = ['logo', 'g.firstname', 'g.lastname', 'g.email', 'g.guest_date','g.AIR_date','g.AMC_active', 'g.created'];
+        $columns = ['logo', 'g.firstname', 'g.lastname', 'g.email', 'g.guest_date', 'g.AIR_date', 'g.AMC_active', 'g.created'];
         $keyword = $this->input->get('search');
         $this->db->select('g.*,c.name as city');
 
@@ -25,15 +25,16 @@ class Guests_model extends MY_Model {
         if (!empty($keyword['value'])) {
             $this->db->where('(g.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR g.companyname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+//                    ' OR g.companyname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.phone LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR g.AMC_active LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ')');
         }
 
         $this->db->where(['g.is_delete' => 0]);
 //        if ($this->input->get('order')) {
-            $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
 //        }
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
@@ -162,10 +163,10 @@ class Guests_model extends MY_Model {
             $dates = explode('-', $post_date_filter);
             $startdate = date('Y-m-d', strtotime($dates[0]));
             $enddate = date('Y-m-d', strtotime($dates[1]));
-            $this->db->where('g.guest_date >=', $startdate);
-            $this->db->where('g.guest_date <=', $enddate);
+            $this->db->where('g.created >=', $startdate);
+            $this->db->where('g.created <=', $enddate);
         }
-        $this->db->where(['a.is_delete' => 0, 'g.is_delete' => 0]);
+        $this->db->where(['g.is_delete' => 0]);
         $this->db->order_by($columns[$this->input->post('order')[0]['column']], $this->input->post('order')[0]['dir']);
         if ($type == 'result') {
             $this->db->limit($this->input->post('length'), $this->input->post('start'));

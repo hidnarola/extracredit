@@ -142,7 +142,18 @@ if (isset($guest)) {
                                     echo '<label id="companyname-error" class="validation-error-label" for="companyname">' . form_error('companyname') . '</label>';
                                     ?>
                                 </div>
+                                <label class="col-lg-1 control-label">Phone</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
 
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Company Website </label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="company_website" id="company_website" placeholder="Enter Company Website" class="form-control" value="<?php echo (isset($guest)) ? $guest['company_website'] : set_value('company_website'); ?>">
+                                </div>
                                 <label class="control-label col-lg-1">Logo</label>
                                 <div class="col-lg-4">
                                     <div class="media no-margin-top">
@@ -170,12 +181,6 @@ if (isset($guest)) {
                                     ?>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Company Website </label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="company_website" id="company_website" placeholder="Enter Company Website" class="form-control" value="<?php echo (isset($guest)) ? $guest['company_website'] : set_value('company_website'); ?>">
-                                </div>
-                            </div>
                         </fieldset>
                         <fieldset>
                             <legend class="text-bold">Program</legend>  
@@ -197,6 +202,7 @@ if (isset($guest)) {
                                     echo '<label id="account_id-error" class="validation-error-label" for="account_id">' . form_error('account_id') . '</label>';
                                     ?>
                                 </div>
+
                             </div>
                         </fieldset>
                         <fieldset class="content-group">
