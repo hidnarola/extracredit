@@ -131,7 +131,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-             order: [[7, "desc"]],
+            order: [[7, "desc"]],
             ajax: site_url + 'guests/get_guests',
             columns: [
                 {
@@ -173,7 +173,7 @@
                     visible: true,
                     sortable: false,
                     render: function (data, type, full, meta) {
-                        if (full.AMC_active == 'No') {
+                        if (full.AMC_active == 'No' || full.AMC_active == 0) {
                             var status = '<span class="label bg-warning">No</span>';
                         } else
                             var status = '<span class="label bg-success">Yes</span>';
@@ -203,6 +203,9 @@
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
                         }
+//                        if ($.inArray('view', compermissions) !== -1) {
+//                            action += '<a href="javascript:void(0)" id="' + btoa(full.id) + '" class="archive_current_season" title="Archive Current Season"><i class="icon-archive"></i> Archive Current Season</a>'
+//                        }
                         if ($.inArray('delete', permissions) !== -1) {
                             action += '<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Guest"><i class="icon-trash"></i> Delete Guest</a>'
                         }
@@ -219,6 +222,25 @@
         $('.dataTables_length select').select2({
             minimumResultsForSearch: Infinity,
             width: 'auto'
+        });
+    });
+
+    $(document).on('click', '.archive_current_season', function () {
+        $.ajax({
+            url: site_url + 'guests/archive_current_season',
+            type: "POST",
+            data: {id: this.id},
+            success: function (response) {
+                console.log(response);
+                if (response == 0) {
+//                    $('.alert-success').show();
+//                    $('.alert-success').html('Guest is archived successfully!');
+                window.location.reload();
+                } else {
+//                    $('.alert-danger').show();
+//                    $('.alert-danger').html('Invalid request. Please try again!');
+                }
+            }
         });
     });
 

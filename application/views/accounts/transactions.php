@@ -71,7 +71,7 @@
                             $total -= $val['debit_amt'];
                         }
                         ?>
-                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''   ?></td>-->
+                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''         ?></td>-->
                         <td><?php echo '$' . $total ?></td>
                     </tr>
                 <?php }
@@ -83,7 +83,7 @@
 </div>
 <script>
     $(function () {
-        $('.datatable-basic').dataTable({
+        var table = $('.datatable-basic').dataTable({
             scrollX: true,
             "aaSorting": [],
             autoWidth: false,
@@ -93,6 +93,33 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+        });
+        $('.datatable-basic').on('draw.dt', function () {
+            total = 0;
+            table.api().rows({filter: 'applied'}).every(function (rowIdx, tableLoop, rowLoop) {
+                var data = this.data();
+                debit_amt = data[7].substr(2);
+                credit_amt = data[8].substr(1);
+                if (debit_amt != '') {
+                    debit_amt = parseFloat(debit_amt);
+                    total = total - debit_amt;
+                }
+                if (credit_amt != '') {
+                    credit_amt = parseFloat(credit_amt);
+                    total = total + credit_amt;
+                }
+
+                if (total > 0) {
+                    data[9] = '$' + total.toFixed(2);
+                } else {
+                    var r = '$' + total.toFixed(2);
+                    t = r.substr(2);
+//                    console.log(r);
+//                    console.log('-$' + t);
+                    data[9] = '-$' + t;
+                }
+                this.data(data);
+            });
         });
         $('.dataTables_length select').select2({
             minimumResultsForSearch: Infinity,

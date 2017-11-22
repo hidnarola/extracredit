@@ -42,11 +42,9 @@
         border: 2px solid #26A69A;
         text-decoration:none;
     }
-    .custom_perpage_dropdown .dataTables_length {
-        float: right;
-        display: inline-block;
-        margin: 0 18px 20px 20px;
-    }
+    .custom_perpage_dropdown .dataTables_length {margin: 0 18px 20px 20px;}
+    .dataTables_info {padding: 8px 22px;}
+    .dataTables_paginate {margin: 0 20px 20px 20px;}
 </style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
@@ -87,7 +85,10 @@
                     <label>Guest date filter: </label>
                     <div class="input-group">
                         <span class="input-group-addon"><i class="icon-calendar22"></i></span>
-                        <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo date('08/01/2017') . ' - ' . date('m/t/Y'); ?>"> 
+                        <?php
+                        $date_filter = date('m/01/Y') . ' - ' . date('m/t/Y'); // hard-coded '01' for first day
+                        ?>
+                        <input type="text" name="post_date_filter" id="post_date_filter" class="form-control daterange-basic" value="<?php echo $date_filter; ?>"> 
                     </div>
                 </div>
             </div>

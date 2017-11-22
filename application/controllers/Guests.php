@@ -130,7 +130,7 @@ class Guests extends MY_Controller {
                     'guest_date' => $guest_date,
                     'AIR_date' => $AIR_date,
                     'AMC_created' => ($this->input->post('AMC_created') == 1) ? 'Yes' : 'No',
-                    'AMC_active' => ($this->input->post('AMC_active') == 1)? 'Yes' : 'No',
+                    'AMC_active' => ($this->input->post('AMC_active') == 1) ? 'Yes' : 'No',
                     'assistant' => $this->input->post('assistant'),
                     'assistant_phone' => $this->input->post('assistant_phone'),
                     'assistant_email' => $this->input->post('assistant_email'),
@@ -270,6 +270,55 @@ class Guests extends MY_Controller {
     }
 
     /**
+     * Archive the current guest season
+     * @param type $guest_id
+     */
+    public function archive_current_season() {
+        $id = base64_decode($this->input->post('id'));
+//        $id = base64_decode($guest_id);
+        if (is_numeric($id)) {
+            $guest = $this->guests_model->get_guest_details($id);
+            if ($guest) {
+                $note = '<p>Invite Date: ' . date('m-d-Y', strtotime($guest['invite_date'])) . '</p>'
+                        . '<p>Guest Date: ' . date('m-d-Y', strtotime($guest['guest_date'])) . '</p>'
+                        . '<p>Air Date: ' . date('m-d-Y', strtotime($guest['AIR_date'])) . '</p>'
+                        . '<p>AMC Created? ' . $guest['AMC_created'] . '</p>'
+                        . '<p>AMC Active? ' . $guest['AMC_active'] . '</p>';
+                //--- communication_array to store in communication table
+                $communication_array = array(
+                    'communication_date' => date('Y-m-d'),
+                    'subject' => 'Archived Show Appearance',
+                    'follow_up_date' => NULL,
+                    'guest_id' => $id,
+                    'donor_id' => 0,
+                    'account_id' => 0,
+                    'type' => 2,
+                    'media' => NULL,
+                    'note' => $note
+                );
+                $this->guests_model->common_insert_update('insert', TBL_COMMUNICATIONS, $communication_array);
+                //--- update invite date, Air Date, Guest Date, AMC Created and AMC Active as null in guest table
+                $update_array = array(
+                    'invite_date' => NULL,
+                    'guest_date' => NULL,
+                    'AIR_date' => NULL,
+                    'AMC_created' => NULL,
+                    'AMC_active' => 'No'
+                );
+                $this->guests_model->common_insert_update('update', TBL_GUESTS, $update_array, ['id' => $id]);
+                $this->session->set_flashdata('success', 'Guest is archived successfully!');
+                $final = 0;
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+                $final = 1;
+            }
+            echo json_encode($final);
+        } else {
+            show_404();
+        }
+    }
+
+    /**
      * Callback function to check email validation - Email is unique or not
      * @param string $str
      * @return boolean
@@ -402,7 +451,7 @@ class Guests extends MY_Controller {
                     if (!empty($this->input->post('follow_up_date'))) {
                         $communication_ManagerArr = array(
                             'user_id' => $this->session->userdata('extracredit_user')['id'],
-                            'communication_id'=> $this->db->insert_id(),
+                            'communication_id' => $this->db->insert_id(),
                             'follow_up_date' => date('Y-m-d', strtotime($this->input->post('follow_up_date'))),
                             'category' => 'guest',
                         );
