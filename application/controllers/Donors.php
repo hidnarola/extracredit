@@ -921,6 +921,55 @@ class Donors extends MY_Controller {
     }
 
     /**
+     * Refund Donor data
+     * @author KU
+     * */
+    public function donation_refund() {
+        checkPrivileges('donors', 'edit');
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $donation = $this->donors_model->get_donor_donation_single($id, 'single');
+//            p($donation,1);
+            $admin_fund = $this->donors_model->get_admin_fund();
+            $flag = 1;
+            $accounts = [];
+            if (($donation['total_fund'] >= $donation['account_fund']) && ($admin_fund >= $donation['admin_fund'])) {
+                
+            } else {
+                $flag = 0;
+                $accounts[] = $donation['action_matters_campaign'];
+            }
+            if ($flag == 1) {
+                $this->db->trans_begin();
+//                foreach ($donations as $donor) {
+                $admin_fund = $this->donors_model->get_admin_fund();
+                $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $donation['account_id']]], ['single' => TRUE]);
+
+                $account_amount = $account['total_fund'] - $donation['account_fund'];
+                $admin_amount = $admin_fund - $donation['admin_fund'];
+
+                $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_amount, 'admin_fund' => $account['admin_fund'] - $donation['admin_fund']], ['id' => $donation['account_id']]);
+                $this->donors_model->update_admin_fund($admin_amount);
+                $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_refund' => 1,'refund_date'=> date('Y-m-d H:i:s')], ['id' => $donation['id']]);
+//                }
+//                $this->donors_model->common_insert_update('update', TBL_DONORS, ['refund' => 1, 'refund_date' => date('Y-m-d H:i:s')], ['id' => $id]);
+                $this->db->trans_complete();
+                $type = 1;
+                $msg = 'success';
+                $this->session->set_flashdata('success', "Refund done successfully!");
+            } else {
+                $type = 0;
+                $accounts = implode(",", $accounts);
+                $msg = $accounts . ' is not having sufficient balance!';
+            }
+            echo json_encode(['type' => $type, 'msg' => $msg]);
+        } else {
+            show_404();
+        }
+    }
+
+    /**
      * View Donor
      * @return : Partial View
      * @author : REP
@@ -984,7 +1033,7 @@ class Donors extends MY_Controller {
                 else
                     $donations[$key]['post_date'] = '-';
             }
-
+//            p($donations,1);
             $final['data'] = $donations;
         }
         echo json_encode($final);

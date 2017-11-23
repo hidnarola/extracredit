@@ -50,7 +50,7 @@ class Home extends MY_Controller {
         $data['week_account_fund'] = $total['final'];
 
         //-- Get total account fund
-        $sql = 'SELECT sum(account_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=0) as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0';
+        $sql = 'SELECT sum(account_fund)-(SELECT IF(sum(p.amount) IS NULL,0,sum(p.amount)) FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id AND a.is_delete=0 LEFT JOIN ' . TBL_FUND_TYPES . ' f ON a.fund_type_id=f.id AND f.is_delete=0 WHERE p.is_delete=0 AND f.type=0) as final FROM ' . TBL_FUNDS . ' WHERE ' . TBL_FUNDS . '.is_delete =0 AND ' . TBL_FUNDS . '.is_refund =0';
         $total = $this->users_model->customQuery($sql, 2);
         $data['total_account_fund'] = $total['final'];
 
@@ -71,8 +71,8 @@ class Home extends MY_Controller {
             $start_date = $dates[0];
             $end_date = $dates[1];
         }
-        $date_array = array('created >=' => date('Y-m-d', strtotime($start_date)), 'created <=' => date('Y-m-d', strtotime($end_date)));
-        $date_string = ' AND created >="' . date('Y-m-d', strtotime($start_date)) . '" AND created <="' . date('Y-m-d', strtotime($end_date)) . '"';
+        $date_array = array('created >= ' => date('Y-m-d', strtotime($start_date)), 'created <= ' => date('Y-m-d', strtotime($end_date)));
+        $date_string = ' AND created >= "' . date('Y-m-d', strtotime($start_date)) . '" AND created <= "' . date('Y-m-d', strtotime($end_date)) . '"';
         $event_arr['from_date'] = date('Y-m-d', strtotime($start_date));
         $event_arr['to_date'] = date('Y-m-d', strtotime($end_date));
         $data['json'] = json_encode("");
@@ -82,7 +82,7 @@ class Home extends MY_Controller {
             'donors' => $this->users_model->num_of_records_by_date(TBL_DONORS, array_merge($date_array, array('is_delete' => 0, 'refund' => 0))),
             'incoming_money' => $this->funds_model->get_incoming_money(array_merge($date_array, array('is_delete' => 0, 'is_refund' => 0))),
         );
-        
+
         $new_json_data = array();
         $key_arrays = array();
 

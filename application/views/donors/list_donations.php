@@ -1,5 +1,10 @@
 <script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
+<style>
+    .btn-icon.btn-xs, .input-group-xs > .input-group-btn > .btn.btn-icon {padding-right: 6px;}
+    .refund_row {background-color: rgba(253, 82, 82, 0.14);}    
+</style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -133,10 +138,22 @@
                         if ($.inArray('edit', permissions) !== -1) {
                             action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/edit_donation/<?php echo base64_encode($donor['id']) ?>/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Donation"><i class="icon-pencil3"></i></a>'
                         }
+                        if (full.is_refund == 0) {
+                            if ($.inArray('edit', permissions) !== -1) {
+                                action += '&nbsp;&nbsp;<a href="javascript:void(0)" title="Refund" data-account-id="' + btoa(full.account_id) + '" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs"><i class="icon-share2"></i></a>';
+                            }
+                        }
                         return action;
                     }
                 }
             ],
+            createdRow: function (row, data, index) {
+                if (data.is_refund == 1) {
+                    $(row).addClass('refund_row');
+                }
+                console.dir(data);
+//                console.dir(row);
+            }
         });
 
         $('.dataTables_length select').select2({
@@ -144,4 +161,40 @@
             width: 'auto'
         });
     });
+    function refund_alert(e) {
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this refund!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#FF7043",
+            confirmButtonText: "Yes, refund it!"
+        },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        id = $(e).attr('data-id');
+                        account_id = $(e).attr('data-account-id');
+                        $.ajax({
+                            url: site_url + 'donors/donation_refund/' + id,
+                            data: {id: id, account_id: account_id},
+                            type: "POST",
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.type == 1) {
+                                    window.location.href = site_url + 'donors/donations/<?php echo base64_encode($donor['id']) ?>';
+                                } else {
+                                    swal({
+                                        title: "Refund Alert",
+                                        text: "There isn't sufficient funds available to process the refund",
+                                        type: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#FF7043",
+                                        confirmButtonText: "Ok!"
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+    }
 </script>

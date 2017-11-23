@@ -203,9 +203,9 @@
                         if ($.inArray('view', compermissions) !== -1) {
                             action += '<a href="' + site_url + 'guests/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
                         }
-//                        if ($.inArray('view', compermissions) !== -1) {
-//                            action += '<a href="javascript:void(0)" id="' + btoa(full.id) + '" class="archive_current_season" title="Archive Current Season"><i class="icon-archive"></i> Archive Current Season</a>'
-//                        }
+                        if ($.inArray('view', compermissions) !== -1) {
+                            action += '<a href="javascript:void(0)" id="' + btoa(full.id) + '" class="archive_current_season" title="Archive Current Season"><i class="icon-archive"></i> Archive Current Season</a>'
+                        }
                         if ($.inArray('delete', permissions) !== -1) {
                             action += '<a href="' + site_url + 'guests/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Guest"><i class="icon-trash"></i> Delete Guest</a>'
                         }
@@ -225,7 +225,7 @@
         });
     });
 
-    $(document).on('click', '.archive_current_season', function () {
+    $(document).on('click', '.archive_current_season1', function () {
         $.ajax({
             url: site_url + 'guests/archive_current_season',
             type: "POST",

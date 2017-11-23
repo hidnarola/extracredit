@@ -42,11 +42,7 @@
         border: 2px solid #26A69A;
         text-decoration:none;
     }
-    .custom_perpage_dropdown .dataTables_length {
-        float: right;
-        display: inline-block;
-        margin: 0 18px 20px 20px;
-    }
+     .custom_perpage_dropdown .dataTables_length {margin: 0 18px 20px 20px;}
     .dataTables_info {padding: 8px 22px;margin-bottom: 10px;}
     .dataTables_paginate {margin: 10px 20px 20px 20px;}
 </style>

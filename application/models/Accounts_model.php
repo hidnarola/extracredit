@@ -243,15 +243,23 @@ class Accounts_model extends MY_Model {
      * @author KU
      */
     public function get_account_transactions($account_id) {
-        $sql = 'SELECT f.created,f.date,f.post_date,d.firstname,d.lastname,pt.type as payment_method,f.payment_number,f.memo,"" as debit_amt,f.account_fund as credit_amt,f.account_balance as balance '
+        $sql = 'SELECT f.created,f.date,f.post_date,d.firstname,d.lastname,pt.type as payment_method,f.payment_number,f.memo,"" as debit_amt,f.account_fund as credit_amt,f.account_balance as balance,0 as is_refund '
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
-                . 'WHERE f.is_delete=0 AND f.is_refund=0 AND f.account_id=' . $account_id
+                . 'WHERE f.is_delete=0 AND f.account_id=' . $account_id
                 . ' UNION ALL '
-                . 'SELECT p.created,p.check_date as date,"" as post_date,"" as firstname,"" as lastname,"" as payment_method,p.check_number as payment_number,"" as memo,p.amount as debit_amt,"" as credit_amt,p.account_balance as balance '
+                . 'SELECT p.created,p.check_date as date,"" as post_date,"" as firstname,"" as lastname,"" as payment_method,p.check_number as payment_number,"" as memo,p.amount as debit_amt,"" as credit_amt,p.account_balance as balance,0 as refund '
                 . 'FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' ac ON p.account_id=ac.id AND ac.is_delete=0 '
-                . 'WHERE p.is_delete=0 AND p.account_id=' . $account_id;
+                . 'WHERE p.is_delete=0 AND p.account_id=' . $account_id.
+                 ' UNION ALL '.
+               'SELECT f.created,f.date,f.post_date,d.firstname,d.lastname,pt.type as payment_method,f.payment_number,f.memo,"" as debit_amt,f.account_fund as credit_amt,f.account_balance as balance,f.is_refund '
+                . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
+                . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
+                . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
+                . 'WHERE f.is_delete=0 AND f.is_refund=1 AND f.account_id=' . $account_id
+                
+                ;
 
         $sql .= ' ORDER BY created';
 

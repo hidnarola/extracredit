@@ -145,8 +145,8 @@
                     data: "email",
                     visible: true
                 },
-                {  
-                  data: "phone",
+                {
+                    data: "phone",
                     visible: true
                 },
                 {
@@ -185,9 +185,9 @@
                             if ($.inArray('edit', permissions) !== -1) {
                                 action += '<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" title="View Donations"><i class="icon-coins"></i> View Donations</a>';
                             }
-                            if ($.inArray('edit', permissions) !== -1) {
-                                action += '<a href="javascript:void(0)" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i> Refund</a>';
-                            }
+//                            if ($.inArray('edit', permissions) !== -1) {
+//                                action += '<a href="javascript:void(0)" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i> Refund</a>';
+//                            }
                         }
                         if ($.inArray('view', permissions) !== -1) {
                             action += '<a href="javascript:void(0)" id=' + btoa(full.id) + ' title="View Details" class="donor_view_btn"><i class="icon-eye"></i> View Details</a>';
@@ -211,7 +211,7 @@
                 if (data.refund == 1) {
                     $(row).addClass('refund_row');
                 }
-//                console.dir(data);
+                console.dir(data);
 //                console.dir(row);
             }
         });
@@ -223,28 +223,41 @@
     });
 
     function refund_alert(e) {
-        id = $(e).attr('data-id');
-        $.ajax({
-            url: site_url + 'donors/refund/' + id,
-            data: {id: id},
-            type: "POST",
-            dataType: 'json',
-            success: function (data) {
-                if (data.type == 1) {
-                    window.location.href = site_url + 'donors';
-                } else {
-                    swal({
-                        title: "Refund Alert",
-                        text: "There isn't sufficient funds available to process the refund",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#FF7043",
-                        confirmButtonText: "Ok!"
-                    });
-                }
-            }
-        });
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this refund!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#FF7043",
+            confirmButtonText: "Yes, refund it!"
+        },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        id = $(e).attr('data-id');
+                        $.ajax({
+                            url: site_url + 'donors/refund/' + id,
+                            data: {id: id},
+                            type: "POST",
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.type == 1) {
+                                    window.location.href = site_url + 'donors';
+                                } else {
+                                    swal({
+                                        title: "Refund Alert",
+                                        text: "There isn't sufficient funds available to process the refund",
+                                        type: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#FF7043",
+                                        confirmButtonText: "Ok!"
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
     }
+
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
@@ -254,14 +267,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 

@@ -57,22 +57,52 @@
                     <tr>
                         <td><?php echo ($val['date'] != '') ? date('m/d/Y', strtotime($val['date'])) : ''; ?></td>
                         <td><?php echo($val['post_date'] != '') ? date('m/d/Y', strtotime($val['post_date'])) : ''; ?></td>
-                        <td><?php echo $val['firstname'] ?></td>
+                        <td>
+                            <?php
+                            if ($val['is_refund'] == 1) {
+                                echo "<h6 style='font-size: 13px;margin-top: 0px;margin-bottom: 0px;'><span style='color:red'>Refund </span>- ";
+                            }
+                            echo $val['firstname'] . '</h6>';
+                            ?>
+                        </td>
                         <td><?php echo $val['lastname'] ?></td>
                         <td><?php echo $val['payment_method'] ?></td>
                         <td><?php echo $val['payment_number'] ?></td>
                         <td><?php echo $val['memo'] ?></td>
-                        <td><?php echo ($val['debit_amt'] != '') ? '-$' . $val['debit_amt'] : '' ?></td>
-                        <td><?php echo ($val['credit_amt'] != '') ? '$' . $val['credit_amt'] : '' ?></td>
+                        <td><?php
+                            if ($val['is_refund'] == 1) {
+                                echo "-$" . $val['credit_amt'];
+                            } else {
+                                echo ($val['debit_amt'] != '') ? '-$' . $val['debit_amt'] : '';
+                            }
+                            ?></td>
+                        <td><?php
+                            if ($val['is_refund'] == 1) {
+                                echo '';
+                            } else {
+                                echo ($val['credit_amt'] != '') ? '$' . $val['credit_amt'] : '';
+                            }
+                            ?></td>
                         <?php
-                        if ($val['credit_amt'] != '') {
-                            $total += $val['credit_amt'];
-                        } elseif ($val['debit_amt'] != '') {
-                            $total -= $val['debit_amt'];
+                        if ($val['is_refund'] == 1) {
+                            $total -= $val['credit_amt'];
+                        } else {
+                            if ($val['credit_amt'] != '') {
+                                $total += $val['credit_amt'];
+                            } elseif ($val['debit_amt'] != '') {
+                                $total -= $val['debit_amt'];
+                            }
                         }
                         ?>
-                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''         ?></td>-->
-                        <td><?php echo '$' . $total ?></td>
+                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''                                  ?></td>-->
+                        <td><?php
+                            if ($total < 0) {
+                                $t = substr($total,1);
+                                echo '-$' . $t;
+                            } else {
+                                echo '$' . $total;
+                            }
+                            ?></td>
                     </tr>
                 <?php }
                 ?>
