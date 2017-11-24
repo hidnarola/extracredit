@@ -225,23 +225,33 @@
         });
     });
 
-    $(document).on('click', '.archive_current_season1', function () {
-        $.ajax({
-            url: site_url + 'guests/archive_current_season',
-            type: "POST",
-            data: {id: this.id},
-            success: function (response) {
-                console.log(response);
-                if (response == 0) {
+    $(document).on('click', '.archive_current_season', function () {
+        swal({
+            title: "Are you sure to archive this guest?",
+//            text: "You will not be able to recover this guest!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#FF7043",
+            confirmButtonText: "Yes, Archive it!"
+        },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            url: site_url + 'guests/archive_current_season',
+                            type: "POST",
+                            data: {id: this.id},
+                            success: function (response) {
+                                if (response == 0) {
 //                    $('.alert-success').show();
 //                    $('.alert-success').html('Guest is archived successfully!');
-                window.location.reload();
-                } else {
-//                    $('.alert-danger').show();
-//                    $('.alert-danger').html('Invalid request. Please try again!');
-                }
-            }
-        });
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
+                });
     });
 
     function confirm_alert(e) {

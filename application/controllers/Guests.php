@@ -556,6 +556,8 @@ class Guests extends MY_Controller {
             $guest_data = $check_account = $check_email = $check_email_valid = $check_city = $check_invite_date = $check_guest_date = $check_AIR_date = $check_amc_created = $check_assiatnt_email = $check_phone = $check_assistant_phone = $check_assistant_email = $imported_emails = [];
             if (($data2 = fgetcsv($handle)) !== FALSE) {
                 $data_format2 = array('firstname', 'lastname', 'companyname', 'invite_date', 'guest_date', 'AIR_date', 'AMC_created', 'amc', 'address', 'city', 'zip', 'email', 'phone', 'assistant', 'assistant_phone', 'assistant_email');
+//                p($data2);
+//                p($data_format2,1);
 
                 //-- check if first colums is according to predefined row
                 if ($data_format2 == $data2) {

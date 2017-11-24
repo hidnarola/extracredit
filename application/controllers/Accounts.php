@@ -367,8 +367,8 @@ class Accounts extends MY_Controller {
             show_404();
         }
     }
-    
-     /**
+
+    /**
      * Listing of All Accounts communication
      * @author REP
      */
@@ -482,7 +482,7 @@ class Accounts extends MY_Controller {
                     if (!empty($this->input->post('follow_up_date'))) {
                         $communication_ManagerArr = array(
                             'user_id' => $this->session->userdata('extracredit_user')['id'],
-                            'communication_id'=> $this->db->insert_id(),
+                            'communication_id' => $this->db->insert_id(),
                             'follow_up_date' => date('Y-m-d', strtotime($this->input->post('follow_up_date'))),
                             'category' => 'account',
                         );
@@ -495,7 +495,7 @@ class Accounts extends MY_Controller {
         }
         $this->template->load('default', 'accounts/add_communication', $data);
     }
-    
+
     /**
      * Delete Guest Communication
      * @param int $id
@@ -520,6 +520,7 @@ class Accounts extends MY_Controller {
             show_404();
         }
     }
+
 }
 
 /* End of file Accounts.php */

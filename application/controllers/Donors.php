@@ -951,7 +951,7 @@ class Donors extends MY_Controller {
 
                 $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_amount, 'admin_fund' => $account['admin_fund'] - $donation['admin_fund']], ['id' => $donation['account_id']]);
                 $this->donors_model->update_admin_fund($admin_amount);
-                $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_refund' => 1,'refund_date'=> date('Y-m-d H:i:s')], ['id' => $donation['id']]);
+                $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_refund' => 1, 'refund_date' => date('Y-m-d H:i:s')], ['id' => $donation['id']]);
 //                }
 //                $this->donors_model->common_insert_update('update', TBL_DONORS, ['refund' => 1, 'refund_date' => date('Y-m-d H:i:s')], ['id' => $id]);
                 $this->db->trans_complete();
