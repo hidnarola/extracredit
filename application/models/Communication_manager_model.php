@@ -21,9 +21,6 @@ class Communication_manager_model extends MY_Model {
         $this->db->select('cm.*,CONCAT(u.firstname, " ", u.lastname) as firstlast');
         $this->db->join(TBL_COMMUNICATIONS . ' as c', 'cm.communication_id=c.id', 'left');
         $this->db->join(TBL_USERS . ' as u', 'cm.user_id=u.id', 'left');
-//        $this->db->join(TBL_DONORS . ' as d', 'c.donor_id=d.id', 'left');
-//        $this->db->join(TBL_GUESTS . ' as g', 'c.guest_id=g.id', 'left');
-//        $this->db->join(TBL_ACCOUNTS . ' as a', 'c.account_id=a.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(firstlast LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .

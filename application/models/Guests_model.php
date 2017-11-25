@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Manage donors table related database operations
+ * Manage Guests table related database operations
  * @author REP
  */
 class Guests_model extends MY_Model {
@@ -11,7 +11,7 @@ class Guests_model extends MY_Model {
     }
 
     /**
-     * Get donors for datatable
+     * Get Guests for datatable
      * @param string $type - Either result or count
      * @return array for result or int for count
      */
@@ -48,7 +48,7 @@ class Guests_model extends MY_Model {
     }
 
     /**
-     * Get guest details of particular id
+     * Get Guest details of particular id
      * @param int $id
      */
     public function get_guest_details($id) {
@@ -112,8 +112,6 @@ class Guests_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
-//            echo $this->db->last_query();
-//            p($query->result_array(),1);
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
@@ -134,7 +132,7 @@ class Guests_model extends MY_Model {
     }
 
     /**
-     * To generate donors report
+     * To generate Guests report
      * @param type $type
      * @return type
      */

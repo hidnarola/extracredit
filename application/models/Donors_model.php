@@ -239,7 +239,7 @@ class Donors_model extends MY_Model {
         $query = $this->db->get(TBL_FUNDS . ' f');
         return $query->result_array();
     }
-    
+
     public function get_donor_donation_single($id = NULL, $type) {
         if ($type == 'group')
             $this->db->select('f.id,f.account_id,sum(f.admin_fund) as admin_fund,sum(f.account_fund) as account_fund,a.total_fund,a.action_matters_campaign');

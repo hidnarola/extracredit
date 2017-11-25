@@ -60,7 +60,7 @@
                         <td>
                             <?php
                             if ($val['is_refund'] == 1) {
-                                echo "<h6 style='font-size: 13px;margin-top: 0px;margin-bottom: 0px;'><span style='color:red'>Refund </span>- ";
+//                                echo "<h6 style='font-size: 13px;margin-top: 0px;margin-bottom: 0px;'><span style='color:red'>Refund </span>- ";
                             }
                             echo $val['firstname'] . '</h6>';
                             ?>
@@ -94,10 +94,10 @@
                             }
                         }
                         ?>
-                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''                                  ?></td>-->
+                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''                                    ?></td>-->
                         <td><?php
                             if ($total < 0) {
-                                $t = substr($total,1);
+                                $t = substr($total, 1);
                                 echo '-$' . $t;
                             } else {
                                 echo '$' . $total;

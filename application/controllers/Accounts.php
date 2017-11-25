@@ -313,7 +313,7 @@ class Accounts extends MY_Controller {
     }
 
     /**
-     * Ajax call to this function checks Unique AMC at the time of account's add and edit
+     * Ajax call to this function checks Unique AMC at the time of accounts add and edit
      * */
     public function checkUniqueAMC($id = NULL) {
         $where = ['action_matters_campaign' => trim($this->input->get('action_matters_campaign'))];

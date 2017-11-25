@@ -35,14 +35,13 @@ class Communication_manager extends MY_Controller {
     }
 
     /**
-     * check the communication and send email to that user
+     * check the communication and send email to that user who added communication
      */
     public function check_communication($id = NULL) {
         checkPrivileges('communication_manager', 'delete');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $communication_manager = $this->communication_manager_model->get_communication_manager_details($id);
-//            p($communication_manager, 1);
             if ($communication_manager) {
                 $update_array = array(
                     'status' => 1
@@ -108,5 +107,4 @@ class Communication_manager extends MY_Controller {
             show_404();
         }
     }
-
 }
