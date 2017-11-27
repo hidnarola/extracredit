@@ -53,15 +53,27 @@
                 <?php
                 $total = 0;
                 foreach ($transactions as $key => $val) {
+                    $class=''
+;                    if ($val['is_refund'] == 1) {
+                        $class = 'danger';
+                    } else if ($val['is_refund'] == -1) {
+                        $class = 'warning';
+                    } else if ($val['is_refund'] == -2) {
+                        $class = 'success';
+                    }
                     ?>
-                    <tr>
+                <tr class="<?php // echo $class;?>">
                         <td><?php echo ($val['date'] != '') ? date('m/d/Y', strtotime($val['date'])) : ''; ?></td>
                         <td><?php echo($val['post_date'] != '') ? date('m/d/Y', strtotime($val['post_date'])) : ''; ?></td>
                         <td>
                             <?php
-                            if ($val['is_refund'] == 1) {
+//                            if ($val['is_refund'] == 1) {
 //                                echo "<h6 style='font-size: 13px;margin-top: 0px;margin-bottom: 0px;'><span style='color:red'>Refund </span>- ";
-                            }
+//                            } else if ($val['is_refund'] == -1) {
+//                                echo "<h6 style='font-size: 13px;margin-top: 0px;margin-bottom: 0px;'><span style='color:#F57C00'>Transfer to </span>- ";
+//                            } else if ($val['is_refund'] == -2) {
+//                                echo "<h6 style='font-size: 13px;margin-top: 0px;margin-bottom: 0px;'><span style='color:#388E3C'>Transfer From </span>- ";
+//                            }
                             echo $val['firstname'] . '</h6>';
                             ?>
                         </td>
@@ -94,7 +106,7 @@
                             }
                         }
                         ?>
-                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''                                    ?></td>-->
+                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''                                     ?></td>-->
                         <td><?php
                             if ($total < 0) {
                                 $t = substr($total, 1);

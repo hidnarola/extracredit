@@ -257,11 +257,19 @@ class Accounts_model extends MY_Model {
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
-                . 'WHERE f.is_delete=0 AND f.is_refund=1 AND f.account_id=' . $account_id
-
+                . 'WHERE f.is_delete=0 AND f.is_refund=1 AND f.account_id=' . $account_id 
+//                ' UNION ALL ' .
+//                'SELECT af.created,af.created as date,"" as post_date,a.action_matters_campaign as firstname,"" as lastname,"" as payment_method,"" as payment_number,"" as memo,af.amount as debit_amt,"" as credit_amt,af.account1_fund as balance,-1 as is_refund '
+//                . 'FROM ' . TBL_ACCOUNTS_TRANSFER . ' af LEFT JOIN ' . TBL_ACCOUNTS . ' a ON af.account_id_to=a.id AND a.is_delete=0 '
+//                . 'WHERE af.is_delete=0 AND af.account_id_from=' . $account_id .
+//                ' UNION ALL ' .
+//                'SELECT af.created,af.created as date,"" as post_date,a.action_matters_campaign as firstname,"" as lastname,"" as payment_method,"" as payment_number,"" as memo,"" as debit_amt,af.amount as credit_amt,af.account1_fund as balance,-2 as is_refund '
+//                . 'FROM ' . TBL_ACCOUNTS_TRANSFER . ' af LEFT JOIN ' . TBL_ACCOUNTS . ' a ON af.account_id_from=a.id AND a.is_delete=0 '
+//                . 'WHERE af.is_delete=0 AND af.account_id_to=' . $account_id
         ;
 
         $sql .= ' ORDER BY created';
+//        echo $sql;
         $query = $this->db->query($sql);
         return $query->result_array();
     }
@@ -304,6 +312,19 @@ class Accounts_model extends MY_Model {
         $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=c.account_id', 'left');
         $this->db->where(['c.id' => $id, 'c.is_delete' => 0]);
         $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
+        return $query->row_array();
+    }
+
+    /**
+     * Get account fund with fund type[is_vendor or not] field of particular id
+     * @param int $id Account Id
+     * @author REP
+     */
+    public function get_account_fund($id) {
+        $this->db->select('a.total_fund,f.type');
+        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->where(['a.id' => $id, 'a.is_delete' => 0]);
+        $query = $this->db->get(TBL_ACCOUNTS . ' a');
         return $query->row_array();
     }
 

@@ -521,6 +521,93 @@ class Accounts extends MY_Controller {
         }
     }
 
+    /**
+     * Ajax call to this function return Account fund 
+     */
+    public function get_account_fund() {
+        $id = base64_decode($this->input->post('id'));
+        $account_details = $this->accounts_model->get_account_fund($id);
+        //-- If not vendor then return accounts fund else return admin fund
+        if ($account_details['type'] == 0) {
+            $data = ['amount' => $account_details['total_fund'], 'type' => 0];
+        } else {
+            $store_admin_fund = $this->accounts_model->sql_select(TBL_USERS, 'total_fund,id', ['where' => ['role' => 'admin']], ['single' => true]);
+            $data = ['amount' => $store_admin_fund['total_fund'], 'type' => 1];
+        }
+        echo json_encode($data);
+    }
+
+    /**
+     * Ajax call to this function return accounts of particular fund type id
+     */
+    public function get_accounts_transfer() {
+        $id = base64_decode($this->input->post('id'));
+        $account_id = base64_decode($this->input->post('account_id'));
+        $accounts = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id, 'id!=' => $account_id]]);
+//        qry();
+        echo json_encode($accounts);
+    }
+
+    /**
+     * Add transfer account data
+     * @param int $id
+     * */
+    public function transfer_account($id = NULL) {
+        $data['perArr'] = checkPrivileges('transfer_account');
+        if (!is_null($id))
+            $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $account = $this->accounts_model->get_account_details($id);
+//             p($account,1);
+            checkPrivileges('transfer_account', 'add');
+            $data['title'] = 'Extracredit | Transfer Money';
+            $data['heading'] = 'Account Transfer';
+            $data['account'] = $account;
+            $data['accounts'] = [];
+            $data['account_fund'] = $account['total_fund'];
+            $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type!=' => 2]]);
+        }
+
+//        $this->form_validation->set_rules('account_id_from', 'Account Name', 'trim|required|numeric');
+        $this->form_validation->set_rules('account_id_to', 'Account To Name', 'trim|required|numeric');
+        $this->form_validation->set_rules('amount', 'Amount', 'trim|required|numeric');
+
+        if ($this->form_validation->run() == TRUE) {
+//            p($_POST);
+            $is_valid = 1;
+            $account_id_from_fund = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'total_fund', ['where' => ['is_delete' => 0, 'id=' => $this->input->post('hidden_account_id_from')]], 'row_array');
+            $account_id_to_fund = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'total_fund', ['where' => ['is_delete' => 0, 'id=' => $this->input->post('account_id_to')]], 'row_array');
+            $amount = $this->input->post('amount');
+            $dataArr = array(
+                'amount' => $amount,
+                'account_id_from' => $this->input->post('hidden_account_id_from'),
+                'account_id_to' => $this->input->post('account_id_to'),
+                'account1_fund' => $account_id_from_fund['total_fund'] - $amount,
+                'account2_fund' => $account_id_to_fund['total_fund'] + $amount,
+            );
+
+            $this->db->trans_begin();
+            $dataArr['created'] = date('Y-m-d H:i:s');
+            if ($account_id_from_fund['total_fund'] >= $this->input->post('amount')) {
+                $account_fund = $account_id_from_fund['total_fund'] - $amount;
+                $account_fund_to = $account_id_to_fund['total_fund'] + $amount;
+                $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_fund], ['id' => $id]);
+                $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_fund_to], ['id' => $this->input->post('account_id_to')]);
+            } else {
+                $is_valid = 0;
+                $this->session->set_flashdata('error', 'Fail to update payment! You have entered more amount than Account fund');
+            }
+            if ($is_valid == 1) {
+                $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS_TRANSFER, $dataArr);
+                $this->session->set_flashdata('success', 'Money has been transferred successfully');
+            }
+
+            $this->db->trans_complete();
+            redirect('accounts');
+        }
+        $this->template->load('default', 'accounts/transfer_account', $data);
+    }
+
 }
 
 /* End of file Accounts.php */

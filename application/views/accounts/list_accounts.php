@@ -145,6 +145,9 @@
                         if ($.inArray('view', permissions) !== -1) {
                             action += '<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" title="View Transactions"><i class="icon-coins"></i> View Transactions</a>';
                         }
+//                        if ($.inArray('view', permissions) !== -1) {
+//                            action += '<a href="' + site_url + 'accounts/transfer_account/' + btoa(full.id) + '" title="Transfer Money"><i class=" icon-arrow-right16"></i> Transfer Money</a>';
+//                        }
                         if ($.inArray('view', permissions) !== -1) {
                             action += '<a href="' + site_url + 'accounts/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>';
                         }

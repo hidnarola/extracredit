@@ -89,6 +89,7 @@ defined('EXIT__AUTO_MAX') OR define('EXIT__AUTO_MAX', 125); // highest automatic
  * Constants for Tables
  */
 define('TBL_ACCOUNTS', 'accounts');
+define('TBL_ACCOUNTS_TRANSFER', 'accounts_transfer');
 define('TBL_CITIES', 'cities');
 define('TBL_COMMUNICATIONS', 'communications');
 define('TBL_DONORS', 'donors');

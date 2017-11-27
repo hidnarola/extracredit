@@ -15,13 +15,8 @@ if (isset($payment)) {
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4>
-                <?php
-                if (isset($payment))
-                    echo '<i class="icon-pencil3"></i>';
-                else
-                    echo '<i class="icon-plus-circle2"></i>';
-                ?>
+            <h4>               
+                <i class="icon-plus-circle2"></i>
                 <span class="text-semibold"><?php echo $heading; ?></span>
             </h4>
         </div>
@@ -29,8 +24,7 @@ if (isset($payment)) {
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('payments'); ?>"><i class="icon-credit-card position-left"></i> Payments</a></li>
-            <li class="active"><?php echo $heading; ?></li>
+            <li class="active">Account Transfer</li>
         </ul>
     </div>
 </div>
@@ -61,7 +55,23 @@ if (isset($payment)) {
         <div class="col-md-12">
             <div class="panel panel-flat">
                 <div class="panel-body">
-                    <form class="form-horizontal form-validate-jquery" action="" id="add_payment_form" method="post" enctype="multipart/form-data">
+                    <form class="form-horizontal form-validate-jquery" action="" id="add_transfer_money_form" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Account Name<span class="text-danger">*</span></label>
+                            <div class="col-lg-6">
+                                <input type="text" placeholder="Account Name" class="form-control" name="account_id_from" id="account_id_from" value="<?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?>" readonly=""/>
+                                <input type="hidden" name="hidden_account_id_from" value="<?php echo $account['id']; ?>">
+                                <?php
+                                echo '<label id="account_id_from-error" class="validation-error-label" for="account_id_from">' . form_error('account_id_from') . '</label>';
+                                ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label required" id="account_fund_label">Account Fund</label>
+                            <div class="col-lg-6">
+                                <input type="text" placeholder="Account Fund" class="form-control" name="account_fund" id="account_fund" value="<?php echo $account['total_fund'] ?>" disabled="disabled"/>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Fund Type <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
@@ -84,7 +94,7 @@ if (isset($payment)) {
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Program <span class="text-danger">*</span></label>
                             <div class="col-lg-6">
-                                <select name="account_id" id="account_id" class="select2" required="required" data-placeholder="Select account" <?php echo $account_disabled ?>>
+                                <select name="account_id_to" id="account_id_to" class="select2" required="required" data-placeholder="Select account" <?php echo $account_disabled ?>>
                                     <option value=""></option>
                                     <?php
                                     foreach ($accounts as $account) {
@@ -96,51 +106,33 @@ if (isset($payment)) {
                                     <?php } ?>
                                 </select>
                                 <?php
-                                echo '<label id="account_id-error" class="validation-error-label" for="account_id">' . form_error('account_id') . '</label>';
+                                echo '<label id="account_id_to-error" class="validation-error-label" for="account_id_to">' . form_error('account_id_to') . '</label>';
                                 ?>
                             </div>
                         </div>
 
-                        <div class="form-group" id="accoun_fund_div" <?php if (!isset($payment)) echo "style='display:none'" ?>>
+<!--                        <div class="form-group" id="accoun_fund_div" <?php if (!isset($payment)) echo "style='display:none'" ?>>
                             <label class="col-lg-2 control-label required" id="account_fund_label">Account Fund</label>
                             <div class="col-lg-6">
                                 <input type="text" placeholder="Account Fund" class="form-control" name="account_fund" id="account_fund" value="<?php echo $account_fund ?>" disabled="disabled"/>
                             </div>
+                        </div>-->
+                        <!--                        <fieldset class="content-group">
+                                                    <legend class="text-bold">Payment Details</legend>
+                        -->
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Amount <span class="text-danger">*</span></label>
+                            <div class="col-lg-6">
+                                <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" required="required" value="<?php echo (isset($payment) && $payment['amount']) ? $payment['amount'] : set_value('amount'); ?>">
+                                <?php
+                                echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
+                                ?>
+                            </div>
                         </div>
-                        <fieldset class="content-group">
-                            <legend class="text-bold">Payment Details</legend>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Check Date <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                        <input type="text" name="check_date" id="check_date" class="form-control pickadate" placeholder="Select Check Date" value="<?php echo (isset($payment) && !empty($payment['check_date'])) ? date('d F, Y', strtotime($payment['check_date'])) : set_value('check_date'); ?>" required="required">
-                                    </div>
-                                    <?php
-                                    echo '<label id="check_date-error" class="validation-error-label" for="check_date">' . form_error('check_date') . '</label>';
-                                    ?>                                    
-                                </div>
-                                <label class="col-lg-2 control-label">Check Number <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="check_number" id="check_number" placeholder="Enter Check Number" class="form-control capitalize-text" required="required" value="<?php echo (isset($payment)) ? $payment['check_number'] : set_value('check_number'); ?>">
-                                    <?php
-                                    echo '<label id="check_number-error" class="validation-error-label" for="check_number">' . form_error('check_number') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Amount <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <input type="number" name="amount" id="amount" placeholder="Enter Amount" class="form-control" required="required" value="<?php echo (isset($payment) && $payment['amount']) ? $payment['amount'] : set_value('amount'); ?>">
-                                    <?php
-                                    echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                        </fieldset>
+                        <!--</fieldset>-->
                         <div class="form-group">
                             <div class="col-lg-12">
-                                <button type="submit" name="save" class="btn bg-teal custom_save_button" id="payment_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
+                                <button type="submit" name="save" class="btn bg-teal custom_save_button" id="transfer_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
                                 <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
                             </div>
                         </div>  
@@ -159,9 +151,10 @@ if (isset($payment)) {
     $('.select2').select2(); //-- Initialize select 2
     //-- fund type change event
     $('#fund_type_id').change(function () {
+        var account_id = '<?php echo $account['id']; ?>';
         $.ajax({
-            url: '<?php echo site_url('payments/get_accounts') ?>',
-            data: {id: btoa($(this).val())},
+            url: '<?php echo site_url('accounts/get_accounts_transfer') ?>',
+            data: {id: btoa($(this).val()), account_id: btoa(account_id)},
             type: "POST",
             dataType: 'json',
             success: function (data) {
@@ -175,35 +168,35 @@ if (isset($payment)) {
                     }
                     options += '</option>';
                 }
-                $('#account_id').empty().append(options);
-                $("#account_id").select2("val", '');
+                $('#account_id_to').empty().append(options);
+                $("#account_id_to").select2("val", '');
             }
         });
     });
     //-- Account id change
-    $('#account_id').change(function () {
-        if ($(this).val() != null) {
-            $.ajax({
-                url: '<?php echo site_url('payments/get_account_fund') ?>',
-                data: {id: btoa($(this).val())},
-                type: "POST",
-                dataType: 'json',
-                success: function (data) {
-                    $('#accoun_fund_div').show();
-                    if (data.type == 1) {
-                        $("#account_fund_label").html('Admin Fund');
-                    } else {
-                        $("#account_fund_label").html('Account Fund');
-                    }
-                    $("#account_fund").val(data.amount);
-                    var amt = parseFloat(data.amount);
-                    $('#amount').rules("add", {max: amt});
-                }
-            });
-        }
-    });
+    /* $('#account_id_to').change(function () {
+     if ($(this).val() != null) {
+     $.ajax({
+     url: '<?php echo site_url('accounts/get_account_fund') ?>',
+     data: {id: btoa($(this).val())},
+     type: "POST",
+     dataType: 'json',
+     success: function (data) {
+     $('#accoun_fund_div').show();
+     if (data.type == 1) {
+     $("#account_fund_label").html('Admin Fund');
+     } else {
+     $("#account_fund_label").html('Account Fund');
+     }
+     $("#account_fund").val(data.amount);
+     var amt = parseFloat(data.amount);
+     $('#amount').rules("add", {max: amt});
+     }
+     });
+     }
+     });*/
 
-    $("#add_payment_form").validate({
+    $("#add_transfer_money_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',
         successClass: 'validation-valid-label',
@@ -249,7 +242,7 @@ if (isset($payment)) {
         },
         validClass: "validation-valid-label",
         success: function (label) {
-            label.addClass("validation-valid-label")
+            label.addClass("validation-valid-label");
         },
         rules: {
             amount: {
@@ -271,10 +264,9 @@ if (isset($payment)) {
                 });
                 return false;
             } else {
-                $('#payment_btn_submit').attr('disabled', true);
+                $('#transfer_btn_submit').attr('disabled', true);
                 form.submit();
             }
-
         }
     });
     /*Validator method for positive number*/
