@@ -226,10 +226,6 @@ class Accounts_model extends MY_Model {
         if ($type == 'result') {
             $this->db->limit($this->input->post('length'), $this->input->post('start'));
             $query = $this->db->get(TBL_ACCOUNTS . ' a');
-            if ($post_date_filter != '') {
-                qry();
-                p($query->result_array(), 1);
-            }
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_ACCOUNTS . ' a');
@@ -257,15 +253,15 @@ class Accounts_model extends MY_Model {
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
-                . 'WHERE f.is_delete=0 AND f.is_refund=1 AND f.account_id=' . $account_id 
-//                ' UNION ALL ' .
-//                'SELECT af.created,af.created as date,"" as post_date,a.action_matters_campaign as firstname,"" as lastname,"" as payment_method,"" as payment_number,"" as memo,af.amount as debit_amt,"" as credit_amt,af.account1_fund as balance,-1 as is_refund '
-//                . 'FROM ' . TBL_ACCOUNTS_TRANSFER . ' af LEFT JOIN ' . TBL_ACCOUNTS . ' a ON af.account_id_to=a.id AND a.is_delete=0 '
-//                . 'WHERE af.is_delete=0 AND af.account_id_from=' . $account_id .
-//                ' UNION ALL ' .
-//                'SELECT af.created,af.created as date,"" as post_date,a.action_matters_campaign as firstname,"" as lastname,"" as payment_method,"" as payment_number,"" as memo,"" as debit_amt,af.amount as credit_amt,af.account1_fund as balance,-2 as is_refund '
-//                . 'FROM ' . TBL_ACCOUNTS_TRANSFER . ' af LEFT JOIN ' . TBL_ACCOUNTS . ' a ON af.account_id_from=a.id AND a.is_delete=0 '
-//                . 'WHERE af.is_delete=0 AND af.account_id_to=' . $account_id
+                . 'WHERE f.is_delete=0 AND f.is_refund=1 AND f.account_id=' . $account_id .
+                ' UNION ALL ' .
+                'SELECT af.created,af.created as date,"" as post_date,a.action_matters_campaign as firstname,"" as lastname,"" as payment_method,"" as payment_number,"" as memo,af.amount as debit_amt,"" as credit_amt,af.account1_fund as balance,-1 as is_refund '
+                . 'FROM ' . TBL_ACCOUNTS_TRANSFER . ' af LEFT JOIN ' . TBL_ACCOUNTS . ' a ON af.account_id_to=a.id AND a.is_delete=0 '
+                . 'WHERE af.is_delete=0 AND af.account_id_from=' . $account_id .
+                ' UNION ALL ' .
+                'SELECT af.created,af.created as date,"" as post_date,a.action_matters_campaign as firstname,"" as lastname,"" as payment_method,"" as payment_number,"" as memo,"" as debit_amt,af.amount as credit_amt,af.account1_fund as balance,-2 as is_refund '
+                . 'FROM ' . TBL_ACCOUNTS_TRANSFER . ' af LEFT JOIN ' . TBL_ACCOUNTS . ' a ON af.account_id_from=a.id AND a.is_delete=0 '
+                . 'WHERE af.is_delete=0 AND af.account_id_to=' . $account_id
         ;
 
         $sql .= ' ORDER BY created';

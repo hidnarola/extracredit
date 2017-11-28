@@ -147,7 +147,6 @@ if (isset($payment)) {
     $('.pickadate').pickadate({
         max: new Date()
     });
-
     $('.select2').select2(); //-- Initialize select 2
     //-- fund type change event
     $('#fund_type_id').change(function () {

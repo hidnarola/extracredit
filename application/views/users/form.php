@@ -138,7 +138,7 @@ if (isset($user)) {
                                                         <?php } ?>
                                                     </div>
                                                     <div class="media-body">
-                                                        <input type="file" name="profile_image" id="profile_image" class="file-styled" onchange="readURL(this);">
+                                                        <input type="file" name="profile_image" id="profile_image" class="file-styled" onchange="readURL(this);ValidateSingleInput(this);">
                                                         <span class="help-block">Accepted formats: png, jpg. Max file size 2Mb</span>
                                                     </div>
                                                 </div>
@@ -270,6 +270,19 @@ if (isset($user)) {
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
+    <div id="validation_modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-teal-400">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title"></h6>
+            </div>
+            <div class="modal-body panel-body validation_alert">
+                <label></label>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     var edit = <?php echo $edit ?>;
     $(".file-styled").uniform({
@@ -359,19 +372,52 @@ if (isset($user)) {
             }
         });
     }
-    // Display the preview of image on image upload
-    function readURL(input) {
+   function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function (e) {
-                var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
+                 if (typeof (input.files[0]) != 'undefined') {
+                    if (valid_extensions.test(input.files[0].name)) {
+                        var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    } else {
+                        var html = '<img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    }
+                } else {
+                    var html = '<img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                }
                 $('#image_preview_div').html(html);
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
+
+    var _validFileExtensions = [".jpg", ".jpeg", ".png"];
+//    var _validFileExtensions_Video = [".mp4", ".webm", ".ogv", ".png",".MPG",".MPEG" ,".OGG",".ogg",".mpeg"];    
+    function ValidateSingleInput(oInput) {
+        if (oInput.type == "file") {
+            var sFileName = oInput.value;
+            if (sFileName.length > 0) {
+                var blnValid = false;
+                for (var j = 0; j < _validFileExtensions.length; j++) {
+                    var sCurExtension = _validFileExtensions[j];
+                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                        blnValid = true;
+                        break;
+                    }
+                }
+                if (!blnValid) {
+                    $(".validation_alert label").text("Sorry, invalid file, allowed extensions are: " + _validFileExtensions.join(", "));
+                    $("#validation_modal").modal();
+                    oInput.value = "";
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     function check_checkboxes_selection(id) {
         if ($('.' + id).length == $('.' + id + ':checked').length) {
             $("#" + id).attr("checked", "checked");

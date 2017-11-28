@@ -29,7 +29,7 @@ if (isset($guest_communication)) {
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('guests'); ?>"><i class="icon-people position-left"></i> Guests</a></li>
-            <li><a href="<?php echo site_url('guests/communication/'.  base64_encode($guest['id'])); ?>"><i class="icon-comment-discussion"></i> Communication</a></li>
+            <li><a href="<?php echo site_url('guests/communication/' . base64_encode($guest['id'])); ?>"><i class="icon-comment-discussion"></i> Communication</a></li>
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -238,10 +238,14 @@ if (isset($guest_communication)) {
 
             reader.onload = function (e) {
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                if (valid_extensions.test(input.files[0].name)) {
-                    var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                if (typeof (input.files[0]) != 'undefined') {
+                    if (valid_extensions.test(input.files[0].name)) {
+                        var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    } else {
+                        var html = '<img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    }
                 } else {
-                    var html = '<img src="assets/images/default_file.png" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    var html = '<img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
                 }
                 $('#image_preview_div').html(html);
             }

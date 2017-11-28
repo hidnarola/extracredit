@@ -544,13 +544,13 @@ class Accounts extends MY_Controller {
         $id = base64_decode($this->input->post('id'));
         $account_id = base64_decode($this->input->post('account_id'));
         $accounts = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id, 'id!=' => $account_id]]);
-//        qry();
         echo json_encode($accounts);
     }
 
     /**
      * Add transfer account data
      * @param int $id
+     * @author REP
      * */
     public function transfer_account($id = NULL) {
         $data['perArr'] = checkPrivileges('transfer_account');
@@ -573,7 +573,6 @@ class Accounts extends MY_Controller {
         $this->form_validation->set_rules('amount', 'Amount', 'trim|required|numeric');
 
         if ($this->form_validation->run() == TRUE) {
-//            p($_POST);
             $is_valid = 1;
             $account_id_from_fund = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'total_fund', ['where' => ['is_delete' => 0, 'id=' => $this->input->post('hidden_account_id_from')]], 'row_array');
             $account_id_to_fund = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'total_fund', ['where' => ['is_delete' => 0, 'id=' => $this->input->post('account_id_to')]], 'row_array');
@@ -601,7 +600,6 @@ class Accounts extends MY_Controller {
                 $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS_TRANSFER, $dataArr);
                 $this->session->set_flashdata('success', 'Money has been transferred successfully');
             }
-
             $this->db->trans_complete();
             redirect('accounts');
         }

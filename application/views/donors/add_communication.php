@@ -234,15 +234,20 @@ if (isset($donor_communication)) {
             form.submit();
         }
     });
-    function readURL(input) {
+   function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
+
             reader.onload = function (e) {
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                if (valid_extensions.test(input.files[0].name)) {
-                    var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                 if (typeof (input.files[0]) != 'undefined') {
+                    if (valid_extensions.test(input.files[0].name)) {
+                        var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    } else {
+                        var html = '<img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    }
                 } else {
-                    var html = '<img src="assets/images/default_file.png" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
+                    var html = '<img src="assets/images/placeholder.jpg" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
                 }
                 $('#image_preview_div').html(html);
             }

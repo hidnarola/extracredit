@@ -156,7 +156,6 @@ class Payments extends MY_Controller {
                     $this->session->set_flashdata('success', 'Payment has been added successfully');
                 }
             }
-
             $this->db->trans_complete();
             redirect('payments');
         }
