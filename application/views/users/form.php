@@ -74,18 +74,9 @@ if (isset($user)) {
                                                 <label class="control-label">User Role <span class="text-danger">*</span></label>
                                                 <select name="role" id="role" class="select2" required="required" data-placeholder="Select User Role">
                                                     <option value=""></option>
-                                                    <option value="staff" <?php
-                                                    if (isset($user) && $user['role'] == 'staff')
-                                                        echo 'selected';
-                                                    else
-                                                        echo '';
-                                                    ?>>Staff</option>
-                                                    <option value="financier" <?php
-                                                    if (isset($user) && $user['role'] == 'financier')
-                                                        echo 'selected';
-                                                    else
-                                                        echo '';
-                                                    ?>>Financier</option>
+                                                    <option value="admin" <?php if (isset($user) && $user['role'] == 'admin') echo 'selected'; ?>>Administrator</option>
+                                                    <option value="staff" <?php if (isset($user) && $user['role'] == 'staff') echo 'selected'; ?>>Staff</option>
+                                                    <option value="financier" <?php if (isset($user) && $user['role'] == 'financier') echo 'selected'; ?>>Financial</option>
                                                 </select>
                                                 <?php
                                                 echo '<label id="role-error" class="validation-error-label" for="role">' . form_error('role') . '</label>';
@@ -270,7 +261,7 @@ if (isset($user)) {
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
-    <div id="validation_modal" class="modal fade">
+<div id="validation_modal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-teal-400">
@@ -372,13 +363,13 @@ if (isset($user)) {
             }
         });
     }
-   function readURL(input) {
+    function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function (e) {
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                 if (typeof (input.files[0]) != 'undefined') {
+                if (typeof (input.files[0]) != 'undefined') {
                     if (valid_extensions.test(input.files[0].name)) {
                         var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
                     } else {

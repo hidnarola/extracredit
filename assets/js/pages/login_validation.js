@@ -66,7 +66,7 @@ $(function() {
         },
         validClass: "validation-valid-label",
         success: function(label) {
-            label.addClass("validation-valid-label").text("Successfully")
+            label.addClass("validation-valid-label").text("Success")
         },
         rules: {
             password: {
