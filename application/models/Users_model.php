@@ -57,7 +57,7 @@ class Users_model extends MY_Model {
             $this->db->where('(firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR CONCAT(firstname , " " ,lastname) LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
 
-        $this->db->where(['role!=' => 'admin', 'is_delete' => 0]);
+        $this->db->where(['id!=' => $this->session->userdata('extracredit_user')['id'], 'is_delete' => 0]);
         $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
