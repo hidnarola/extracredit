@@ -351,11 +351,10 @@ class Donors extends MY_Controller {
                 );
 
                 //-- If donor is not refunded money then only update account and admin fund
-                if ($donor['refund'] == 0) {
-                    $donations = $this->donors_model->get_donor_donations($id, 'single');
-                    $this->db->trans_begin();
-                    foreach ($donations as $donor) {
-
+                $donations = $this->donors_model->get_donor_donations($id, 'single');
+                $this->db->trans_begin();
+                foreach ($donations as $donor) {
+                    if ($donor['is_refund'] == 0) {
                         $admin_fund = $this->donors_model->get_admin_fund();
                         $account = $this->donors_model->sql_select(TBL_ACCOUNTS, 'total_fund,admin_fund', ['where' => ['id' => $donor['account_id']]], ['single' => TRUE]);
 
@@ -364,10 +363,10 @@ class Donors extends MY_Controller {
 
                         $this->donors_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_amount, 'admin_fund' => $account['admin_fund'] - $donor['admin_fund']], ['id' => $donor['account_id']]);
                         $this->donors_model->update_admin_fund($admin_amount);
-                        $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_delete' => 1], ['id' => $donor['id']]);
                     }
-                    $this->db->trans_complete();
+                    $this->donors_model->common_insert_update('update', TBL_FUNDS, ['is_delete' => 1], ['id' => $donor['id']]);
                 }
+                $this->db->trans_complete();
                 $this->donors_model->common_insert_update('update', TBL_DONORS, $update_array, ['id' => $id]);
 
                 //--Delete subscriber from donors list

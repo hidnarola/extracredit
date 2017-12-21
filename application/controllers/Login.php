@@ -79,7 +79,8 @@ class Login extends MY_Controller {
             $verification_code = verification_code();
             $this->users_model->common_insert_update('update', TBL_USERS, array('verification_code' => $verification_code), array('id' => $user['id']));
 
-            $verification_code = $this->encrypt->encode($verification_code);
+//            $verification_code = $this->encrypt->encode($verification_code);
+            $verification_code = base64_encode($verification_code);
 //            $encoded_verification_code = urlencode($verification_code);
             $encoded_verification_code = $verification_code;
 
@@ -103,7 +104,8 @@ class Login extends MY_Controller {
     public function reset_password() {
         $data['title'] = 'Extra Credit| Reset Password';
         $verification_code = $this->input->get('code');
-        $verification_code = $this->encrypt->decode($verification_code);
+//        $verification_code = $this->encrypt->decode($verification_code);
+        $verification_code = base64_decode($verification_code);
         //--- check varification code is valid or not
         $result = $this->users_model->check_verification_code($verification_code);
         if (!empty($result)) {

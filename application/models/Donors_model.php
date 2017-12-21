@@ -226,12 +226,12 @@ class Donors_model extends MY_Model {
      */
     public function get_donor_donations($id = NULL, $type) {
         if ($type == 'group')
-            $this->db->select('f.id,f.account_id,sum(f.admin_fund) as admin_fund,sum(f.account_fund) as account_fund,a.total_fund,a.action_matters_campaign');
+            $this->db->select('f.id,f.account_id,sum(f.admin_fund) as admin_fund,sum(f.account_fund) as account_fund,a.total_fund,a.action_matters_campaign,f.is_refund');
         else
-            $this->db->select('f.id,f.account_id,f.admin_fund,f.account_fund,a.total_fund,a.action_matters_campaign');
+            $this->db->select('f.id,f.account_id,f.admin_fund,f.account_fund,a.total_fund,a.action_matters_campaign,,f.is_refund');
 
         $this->db->join(TBL_ACCOUNTS . ' as a', 'f.account_id=a.id', 'left');
-        $this->db->where(['f.id' => $id, 'f.is_delete' => 0]);
+        $this->db->where(['f.donor_id' => $id, 'f.is_delete' => 0]);
 
         if ($type == 'group')
             $this->db->group_by('account_id,donor_id');

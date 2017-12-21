@@ -243,7 +243,7 @@ class Accounts_model extends MY_Model {
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
-                . 'WHERE f.is_delete=0 AND f.account_id=' . $account_id
+                . 'WHERE f.is_delete=0 AND f.account_id=' . $account_id . ' AND d.is_delete=0'
                 . ' UNION ALL '
                 . 'SELECT p.created,p.check_date as date,"" as post_date,"" as firstname,"" as lastname,"" as payment_method,p.check_number as payment_number,"" as memo,p.amount as debit_amt,"" as credit_amt,p.account_balance as balance,0 as refund '
                 . 'FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' ac ON p.account_id=ac.id AND ac.is_delete=0 '
@@ -253,7 +253,7 @@ class Accounts_model extends MY_Model {
                 . 'FROM ' . TBL_FUNDS . ' f LEFT JOIN ' . TBL_DONORS . ' d ON f.donor_id=d.id AND d.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_ACCOUNTS . ' a ON f.account_id=a.id AND a.is_delete=0 '
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
-                . 'WHERE f.is_delete=0 AND f.is_refund=1 AND f.account_id=' . $account_id .
+                . 'WHERE f.is_delete=0 AND f.is_refund=1 AND f.account_id=' . $account_id . ' AND d.is_delete=0' .
                 ' UNION ALL ' .
                 'SELECT af.created,af.created as date,"" as post_date,a.action_matters_campaign as firstname,"" as lastname,"" as payment_method,"" as payment_number,"" as memo,af.amount as debit_amt,"" as credit_amt,af.account1_fund as balance,-1 as is_refund '
                 . 'FROM ' . TBL_ACCOUNTS_TRANSFER . ' af LEFT JOIN ' . TBL_ACCOUNTS . ' a ON af.account_id_to=a.id AND a.is_delete=0 '
@@ -320,6 +320,15 @@ class Accounts_model extends MY_Model {
         $this->db->select('a.total_fund,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->where(['a.id' => $id, 'a.is_delete' => 0]);
+        $query = $this->db->get(TBL_ACCOUNTS . ' a');
+        return $query->row_array();
+    }
+
+    public function allow_delete($id) {
+        $this->db->select('f.*');
+        $this->db->join(TBL_FUNDS . ' as f', 'a.id=f.account_id', 'left');
+        $this->db->join(TBL_DONORS . ' as d', 'd.id=f.donor_id', 'left');
+        $this->db->where(['a.id' => $id, 'd.is_delete' => 0]);
         $query = $this->db->get(TBL_ACCOUNTS . ' a');
         return $query->row_array();
     }
