@@ -82,7 +82,7 @@ if (isset($account)) {
                         <?php
                         $program_div_style = '';
                         $vendor_div_style = 'style="display:none"';
-                        $program_required = 'required="required"';
+                        $program_required = '';
                         $vendor_required = '';
                         if (isset($account) && $account['type'] == 1) {
                             $program_div_style = 'style="display:none"';
