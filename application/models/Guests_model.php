@@ -16,7 +16,7 @@ class Guests_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_guests($type = 'result') {
-        $columns = ['logo', 'g.firstname', 'g.lastname', 'g.email', 'g.guest_date', 'g.AIR_date', 'g.AMC_active', 'g.created'];
+        $columns = ['logo', 'g.created', 'g.firstname', 'g.companyname', 'g.guest_date', 'g.AMC_active'];
         $keyword = $this->input->get('search');
         $this->db->select('g.*,c.name as city');
 
@@ -25,8 +25,8 @@ class Guests_model extends MY_Model {
         if (!empty($keyword['value'])) {
             $this->db->where('(g.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-//                    ' OR g.companyname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR g.email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR g.companyname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+//                    ' OR g.email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.phone LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR g.AMC_active LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ')');

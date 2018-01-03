@@ -52,13 +52,12 @@
             <thead>
                 <tr>
                     <th>Logo</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Guest Date</th>
-                    <th>Air Date</th>
-                    <th>AMC Active</th>
                     <th>Action</th>
+                    <th>Full Name</th>
+                    <th>Company Name</th>
+                    <th>Guest Date</th>
+                    <!--<th>Air Date</th>-->
+                    <th>AMC Active</th>
                 </tr>
             </thead>
         </table>
@@ -131,7 +130,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[7, "desc"]],
+            order: [[1, "desc"]],
             ajax: site_url + 'guests/get_guests',
             columns: [
                 {
@@ -146,38 +145,6 @@
                             logo = '<a class="fancybox" href="assets/images/placeholder.jpg" data-fancybox-group="gallery" ><img src="assets/images/placeholder.jpg" height="55px" width="55px" alt="' + full.firstname + '" class="img-circle"/></a>';
                         }
                         return logo;
-                    }
-                },
-                {
-                    data: "firstname",
-                    visible: true,
-                },
-                {
-                    data: "lastname",
-                    visible: true,
-                },
-                {
-                    data: "email",
-                    visible: true
-                },
-                {
-                    data: "guest_date",
-                    visible: true,
-                },
-                {
-                    data: "AIR_date",
-                    visible: true
-                },
-                {
-                    data: "AMC_active",
-                    visible: true,
-                    sortable: false,
-                    render: function (data, type, full, meta) {
-                        if (full.AMC_active == 'No' || full.AMC_active == 0) {
-                            var status = '<span class="label bg-warning">No</span>';
-                        } else
-                            var status = '<span class="label bg-success">Yes</span>';
-                        return status;
                     }
                 },
                 {
@@ -215,7 +182,37 @@
                         action += '</ul>';
                         return action;
                     }
-                }
+                },
+                {
+                    data: "firstname",
+                    render: function (data, type, full, meta) {
+                        return data + ' ' + full.lastname;
+                    }
+                },
+                {
+                    data: "companyname",
+                    visible: true
+                },
+                {
+                    data: "guest_date",
+                    visible: true,
+                },
+//                {
+//                    data: "AIR_date",
+//                    visible: true
+//                },
+                {
+                    data: "AMC_active",
+                    visible: true,
+                    sortable: false,
+                    render: function (data, type, full, meta) {
+                        if (full.AMC_active == 'No' || full.AMC_active == 0) {
+                            var status = '<span class="label bg-warning">No</span>';
+                        } else
+                            var status = '<span class="label bg-success">Yes</span>';
+                        return status;
+                    }
+                },
             ]
         });
 
