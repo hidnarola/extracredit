@@ -54,7 +54,9 @@ class Home extends MY_Controller {
         $total = $this->users_model->customQuery($sql, 2);
         $data['total_account_fund'] = $total['final'];
 
-        $data['payments'] = $this->users_model->sql_select(TBL_PAYMENTS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]);
+        $sql = 'SELECT count(p.id) as total FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' a ON p.account_id=a.id WHERE p.is_delete=0 AND a.is_delete=0';
+        $total = $this->users_model->customQuery($sql, 2);
+        $data['payments'] = $total['total'];
 
         //-- Chart data
         //-- Returns the number of free images purchased

@@ -4,6 +4,7 @@
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+<script type="text/javascript" src="assets/js/jquery.custom_validate.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
 
 <?php
@@ -82,13 +83,20 @@ if (isset($guest)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Address</label>
+                                <label class="col-lg-1 control-label">Company Name</label>
                                 <div class="col-lg-4">
-                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize"><?php echo (isset($guest)) ? $guest['address'] : set_value('address'); ?></textarea>
+                                    <input type="text" name="companyname" id="companyname" placeholder="Enter Company Name" class="form-control text-capitalize"  value="<?php echo (isset($guest)) ? $guest['companyname'] : set_value('companyname'); ?>">
                                     <?php
-                                    echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
+                                    echo '<label id="companyname-error" class="validation-error-label" for="companyname">' . form_error('companyname') . '</label>';
                                     ?>
                                 </div>
+                                <label class="col-lg-1 control-label">Company Website </label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="company_website" id="company_website" placeholder="Enter Company Website" class="form-control" value="<?php echo (isset($guest)) ? $guest['company_website'] : set_value('company_website'); ?>">
+                                </div>
+
+                            </div>
+                            <div class="form-group">
                                 <label class="col-lg-1 control-label">Email</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
@@ -96,6 +104,14 @@ if (isset($guest)) {
                                     echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
                                     ?>
                                 </div>
+                                <label class="col-lg-1 control-label">Address</label>
+                                <div class="col-lg-4">
+                                    <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize"><?php echo (isset($guest)) ? $guest['address'] : set_value('address'); ?></textarea>
+                                    <?php
+                                    echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
+                                    ?>
+                                </div>
+
 
                             </div>
                             <div class="form-group">
@@ -134,25 +150,13 @@ if (isset($guest)) {
                                 <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $guest['state_short'] : set_value('state_short'); ?>"/>
                             </div>
 
+
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Company Name</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="companyname" id="companyname" placeholder="Enter Company Name" class="form-control text-capitalize"  value="<?php echo (isset($guest)) ? $guest['companyname'] : set_value('companyname'); ?>">
-                                    <?php
-                                    echo '<label id="companyname-error" class="validation-error-label" for="companyname">' . form_error('companyname') . '</label>';
-                                    ?>
-                                </div>
                                 <label class="col-lg-1 control-label">Phone</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
 
 
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">Company Website </label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="company_website" id="company_website" placeholder="Enter Company Website" class="form-control" value="<?php echo (isset($guest)) ? $guest['company_website'] : set_value('company_website'); ?>">
                                 </div>
                                 <label class="control-label col-lg-1">Logo</label>
                                 <div class="col-lg-4">
@@ -523,15 +527,15 @@ if (isset($guest)) {
         var url = $.validator.methods.url.bind(this);
         return url(value, element) || url('http://' + value, element);
     }, 'Please enter a valid URL');
-    
-    
+
+
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function (e) {
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                 if (typeof (input.files[0]) != 'undefined') {
+                if (typeof (input.files[0]) != 'undefined') {
                     if (valid_extensions.test(input.files[0].name)) {
                         var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
                     } else {
