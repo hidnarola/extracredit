@@ -147,7 +147,8 @@ class Donors extends MY_Controller {
                     'post_date' => $post_date,
                     'payment_type_id' => $this->input->post('payment_type_id'),
                     'payment_number' => $this->input->post('payment_number'),
-                    'memo' => $this->input->post('memo')
+                    'memo' => $this->input->post('memo'),
+                    'ubi' => ($this->input->post('ubi')) ? 1 : 0,
                 );
             }
             $dataArr = array(
@@ -1095,7 +1096,8 @@ class Donors extends MY_Controller {
                     'post_date' => $post_date,
                     'payment_type_id' => $this->input->post('payment_type_id'),
                     'payment_number' => $this->input->post('payment_number'),
-                    'memo' => $this->input->post('memo')
+                    'memo' => $this->input->post('memo'),
+                    'ubi' => ($this->input->post('ubi')) ? 1 : 0,
                 );
 
                 $this->db->trans_begin();

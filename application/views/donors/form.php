@@ -293,6 +293,12 @@ if (isset($donor)) {
                                         echo '<label id="memo-error" class="validation-error-label" for="memo">' . form_error('memo') . '</label>';
                                         ?>
                                     </div>
+                                    <div class="col-lg-4">
+                                        <label class="checkbox-inline checkbox-right">
+                                            <input type="checkbox" class="styled" id="ubi" name="ubi" <?php echo (isset($donor) && $donor['ubi'] == 1) ? 'checked' : '' ?> value="1">
+                                            UBI
+                                        </label>
+                                    </div>
                                 </div>
                             </fieldset>
                         <?php } ?>

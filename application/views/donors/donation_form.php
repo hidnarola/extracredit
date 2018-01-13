@@ -154,7 +154,7 @@ if (isset($donation)) {
                                     echo '<label id="amount-error" class="validation-error-label" for="amount">' . form_error('amount') . '</label>';
                                     ?>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-3">
                                     <label class="checkbox-inline checkbox-right">
                                         <input type="checkbox" class="styled" id="change_donation_split" <?php echo $split_checkbox ?>>
                                         Change Donation Split Settings
@@ -222,6 +222,12 @@ if (isset($donation)) {
                                     <?php
                                     echo '<label id="memo-error" class="validation-error-label" for="memo">' . form_error('memo') . '</label>';
                                     ?>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="checkbox-inline checkbox-right">
+                                        <input type="checkbox" class="styled" id="ubi" name="ubi" <?php echo (isset($donation) && $donation['ubi'] == 1) ? 'checked' : '' ?> value="1">
+                                        UBI
+                                    </label>
                                 </div>
                             </div>
                         </fieldset>

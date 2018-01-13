@@ -52,6 +52,7 @@
                     <th>Payment Number</th>
                     <th>Payment Type</th>
                     <th>memo</th>
+                    <th>UBI</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -127,6 +128,18 @@
                 {
                     data: "memo",
                     visible: true,
+                },
+                {
+                    data: "ubi",
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (data == 1) {
+                            ubi_str = 'Yes';
+                        } else {
+                            ubi_str = 'No';
+                        }
+                        return ubi_str;
+                    }
                 },
                 {
                     data: "is_delete",

@@ -175,7 +175,7 @@ class Donors_model extends MY_Model {
      * @author KU
      */
     public function get_donations($type = 'result', $id) {
-        $columns = ['a.action_matters_campaign,a.vendor_name', 'amount', 'f.date', 'f.post_date', 'f.payment_number', 'p.type', 'f.memo', 'f.is_delete'];
+        $columns = ['a.action_matters_campaign,a.vendor_name', 'amount', 'f.date', 'f.post_date', 'f.payment_number', 'p.type', 'f.memo', 'f.ubi', 'f.is_delete'];
         $keyword = $this->input->get('search');
         $this->db->select('f.*,(f.admin_fund+f.account_fund) as amount,p.type as payment_type,a.action_matters_campaign,a.vendor_name,ft.type');
         $this->db->join(TBL_PAYMENT_TYPES . ' as p', 'f.payment_type_id=p.id AND p.is_delete=0', 'left');
