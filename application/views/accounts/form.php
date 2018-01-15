@@ -408,7 +408,7 @@ if (isset($account)) {
                 var state = '';
                 var state_short = '';
                 //make a request to the google geocode api
-                $.getJSON('http://maps.googleapis.com/maps/api/geocode/json?address=' + zip)
+                $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?address=' + zip)
                         .success(function (response) {
                             //find the city and state
                             var address_components = response.results[0].address_components;
