@@ -122,14 +122,7 @@ if (isset($guest)) {
                                     echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">State</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
 
-                                    <?php
-                                    echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
-                                    ?>
-                                </div>
                                 <!--                                <label class="col-lg-1 control-label">Phone</label>
                                                                 <div class="col-lg-4">
                                                                     <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
@@ -139,14 +132,21 @@ if (isset($guest)) {
                                                                 </div>-->
                             </div>
                             <div class="form-group">
+                                <label class="col-lg-1 control-label">State</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
 
-                                <!--                                <label class="col-lg-1 control-label">City</label>
-                                                                <div class="col-lg-4" id="city_wrap">
-                                                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
-                                <?php
-                                echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
-                                ?>
-                                                                </div>-->
+                                    <?php
+                                    echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">City</label>
+                                <div class="col-lg-4" id="city_wrap">
+                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
+                                    <?php
+                                    echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
+                                    ?>
+                                </div>
                                 <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $guest['state_short'] : set_value('state_short'); ?>"/>
                             </div>
 
@@ -473,7 +473,7 @@ if (isset($guest)) {
                 var state = '';
                 var state_short = '';
                 //make a request to the google geocode api
-                $.getJSON('http://maps.googleapis.com/maps/api/geocode/json?address=' + zip)
+                $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?address=' + zip)
                         .success(function (response) {
                             //find the city and state
                             var address_components = response.results[0].address_components;
