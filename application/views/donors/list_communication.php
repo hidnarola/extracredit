@@ -202,7 +202,7 @@
                             action += '&nbsp;&nbsp;<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation"><i class="icon-eye"></i></a>'
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete_communication/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donors Communication"><i class="icon-trash"></i></a>'
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'donors/delete_communication/' + btoa(full.donor_id) + '/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Donors Communication"><i class="icon-trash"></i></a>'
                         }
                         return action;
                     }

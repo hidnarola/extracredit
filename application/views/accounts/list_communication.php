@@ -209,14 +209,14 @@
                     render: function (data, type, full, meta) {
                         var action = '';
                         if ($.inArray('edit', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/add_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest Communication"><i class="icon-pencil3"></i></a>';
+                            action += '<a href="' + site_url + 'accounts/add_communication/' + btoa(full.account_id) + '/' + btoa(full.id) + '" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs" title="Edit Guest Communication"><i class="icon-pencil3"></i></a>';
                         }
                         if ($.inArray('view', permissions) !== -1) {
 //                        action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/communication/' + btoa(full.id) + '" class="btn border-info text-info-600 btn-flat btn-icon btn-rounded btn-xs" title="View Conversation"><i class="icon-comment-discussion"></i></a>'
                             action += '&nbsp;&nbsp;<a href="javascript:void(0)"  data-toggle="modal" data-target="#modalviewConversation" class="btn border-purple text-purple-600 btn-flat btn-icon btn-rounded btn-xs" data-id=' + btoa(full.id) + ' onclick="return view_communication(this)" title="View Conversation"><i class="icon-eye"></i></a>'
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/delete_communication/' + btoa(full.guest_id) + '/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest Communication"><i class="icon-trash"></i></a>'
+                            action += '&nbsp;&nbsp;<a href="' + site_url + 'accounts/delete_communication/' + btoa(full.account_id) + '/' + btoa(full.id) + '" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Guest Communication"><i class="icon-trash"></i></a>'
                         }
                         return action;
                     }
