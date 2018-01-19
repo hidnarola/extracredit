@@ -218,7 +218,7 @@ if (isset($guest)) {
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                         <input type="text" name="invite_date" id="invite_date" placeholder="Enter Invite Date" class="form-control pickadate" value="<?php
                                         if (isset($guest) && !empty($guest['invite_date'])) {
-                                            echo date('d F, Y', strtotime($guest['invite_date']));
+                                            echo date('d F Y', strtotime($guest['invite_date']));
                                         } else
                                             echo set_value('invite_date');
                                         ?>" >
@@ -233,7 +233,7 @@ if (isset($guest)) {
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                         <input type="text" name="guest_date" id="guest_date" placeholder="Enter Guest Date" class="form-control pickadate" value="<?php
                                         if (isset($guest) && !empty($guest['guest_date'])) {
-                                            echo date('d F, Y', strtotime($guest['guest_date']));
+                                            echo date('d F Y', strtotime($guest['guest_date']));
                                         } else
                                             echo set_value('guest_date');
                                         ?>" >
@@ -250,7 +250,7 @@ if (isset($guest)) {
                                         <span class="input-group-addon"><i class="icon-calendar"></i></span>
                                         <input type="text" name="AIR_date" id="post_date" placeholder="Enter AIR Date" class="form-control pickadate" value="<?php
                                         if (isset($guest) && !empty($guest['AIR_date'])) {
-                                            echo date('d F, Y', strtotime($guest['AIR_date']));
+                                            echo date('d F Y', strtotime($guest['AIR_date']));
                                         } else
                                             echo set_value('AIR_date');
                                         ?>" >
@@ -350,6 +350,7 @@ if (isset($guest)) {
     $("#phone").mask("999-999-9999");
     $("#assistant_phone").mask("999-999-9999");
     $('.pickadate').pickadate({
+        format: 'd mmmm yyyy'
 //        max: new Date()
     });
 

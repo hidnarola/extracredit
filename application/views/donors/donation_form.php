@@ -108,7 +108,7 @@ if (isset($donation)) {
                                         <input type="text" name="date" id="date" class="form-control pickadate" placeholder="Select Date" value="<?php
                                         if (isset($donation)) {
                                             if (!empty($donation['date']))
-                                                echo date('d F, Y', strtotime($donation['date']));
+                                                echo date('d F Y', strtotime($donation['date']));
                                             else
                                                 echo '';
                                         } else
@@ -126,7 +126,7 @@ if (isset($donation)) {
                                         <input type="text" name="post_date" id="post_date" class="form-control pickadate" placeholder="Select Post Date" value="<?php
                                         if (isset($donation)) {
                                             if (!empty($donation['post_date']))
-                                                echo date('d F, Y', strtotime($donation['post_date']));
+                                                echo date('d F Y', strtotime($donation['post_date']));
                                             else
                                                 echo '';
                                         } else
@@ -252,6 +252,8 @@ if (isset($donation)) {
 
     //-- Initialize datepicker
     $('.pickadate').pickadate({
+        format: 'd mmmm yyyy'
+
 //        max: new Date()
     });
     var edit = <?php echo $edit ?>;

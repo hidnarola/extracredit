@@ -29,7 +29,7 @@ if (isset($account_communication)) {
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> Accounts</a></li>
-            <li><a href="<?php echo site_url('accounts/communication/'.  base64_encode($account['id'])); ?>"><i class="icon-comment-discussion"></i> Communication</a></li>
+            <li><a href="<?php echo site_url('accounts/communication/' . base64_encode($account['id'])); ?>"><i class="icon-comment-discussion"></i> Communication</a></li>
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -67,7 +67,7 @@ if (isset($account_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($account_communication) && !empty($account_communication['communication_date'])) ? date('d F, Y', strtotime($account_communication['communication_date'])) : set_value('communication_date'); ?>" required="required">
+                                    <input type="text" name="communication_date" id="communication_date" placeholder="Enter Communication Date" class="form-control pickadate" value="<?php echo (isset($account_communication) && !empty($account_communication['communication_date'])) ? date('d F Y', strtotime($account_communication['communication_date'])) : set_value('communication_date'); ?>" required="required">
                                 </div>
                                 <?php
                                 echo '<label id="communication_date-error" class="validation-error-label" for="communication_date">' . form_error('communication_date') . '</label>';
@@ -79,7 +79,7 @@ if (isset($account_communication)) {
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="icon-calendar"></i></span>
-                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($account_communication) && !empty($account_communication['follow_up_date'])) ? date('d F, Y', strtotime($account_communication['follow_up_date'])) : set_value('follow_up_date'); ?>">
+                                    <input type="text" name="follow_up_date" id="follow_up_date" placeholder="Enter Follow Up Date" class="form-control followdate" value="<?php echo (isset($account_communication) && !empty($account_communication['follow_up_date'])) ? date('d F Y', strtotime($account_communication['follow_up_date'])) : set_value('follow_up_date'); ?>">
                                 </div>
                                 <?php
                                 echo '<label id="follow_up_date-error" class="validation-error-label" for="follow_up_date">' . form_error('follow_up_date') . '</label>';
@@ -174,9 +174,12 @@ if (isset($account_communication)) {
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
     $('.pickadate').pickadate({
-        max: new Date()
+        max: new Date(),
+        format: 'd mmmm yyyy'
     });
-    $('.followdate').pickadate();
+    $('.followdate').pickadate({
+        format: 'd mmmm yyyy'
+    });
     $("#add_conversation_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',
@@ -238,7 +241,7 @@ if (isset($account_communication)) {
 
             reader.onload = function (e) {
                 var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-                 if (typeof (input.files[0]) != 'undefined') {
+                if (typeof (input.files[0]) != 'undefined') {
                     if (valid_extensions.test(input.files[0].name)) {
                         var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
                     } else {
