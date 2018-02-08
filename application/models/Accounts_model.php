@@ -16,7 +16,7 @@ class Accounts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_accounts($type = 'result') {
-        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
+        $columns = ['f.name', 'action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
         $keyword = $this->input->get('search');
         $this->db->select('a.*,f.name as fund_type,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
