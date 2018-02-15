@@ -98,22 +98,13 @@ if (isset($donor)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Phone </label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($donor) && $donor['phone']) ? $donor['phone'] : set_value('phone'); ?>" data-mask="999-999-9999">
+                                <label class="col-lg-1 control-label">City</label>
+                                <div class="col-lg-4" id="city_wrap">
+                                    <input type="text" name="city" id="city" placeholder="City" class="form-control" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>" readonly>
                                     <?php
-                                    echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
+                                    echo '<label id="city-error" class="validation-error-label" for="city">' . form_error('city') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Zip</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
-                                    <?php
-                                    echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="col-lg-1 control-label">State</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="state" id="state" placeholder="State" class="form-control" value="<?php echo (isset($donor) && $donor['state']) ? $donor['state'] : set_value('state'); ?>" readonly>
@@ -121,11 +112,20 @@ if (isset($donor)) {
                                     echo '<label id="state-error" class="validation-error-label" for="state">' . form_error('state') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">City</label>
-                                <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city" id="city" placeholder="City" class="form-control" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Zip</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
                                     <?php
-                                    echo '<label id="city-error" class="validation-error-label" for="city">' . form_error('city') . '</label>';
+                                    echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">Phone </label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($donor) && $donor['phone']) ? $donor['phone'] : set_value('phone'); ?>" data-mask="999-999-9999">
+                                    <?php
+                                    echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
                                     ?>
                                 </div>
                             </div>

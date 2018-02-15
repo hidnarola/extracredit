@@ -97,13 +97,6 @@ if (isset($guest)) {
 
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Email</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
-                                    <?php
-                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
-                                    ?>
-                                </div>
                                 <label class="col-lg-1 control-label">Address</label>
                                 <div class="col-lg-4">
                                     <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize"><?php echo (isset($guest)) ? $guest['address'] : set_value('address'); ?></textarea>
@@ -111,7 +104,31 @@ if (isset($guest)) {
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
                                 </div>
+                                <label class="col-lg-1 control-label">Email</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
+                                    <?php
+                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">City</label>
+                                <div class="col-lg-4" id="city_wrap">
+                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
+                                    <?php
+                                    echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
+                                    ?>
+                                </div>
+                                <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $guest['state_short'] : set_value('state_short'); ?>"/>
+                                <label class="col-lg-1 control-label">State</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
 
+                                    <?php
+                                    echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
+                                    ?>
+                                </div>
 
                             </div>
                             <div class="form-group">
@@ -131,24 +148,7 @@ if (isset($guest)) {
                                 ?>
                                                                 </div>-->
                             </div>
-                            <div class="form-group">
-                                <label class="col-lg-1 control-label">State</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
 
-                                    <?php
-                                    echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
-                                    ?>
-                                </div>
-                                <label class="col-lg-1 control-label">City</label>
-                                <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
-                                    <?php
-                                    echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
-                                    ?>
-                                </div>
-                                <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $guest['state_short'] : set_value('state_short'); ?>"/>
-                            </div>
 
 
                             <div class="form-group">
