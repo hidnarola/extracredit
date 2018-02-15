@@ -1,13 +1,5 @@
-.custom_save_button {
-    width: 90px;
-    display: inline-block;
-    float: left;
-    margin-right: 15px;
-    border: none;
-    padding: 8px 12px;
-}
-.custom_cancel_button {
-    width: 90px;
-    display: inline-block;
-    float: left;
-}
+.custom_save_button {width: 90px;display: inline-block;float: left;margin-right: 15px;border: none;padding: 8px 12px;}
+.custom_cancel_button {width: 90px;display: inline-block;float: left;}
+/*.navbar-inverse .navbar-nav > li > a,
+.navbar-inverse .navbar-nav > li > a:hover{background-color: rgba(0, 0, 0, 0.25);}*/
+.navbar-nav {margin-left: 0;}

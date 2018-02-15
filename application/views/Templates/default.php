@@ -29,7 +29,7 @@
             </div>
             <div class="navbar-collapse collapse" id="navbar-mobile">
                 <ul class="nav navbar-nav">
-                    <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-paragraph-justify3"></i></a></li>
+                    <li><a class="sidebar-control sidebar-main-toggle hidden-xs" id="hamburger-anchor"><i class="icon-arrow-left16"></i></a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown dropdown-user">
