@@ -90,7 +90,7 @@ class Login extends MY_Controller {
             $email_data['email'] = trim($this->input->post('email'));
             $email_data['subject'] = 'Reset Password - Extra Credit';
             send_email(trim($this->input->post('email')), 'forgot_password', $email_data);
-            $this->session->set_flashdata('success', 'Email has been successfully sent to reset password!Please check email');
+            $this->session->set_flashdata('success', 'Email has been successfully sent to reset password! Please check email');
             redirect('login');
         }
 
