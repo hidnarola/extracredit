@@ -1,4 +1,10 @@
-<!--<script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>-->
+<style>
+    .dt-button {display: block;width: 60px;height: 35px;background: #26A69A;padding: 6px;text-align: center;border-radius: 5px;color: white;font-weight: bold;margin-right: 4px;transition: all 0.3s ease-in-out;-webkit-transition: all 0.3s ease-in-out;-moz-transition: all 0.3s ease-in-out;text-decoration:none;border: 2px solid #fff;}
+    .dt-buttons a:hover,.dt-buttons a:focus {color: #26A69A !important;background: #fff !important;border: 2px solid #26A69A;text-decoration:none;}
+    .custom_perpage_dropdown .dataTables_length {margin: 0 18px 20px 20px;}
+    .dataTables_info {padding: 8px 22px;margin-bottom: 10px;}
+    .dataTables_paginate {margin: 10px 20px 20px 20px;}
+</style>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -6,8 +12,6 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
 <script type="text/javascript" src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
 
-<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.css"/>
-<script type="text/javascript" src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"></script>-->
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/ui/moment/moment.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/daterangepicker.js"></script>
@@ -17,35 +21,6 @@
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.time.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/legacy.js"></script>
 <script type="text/javascript" src="assets/js/pages/picker_date.js"></script>
-<style>
-    .dt-button {
-        display: block;
-        width: 60px;
-        height: 35px;
-        background: #26A69A;
-        padding: 6px;
-        text-align: center;
-        border-radius: 5px;
-        color: white;
-        font-weight: bold;
-        margin-right: 4px;
-        transition: all 0.3s ease-in-out;
-        -webkit-transition: all 0.3s ease-in-out;
-        -moz-transition: all 0.3s ease-in-out;
-        text-decoration:none;
-        border: 2px solid #fff;
-    }
-
-    .dt-buttons a:hover,.dt-buttons a:focus {
-        color: #26A69A !important;
-        background: #fff !important;
-        border: 2px solid #26A69A;
-        text-decoration:none;
-    }
-    .custom_perpage_dropdown .dataTables_length {margin: 0 18px 20px 20px;}
-    .dataTables_info {padding: 8px 22px;margin-bottom: 10px;}
-    .dataTables_paginate {margin: 10px 20px 20px 20px;}
-</style>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -96,7 +71,6 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <!--<th>#</th>-->
                     <th>Fund Type</th>
                     <th>Subcategory</th>
                     <th>Date</th>
@@ -114,6 +88,7 @@
                     <th>Pmt Method</th>
                     <th>Pmt Number</th>
                     <th>Memo</th>                    
+                    <th>UBI</th>                    
                 </tr>
             </thead>
         </table>
@@ -143,7 +118,6 @@
                 lengthMenu: '<span>Show:</span> _MENU_',
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
-//            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             order: [[7, "desc"]],
             dom: 'lBfrtipx',
             buttons: [
@@ -162,6 +136,7 @@
                 data: {
                     post_date_filter: post_date_filter
                 },
+                type: 'post',
             },
             columns: [
                 {
@@ -250,7 +225,19 @@
                 {
                     data: "memo",
                     visible: true,
-                }
+                },
+                {
+                    data: "ubi",
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (data == 1) {
+                            ubi_str = 'Yes';
+                        } else {
+                            ubi_str = 'No';
+                        }
+                        return ubi_str;
+                    }
+                },
             ]
         });
         $('.dataTables_length select').select2({

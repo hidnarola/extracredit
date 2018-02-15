@@ -99,9 +99,9 @@ class Donors_model extends MY_Model {
      * @return type
      */
     public function get_donors_reports($type = 'result') {
-        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'fu.date', 'fu.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'state', 'city', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'fu.payment_number', 'fu.memo'];
-        $keyword = $this->input->get('search');
-        $this->db->select('d.*,fu.date,fu.post_date,fu.payment_type_id,fu.payment_number,fu.memo,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,c.name as city,s.name as state,f.type,p.type as payment_type');
+        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'fu.date', 'fu.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'state', 'city', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'fu.payment_number', 'fu.memo', 'fu.ubi'];
+        $keyword = $this->input->post('search');
+        $this->db->select('d.*,fu.date,fu.post_date,fu.payment_type_id,fu.payment_number,fu.memo,fu.ubi,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,fu.ubi,c.name as city,s.name as state,f.type,p.type as payment_type');
 
         $this->db->join(TBL_DONORS . ' as d', 'fu.donor_id=d.id', 'left');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'fu.account_id=a.id', 'left');
@@ -122,7 +122,7 @@ class Donors_model extends MY_Model {
                     ' OR f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
 
-        $post_date_filter = $this->input->get('post_date_filter');
+        $post_date_filter = $this->input->post('post_date_filter');
         if ($post_date_filter != '') {
             $dates = explode('-', $post_date_filter);
             $startdate = date('Y-m-d', strtotime($dates[0]));
@@ -132,9 +132,9 @@ class Donors_model extends MY_Model {
         }
 
         $this->db->where(['a.is_delete' => 0, 'd.is_delete' => 0, 'fu.is_delete' => 0]);
-        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        $this->db->order_by($columns[$this->input->post('order')[0]['column']], $this->input->post('order')[0]['dir']);
         if ($type == 'result') {
-            $this->db->limit($this->input->get('length'), $this->input->get('start'));
+            $this->db->limit($this->input->post('length'), $this->input->post('start'));
             $query = $this->db->get(TBL_FUNDS . ' fu');
             return $query->result_array();
         } else {
