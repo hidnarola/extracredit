@@ -89,36 +89,36 @@ if (isset($donor)) {
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Email</label>
+                                <label class="col-lg-1 control-label">Zip</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($donor) && $donor['email']) ? $donor['email'] : set_value('email'); ?>">
+                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
                                     <?php
-                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
+                                    echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">City</label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city" id="city" placeholder="City" class="form-control" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>" readonly>
+                                    <input type="text" name="city" id="city" class="form-control" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>" readonly>
                                     <?php
                                     echo '<label id="city-error" class="validation-error-label" for="city">' . form_error('city') . '</label>';
                                     ?>
                                 </div>
                                 <label class="col-lg-1 control-label">State</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state" id="state" placeholder="State" class="form-control" value="<?php echo (isset($donor) && $donor['state']) ? $donor['state'] : set_value('state'); ?>" readonly>
+                                    <input type="text" name="state" id="state"class="form-control" value="<?php echo (isset($donor) && $donor['state']) ? $donor['state'] : set_value('state'); ?>" readonly>
                                     <?php
                                     echo '<label id="state-error" class="validation-error-label" for="state">' . form_error('state') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Zip</label>
+                                <label class="col-lg-1 control-label">Email</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control" value="<?php echo (isset($donor) && $donor['zip']) ? $donor['zip'] : set_value('zip'); ?>">
+                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($donor) && $donor['email']) ? $donor['email'] : set_value('email'); ?>">
                                     <?php
-                                    echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
+                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
                                     ?>
                                 </div>
                                 <label class="col-lg-1 control-label">Phone </label>

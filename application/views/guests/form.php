@@ -104,18 +104,18 @@ if (isset($guest)) {
                                     echo '<label id="address-error" class="validation-error-label" for="address">' . form_error('address') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Email</label>
+                                <label class="col-lg-1 control-label">Zip</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
+                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control"  value="<?php echo (isset($guest) && $guest['zip']) ? $guest['zip'] : set_value('zip'); ?>">
                                     <?php
-                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
+                                    echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">City</label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" placeholder="Enter City" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
+                                    <input type="text" name="city_id" id="city_id" readonly="" class="form-control"  value="<?php echo (isset($guest)) ? $guest['city'] : set_value('city_id'); ?>">
                                     <?php
                                     echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
                                     ?>
@@ -123,7 +123,7 @@ if (isset($guest)) {
                                 <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($guest)) ? $guest['state_short'] : set_value('state_short'); ?>"/>
                                 <label class="col-lg-1 control-label">State</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" placeholder="Enter State" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
+                                    <input type="text" name="state_id" id="state_id" readonly="" class="form-control"  value="<?php echo (isset($guest)) ? $guest['state'] : set_value('state_id'); ?>">
 
                                     <?php
                                     echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
@@ -132,32 +132,22 @@ if (isset($guest)) {
 
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Zip</label>
+                                <label class="col-lg-1 control-label">Email</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="zip" id="zip" placeholder="Enter Zip" class="form-control"  value="<?php echo (isset($guest) && $guest['zip']) ? $guest['zip'] : set_value('zip'); ?>">
+                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
                                     <?php
-                                    echo '<label id="zip-error" class="validation-error-label" for="zip">' . form_error('zip') . '</label>';
+                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
                                     ?>
                                 </div>
-
-                                <!--                                <label class="col-lg-1 control-label">Phone</label>
-                                                                <div class="col-lg-4">
-                                                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
-                                <?php
-                                echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
-                                ?>
-                                                                </div>-->
-                            </div>
-
-
-
-                            <div class="form-group">
                                 <label class="col-lg-1 control-label">Phone</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">
-
-
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">                                
+                                    <?php
+                                    echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
+                                    ?>
                                 </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="control-label col-lg-1">Logo</label>
                                 <div class="col-lg-4">
                                     <div class="media no-margin-top">
