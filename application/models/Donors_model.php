@@ -16,7 +16,7 @@ class Donors_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_donors($type = 'result') {
-        $columns = ['d.firstname', 'd.lastname', 'd.email', 'd.phone', 'd.amount', 'd.created', 'd.is_active', 'last_donation_date', 'last_donation_category'];
+        $columns = ['d.is_delete', 'd.firstname', 'd.lastname', 'd.email', 'd.phone', 'd.amount', 'd.created', 'last_donation_category', 'last_donation_date', 'last_donation_category'];
         $keyword = $this->input->get('search');
         $select1 = '(SELECT created FROM ' . TBL_FUNDS . ' WHERE donor_id=d.id AND is_delete=0 AND is_refund=0 order by id DESC LIMIT 1) as last_donation_date';
         $select2 = '(SELECT GROUP_CONCAT(DISTINCT ft.name) as fundtypes, f.donor_id FROM funds f JOIN accounts a ON f.account_id=a.id JOIN fund_types ft on a.fund_type_id=ft.id WHERE f.is_delete=0 AND f.is_refund=0 group by f.donor_id) fundcat';

@@ -16,7 +16,7 @@ class Accounts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_accounts($type = 'result') {
-        $columns = ['f.name', 'action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
+        $columns = ['a.is_delete', 'f.name', 'action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
         $keyword = $this->input->get('search');
         $this->db->select('a.*,f.name as fund_type,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
@@ -31,9 +31,9 @@ class Accounts_model extends MY_Model {
                     ' OR f.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $this->db->where(['a.is_delete' => 0]);
-//        if ($this->input->get('order')) {
-        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
-//        }
+        if ($this->input->get('order')) {
+            $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        }
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
             $query = $this->db->get(TBL_ACCOUNTS . ' a');

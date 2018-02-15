@@ -1,10 +1,10 @@
-<script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
-<script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
-<script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <style>
     .btn-icon.btn-xs, .input-group-xs > .input-group-btn > .btn.btn-icon {padding-right: 6px;}
     .refund_row {background-color: rgba(253, 82, 82, 0.14);}    
 </style>
+<script type="text/javascript" src="assets/js/plugins/tables/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
@@ -53,6 +53,7 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
+                    <th>Action</th>
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Email</th>
@@ -60,7 +61,6 @@
                     <th>Amount</th>
                     <th>Last Donation Date</th>
                     <th>Donation category</th>
-                    <th>Action</th>
                 </tr>
             </thead>
         </table>
@@ -97,8 +97,7 @@
         </div>
     </div>
 </div>
-
-<!-- Guest View Modal -->
+<!-- Donor View Modal -->
 <div id="donor_view_modal" class="modal fade">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -111,6 +110,7 @@
         </div>
     </div>
 </div>
+<!-- Donor View Modal -->
 <script>
     $(".file-styled").uniform({
         fileButtonClass: 'action btn bg-blue'
@@ -130,9 +130,47 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[5, "desc"]],
+            order: [[6, "desc"]],
             ajax: site_url + 'donors/get_donors',
             columns: [
+                {
+                    data: "is_delete",
+                    visible: true,
+                    searchable: false,
+                    sortable: false,
+                    render: function (data, type, full, meta) {
+                        var action = '';
+                        action += '<ul class="icons-list">';
+                        action += '<li class="dropdown">';
+                        action += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+                        action += '<i class="icon-menu9"></i>';
+                        action += '</a>';
+                        action += '<ul class="dropdown-menu dropdown-menu-right">';
+                        action += '<li>';
+                        if (full.refund == 0) {
+                            if ($.inArray('edit', permissions) !== -1) {
+                                action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" title="Edit Donor"><i class="icon-pencil3"></i> Edit Donor</a>';
+                            }
+                            if ($.inArray('edit', permissions) !== -1) {
+                                action += '<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" title="View Donations"><i class="icon-coins"></i> View Donations</a>';
+                            }
+                        }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '<a href="javascript:void(0)" id=' + btoa(full.id) + ' title="View Details" class="donor_view_btn"><i class="icon-eye"></i> View Details</a>';
+                        }
+                        if ($.inArray('view', compermissions) !== -1) {
+                            action += '<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
+                        }
+                        if ($.inArray('delete', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i> Delete Donor</a>'
+                        }
+                        action += '</li>';
+                        action += '</ul>';
+                        action += '</li>';
+                        action += '</ul>';
+                        return action;
+                    }
+                },
                 {
                     data: "firstname",
                     visible: true,
@@ -164,55 +202,11 @@
                     data: "last_donation_category",
                     visible: true
                 },
-                {
-                    data: "is_delete",
-                    visible: true,
-                    searchable: false,
-                    sortable: false,
-                    render: function (data, type, full, meta) {
-                        var action = '';
-                        action += '<ul class="icons-list">';
-                        action += '<li class="dropdown">';
-                        action += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
-                        action += '<i class="icon-menu9"></i>';
-                        action += '</a>';
-                        action += '<ul class="dropdown-menu dropdown-menu-right">';
-                        action += '<li>';
-                        if (full.refund == 0) {
-                            if ($.inArray('edit', permissions) !== -1) {
-                                action += '<a href="' + site_url + 'donors/edit/' + btoa(full.id) + '" title="Edit Donor"><i class="icon-pencil3"></i> Edit Donor</a>';
-                            }
-                            if ($.inArray('edit', permissions) !== -1) {
-                                action += '<a href="' + site_url + 'donors/donations/' + btoa(full.id) + '" title="View Donations"><i class="icon-coins"></i> View Donations</a>';
-                            }
-//                            if ($.inArray('edit', permissions) !== -1) {
-//                                action += '<a href="javascript:void(0)" title="Refund" data-id="' + btoa(full.id) + '" onclick="return refund_alert(this)"><i class="icon-share2"></i> Refund</a>';
-//                            }
-                        }
-                        if ($.inArray('view', permissions) !== -1) {
-                            action += '<a href="javascript:void(0)" id=' + btoa(full.id) + ' title="View Details" class="donor_view_btn"><i class="icon-eye"></i> View Details</a>';
-                        }
-                        if ($.inArray('view', compermissions) !== -1) {
-                            action += '<a href="' + site_url + 'donors/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>'
-                        }
-                        if ($.inArray('delete', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'donors/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Donor"><i class="icon-trash"></i> Delete Donor</a>'
-                        }
-                        action += '</li>';
-                        action += '</ul>';
-                        action += '</li>';
-                        action += '</ul>';
-                        return action;
-                    }
-                }
-
             ],
             createdRow: function (row, data, index) {
                 if (data.refund == 1) {
                     $(row).addClass('refund_row');
                 }
-                console.dir(data);
-//                console.dir(row);
             }
         });
 

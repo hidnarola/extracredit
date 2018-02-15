@@ -40,7 +40,7 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Action</th>
                     <th>Fund Type</th>
                     <th>Program/Vendor</th>
                     <th>Contact Name</th>
@@ -48,7 +48,6 @@
                     <th>Phone</th>
                     <th>Total Fund</th>
                     <th>Active</th>
-                    <th>Action</th>
                 </tr>
             </thead>
         </table>
@@ -64,19 +63,50 @@
             autoWidth: false,
             processing: true,
             serverSide: true,
-            "aaSorting": [],
             language: {
                 search: '<span>Filter:</span> _INPUT_',
                 lengthMenu: '<span>Show:</span> _MENU_',
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[0, "desc"]],
+            order: [],
             ajax: site_url + 'accounts/get_accounts',
             columns: [
                 {
-                    data: "id",
-                    visible: false,
+                    data: "is_delete",
+                    visible: true,
+                    searchable: false,
+                    sortable: false,
+                    render: function (data, type, full, meta) {
+                        var action = '';
+                        action += '<ul class="icons-list">';
+                        action += '<li class="dropdown">';
+                        action += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+                        action += '<i class="icon-menu9"></i>';
+                        action += '</a>';
+                        action += '<ul class="dropdown-menu dropdown-menu-right">';
+                        action += '<li>';
+                        if ($.inArray('edit', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" title="Edit Account"><i class="icon-pencil3"></i> Edit Account</a>';
+                        }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" title="View Transactions"><i class="icon-coins"></i> View Transactions</a>';
+                        }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'accounts/transfer_account/' + btoa(full.id) + '" title="Transfer Money"><i class=" icon-arrow-right16"></i> Transfer Money</a>';
+                        }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'accounts/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>';
+                        }
+                        if ($.inArray('delete', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i> Delete Account</a>'
+                        }
+                        action += '</li>';
+                        action += '</ul>';
+                        action += '</li>';
+                        action += '</ul>';
+                        return action;
+                    }
                 },
                 {
                     data: "fund_type",
@@ -125,42 +155,6 @@
                         return status;
                     }
                 },
-                {
-                    data: "is_delete",
-                    visible: true,
-                    searchable: false,
-                    sortable: false,
-                    render: function (data, type, full, meta) {
-                        var action = '';
-                        action += '<ul class="icons-list">';
-                        action += '<li class="dropdown">';
-                        action += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
-                        action += '<i class="icon-menu9"></i>';
-                        action += '</a>';
-                        action += '<ul class="dropdown-menu dropdown-menu-right">';
-                        action += '<li>';
-                        if ($.inArray('edit', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" title="Edit Account"><i class="icon-pencil3"></i> Edit Account</a>';
-                        }
-                        if ($.inArray('view', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" title="View Transactions"><i class="icon-coins"></i> View Transactions</a>';
-                        }
-                        if ($.inArray('view', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/transfer_account/' + btoa(full.id) + '" title="Transfer Money"><i class=" icon-arrow-right16"></i> Transfer Money</a>';
-                        }
-                        if ($.inArray('view', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>';
-                        }
-                        if ($.inArray('delete', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i> Delete Account</a>'
-                        }
-                        action += '</li>';
-                        action += '</ul>';
-                        action += '</li>';
-                        action += '</ul>';
-                        return action;
-                    }
-                }
             ]
         });
 
