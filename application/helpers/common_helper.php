@@ -35,7 +35,7 @@ function send_email($to = '', $template = '', $data = []) {
     $ci->email->initialize($config);
 
     $ci->email->to($to);
-    $ci->email->from('no-reply@extracredit.com');
+    $ci->email->from('no-reply@extracredit.com', 'Extracredit');
     $ci->email->subject($data['subject']);
     $view = $ci->load->view('email_templates/' . $template, $data, TRUE);
     $ci->email->message($view);
