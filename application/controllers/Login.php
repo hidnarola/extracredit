@@ -37,7 +37,7 @@ class Login extends MY_Controller {
      * @return boolean
      */
     public function login_validation() {
-        $result = $this->users_model->get_user_detail(['email' => trim($this->input->post('email'))]);
+        $result = $this->users_model->get_user_detail(['email' => trim($this->input->post('email')), 'is_delete' => 0]);
         if ($result) {
             if (!password_verify($this->input->post('password'), $result['password'])) {
                 $this->form_validation->set_message('login_validation', 'Invalid  Email/Password.');
