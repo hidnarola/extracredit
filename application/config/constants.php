@@ -92,6 +92,8 @@ define('TBL_ACCOUNTS', 'accounts');
 define('TBL_ACCOUNTS_TRANSFER', 'accounts_transfer');
 define('TBL_CITIES', 'cities');
 define('TBL_COMMUNICATIONS', 'communications');
+define('TBL_COMMUNICATIONS_MANAGER', 'communication_manager');
+define('TBL_CONTACTS', 'contacts');
 define('TBL_DONORS', 'donors');
 define('TBL_FUNDS', 'funds');
 define('TBL_FUND_TYPES', 'fund_types');
@@ -105,7 +107,8 @@ define('TBL_STATES', 'states');
 define('TBL_USERS', 'users');
 define('TBL_PAGES', 'pages');
 define('TBL_USER_PERMISSION', 'user_permissions');
-define('TBL_COMMUNICATIONS_MANAGER', 'communication_manager');
+define('TBL_VENDORS', 'vendors');
+
 /**
  * Constants for User Images
  */

@@ -23,7 +23,7 @@ class Communication_manager_model extends MY_Model {
         $this->db->join(TBL_USERS . ' as u', 'cm.user_id=u.id', 'left');
 
         if (!empty($keyword['value'])) {
-            $this->db->where('(firstlast LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+            $this->db->where('(CONCAT(u.firstname, " ", u.lastname) LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR cm.follow_up_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR cm.category LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }

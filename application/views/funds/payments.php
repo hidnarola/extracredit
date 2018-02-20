@@ -101,12 +101,19 @@
                 {
                     data: "fund_type",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.payer == 'vendor') {
+                            return 'Vendor';
+                        } else {
+                            return data
+                        }
+                    }
                 },
                 {
                     data: "action_matters_campaign",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.type == 1) {
+                        if (full.payer == 'vendor') {
                             return full.vendor_name;
                         } else {
                             return data

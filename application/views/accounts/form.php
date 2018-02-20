@@ -432,6 +432,7 @@ if (isset($account)) {
                                 var $select = $(document.createElement('select'));
                                 $select.addClass('select2');
                                 $select.attr('id', 'city_id');
+                                $select.attr('name', 'city_id');
                                 $.each(cities, function (index, locality) {
                                     var $option = $(document.createElement('option'));
                                     $option.html(locality);

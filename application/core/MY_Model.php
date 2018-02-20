@@ -248,8 +248,8 @@ class MY_Model extends CI_Model {
     }
 
     /**
-     * Return current totalt admin fund
-     * @return decimal Total admin fund
+     * Return current total Admin fund
+     * @return decimal Total Admin fund
      * @author KU
      */
     public function get_admin_fund() {

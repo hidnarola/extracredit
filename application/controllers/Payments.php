@@ -57,7 +57,7 @@ class Payments extends MY_Controller {
                 $data['payment'] = $payment;
                 $data['title'] = 'Extracredit | Edit Payment';
                 $data['heading'] = 'Edit Payment';
-                if ($payment['type'] == 1) {
+                if ($payment['payer'] == 'vendor') {
                     $data['account_fund'] = $this->admin_fund + $payment['amount'];
                 } else {
                     $data['account_fund'] = $payment['total_fund'] + $payment['amount'];
@@ -75,7 +75,7 @@ class Payments extends MY_Controller {
             $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
             $this->form_validation->set_rules('account_id', 'Program/AMC', 'trim|required');
         }
-        $data['fund_types'] = $this->payments_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type!=' => 2]]);
+        $data['fund_types'] = $this->payments_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type' => 0]]);
 
         $this->form_validation->set_rules('check_date', 'Check Date', 'trim|required');
         $this->form_validation->set_rules('check_number', 'Post Date', 'trim|required');
@@ -95,7 +95,7 @@ class Payments extends MY_Controller {
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 //-- If account is vendor then update admin fund amount
                 $is_valid = 1;
-                if ($payment['type'] == 1) {
+                if ($payment['payer'] == 'vendor') {
                     $admin_fund = $this->admin_fund + $payment['amount'];
                     $dataArr['account_balance'] = $admin_fund - $this->input->post('amount');
                     if ($admin_fund >= $this->input->post('amount')) {
@@ -128,9 +128,10 @@ class Payments extends MY_Controller {
 
                 $account_details = $this->payments_model->get_account_fund($account_id);
                 $is_valid = 1;
-                if ($account_details['type'] == 1) {
+                if ($this->input->post('fund_type_id') == 'vendor') {
                     $admin_fund = $this->admin_fund;
                     $dataArr['account_balance'] = $admin_fund - $this->input->post('amount');
+                    $dataArr['payer'] = 'vendor';
 
                     if ($admin_fund >= $this->input->post('amount')) {
                         $admin_fund = $admin_fund - $this->input->post('amount');
@@ -142,6 +143,7 @@ class Payments extends MY_Controller {
                 } else {
                     $account_fund = $account_details['total_fund'];
                     $dataArr['account_balance'] = $account_fund - $this->input->post('amount');
+                    $dataArr['payer'] = 'account';
 
                     if ($account_fund >= $this->input->post('amount')) {
                         $account_fund = $account_fund - $this->input->post('amount');
@@ -177,22 +179,27 @@ class Payments extends MY_Controller {
      */
     public function get_accounts() {
         $id = base64_decode($this->input->post('id'));
-        $accounts = $this->payments_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
+        if ($id == 'vendor') {
+            $accounts = $this->payments_model->sql_select(TBL_VENDORS, 'id,name', ['where' => ['is_delete' => 0]]);
+        } else {
+            $accounts = $this->payments_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign as name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
+        }
         echo json_encode($accounts);
     }
 
     /**
-     * Ajax call to this funnction return Account fund 
+     * Ajax call to this function return Account fund 
      */
     public function get_account_fund() {
         $id = base64_decode($this->input->post('id'));
+        $fund_type = $this->input->post('fund_type');
         $account_details = $this->payments_model->get_account_fund($id);
         //-- If not vendor then return accounts fund else return admin fund
-        if ($account_details['type'] == 0) {
-            $data = ['amount' => $account_details['total_fund'], 'type' => 0];
+        if ($fund_type == 'vendor') {
+            $admin_fund = $this->users_model->get_admin_fund();
+            $data = ['amount' => $admin_fund, 'type' => 1];
         } else {
-            $store_admin_fund = $this->payments_model->sql_select(TBL_USERS, 'total_fund,id', ['where' => ['role' => 'admin']], ['single' => true]);
-            $data = ['amount' => $store_admin_fund['total_fund'], 'type' => 1];
+            $data = ['amount' => $account_details['total_fund'], 'type' => 0];
         }
         echo json_encode($data);
     }

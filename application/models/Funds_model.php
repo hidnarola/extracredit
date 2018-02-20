@@ -32,7 +32,7 @@ class Funds_model extends MY_Model {
                     ' OR f.memo LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR f.admin_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR f.admin_balance LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')';
-            $where1 = ' AND (ac.vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
+            $where1 = ' AND (v.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
                     . ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
                     . ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
                     . ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
@@ -46,14 +46,13 @@ class Funds_model extends MY_Model {
                 . 'LEFT JOIN ' . TBL_PAYMENT_TYPES . ' pt ON f.payment_type_id=pt.id AND pt.is_delete=0 '
                 . 'WHERE f.is_delete=0 AND f.is_refund=0 AND a.is_delete=0 ' . $where
                 . 'UNION ALL '
-                . 'SELECT p.created,p.check_date as date,"" as post_date,"" as firstname,"" as lastname,"" as fund_type,ac.vendor_name as sub_category,"" as payment_method,p.check_number as payment_number,"" as memo,p.amount as debit_amt,"" as credit_amt,p.account_balance as balance '
-                . 'FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_ACCOUNTS . ' ac ON p.account_id=ac.id '
-                . 'LEFT JOIN ' . TBL_FUND_TYPES . ' fnt ON ac.fund_type_id=fnt.id AND fnt.is_delete=0 '
-                . 'WHERE p.is_delete=0 AND fnt.type=1 AND ac.is_delete=0 ' . $where1;
+                . 'SELECT p.created,p.check_date as date,"" as post_date,"" as firstname,"" as lastname,"Vendor" as fund_type,v.name as sub_category,"" as payment_method,p.check_number as payment_number,"" as memo,p.amount as debit_amt,"" as credit_amt,p.account_balance as balance '
+                . 'FROM ' . TBL_PAYMENTS . ' p LEFT JOIN ' . TBL_VENDORS . ' v ON p.account_id=v.id '
+                . 'WHERE p.is_delete=0 AND p.payer="vendor" AND v.is_delete=0 ' . $where1;
 
-        $sql.=' ORDER BY ' . $columns[$this->input->get('order')[0]['column']] . ' ' . $this->input->get('order')[0]['dir'];
+        $sql .= ' ORDER BY ' . $columns[$this->input->get('order')[0]['column']] . ' ' . $this->input->get('order')[0]['dir'];
         if ($type == 'result') {
-            $sql.=' LIMIT ' . $this->input->get('start') . ', ' . $this->input->get('length');
+            $sql .= ' LIMIT ' . $this->input->get('start') . ', ' . $this->input->get('length');
             $query = $this->db->query($sql);
             return $query->result_array();
         } else {
@@ -191,20 +190,23 @@ class Funds_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_paymentfund($type = 'result') {
-        $columns = ['ft.type', 'a.action_matters_campaign,a.vendor_name', 'p.check_date', 'p.check_number', 'p.amount'];
+        $columns = ['ft.type', 'a.action_matters_campaign,v.name', 'p.check_date', 'p.check_number', 'p.amount'];
         $keyword = $this->input->get('search');
-        $this->db->select('ft.name as fund_type,a.action_matters_campaign,a.vendor_name,p.check_date,p.check_number,p.amount,'
+        $this->db->select('ft.name as fund_type,a.action_matters_campaign,v.name as vendor_name,p.payer,p.check_date,p.check_number,p.amount,'
                 . 'a.total_fund as balance,ft.type');
 
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id AND a.is_delete=0', 'left');
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id AND a.is_delete=0 AND p.payer="account"', 'left');
+        $this->db->join(TBL_VENDORS . ' v', 'p.account_id=v.id AND p.payer="vendor" AND v.is_delete=0', 'left');
+
         $this->db->join(TBL_FUND_TYPES . ' as ft', 'a.fund_type_id=ft.id AND ft.is_delete=0', 'left');
 
         if (!empty($keyword['value'])) {
-            $this->db->where('(action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR ft.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+            $this->db->where('(a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR v.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR ft.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR DATE_FORMAT(p.check_date,"%c/%d/%Y") LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.payer LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         //-- Check date filter

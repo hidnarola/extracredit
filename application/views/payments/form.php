@@ -67,10 +67,11 @@ if (isset($payment)) {
                             <div class="col-lg-6">
                                 <select name="fund_type_id" id="fund_type_id" class="select2" required="required" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
                                     <option value=""></option>
+                                    <option value="vendor" <?php if (isset($payment) && $payment['payer'] == 'vendor') echo 'selected' ?>>Vendor</option>
                                     <?php
                                     foreach ($fund_types as $type) {
                                         $selected = '';
-                                        if (isset($payment) && $payment['fund_type_id'] == $type['id'])
+                                        if (isset($payment) && $payment['payer'] == $type['id'])
                                             $selected = 'selected';
                                         ?>
                                         <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['type'] ?></option>
@@ -102,7 +103,14 @@ if (isset($payment)) {
                         </div>
 
                         <div class="form-group" id="accoun_fund_div" <?php if (!isset($payment)) echo "style='display:none'" ?>>
-                            <label class="col-lg-2 control-label required" id="account_fund_label">Account Fund</label>
+                            <label class="col-lg-2 control-label required" id="account_fund_label">
+                                <?php
+                                if (isset($payment) && $payment['payer'] == 'vendor')
+                                    echo 'Admin Fund';
+                                else
+                                    echo 'Account Fund';
+                                ?>
+                            </label>
                             <div class="col-lg-6">
                                 <input type="text" placeholder="Account Fund" class="form-control" name="account_fund" id="account_fund" value="<?php echo $account_fund ?>" disabled="disabled"/>
                             </div>
@@ -169,11 +177,7 @@ if (isset($payment)) {
                 var options = "<option value=''></option>";
                 for (var i = 0; i < data.length; i++) {
                     options += '<option value="' + data[i]['id'] + '">';
-                    if (data[i]['action_matters_campaign'] != null) {
-                        options += data[i]['action_matters_campaign'];
-                    } else {
-                        options += data[i]['vendor_name'];
-                    }
+                    options += data[i]['name'];
                     options += '</option>';
                 }
                 $('#account_id').empty().append(options);
@@ -186,7 +190,7 @@ if (isset($payment)) {
         if ($(this).val() != null) {
             $.ajax({
                 url: '<?php echo site_url('payments/get_account_fund') ?>',
-                data: {id: btoa($(this).val())},
+                data: {id: btoa($(this).val()), fund_type: $('#fund_type_id').val()},
                 type: "POST",
                 dataType: 'json',
                 success: function (data) {
@@ -261,8 +265,6 @@ if (isset($payment)) {
         submitHandler: function (form) {
             var amount_val = parseFloat($('#amount').val());
             var account_fund = parseFloat($('#account_fund').val());
-            console.log('amount', amount_val);
-            console.log('account fund', account_fund);
             if (amount_val > account_fund) {
                 swal({
                     title: "Oops...",

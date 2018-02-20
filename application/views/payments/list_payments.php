@@ -62,7 +62,6 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>#</th>
                     <th>Fund Type</th>
                     <th>Program/Vendor</th>
                     <th>Check Date</th>
@@ -98,7 +97,7 @@
                 paginate: {'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;'}
             },
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
-            order: [[6, "desc"]],
+            order: [[5, "desc"]],
             ajax: {
                 url: site_url + 'payments/get_payments',
                 data: {
@@ -107,19 +106,21 @@
             },
             columns: [
                 {
-                    data: "id",
-                    visible: true,
-                    sortable: false,
-                },
-                {
                     data: "fund_type",
                     visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.payer == 'vendor') {
+                            return 'Vendor';
+                        } else {
+                            return data
+                        }
+                    }
                 },
                 {
                     data: "action_matters_campaign",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.type == 1) {
+                        if (full.payer == 'vendor') {
                             return full.vendor_name;
                         } else {
                             return data

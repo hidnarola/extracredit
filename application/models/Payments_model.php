@@ -16,19 +16,21 @@ class Payments_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_payments($type = 'result') {
-        $columns = ['p.id', 'f.type', 'a.action_matters_campaign,a.vendor_name', 'p.check_date', 'p.check_number', 'p.amount', 'p.created', 'p.is_delete'];
+        $columns = ['f.type', 'a.action_matters_campaign,v.name', 'p.check_date', 'p.check_number', 'p.amount', 'p.created', 'p.is_delete'];
         $keyword = $this->input->get('search');
-        $this->db->select('p.*,a.action_matters_campaign,a.vendor_name,f.name as fund_type,f.type');
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'p.account_id=a.id', 'left');
-        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->select('p.*,a.action_matters_campaign,v.name as vendor_name,f.name as fund_type,f.type');
+        $this->db->join(TBL_ACCOUNTS . ' a', 'p.account_id=a.id AND p.payer="account"', 'left');
+        $this->db->join(TBL_VENDORS . ' v', 'p.account_id=v.id AND p.payer="vendor"', 'left');
+        $this->db->join(TBL_FUND_TYPES . ' f', 'a.fund_type_id=f.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR a.vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR v.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+                    ' OR p.payer LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR f.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $post_date_filter = $this->input->get('post_date_filter');
         if ($post_date_filter != '') {
@@ -81,24 +83,30 @@ class Payments_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_payments_made_report($type = 'result') {
-        $columns = ['a.action_matters_campaign,a.vendor_name', 'a.address', 'city', 'state', 'a.zip', 'p.amount', 'p.check_date', 'p.check_number', 'p.payment_number'];
+        $columns = ['a.action_matters_campaign,v.name', 'a.address,v.address', 'city,vc.name', 'state,vs.name', 'a.zip', 'p.amount', 'p.check_date', 'p.check_number'];
         $keyword = $this->input->get('search');
-        $this->db->select('a.action_matters_campaign,a.address,a.zip,a.vendor_name,p.amount,p.check_date,p.check_number,f.type,c.name as city,s.name as state,f.type');
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id', 'left');
-        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->select('a.action_matters_campaign,v.name as vendor_name,a.address,v.address as vendor_address,a.zip,'
+                . 'v.zip as vendor_zip,p.amount,p.check_date,p.check_number,p.payer,c.name as city,vc.name as vendor_city,s.name as state,vs.name as vendor_state');
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id AND p.payer="account"', 'left');
+        $this->db->join(TBL_VENDORS . ' as v', 'v.id=p.account_id AND p.payer="vendor"', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'a.state_id=s.id', 'left');
+        $this->db->join(TBL_CITIES . ' as vc', 'v.city_id=vc.id', 'left');
+        $this->db->join(TBL_STATES . ' as vs', 'v.state_id=vs.id', 'left');
 
         if (!empty($keyword['value'])) {
-            $this->db->where('(a.vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+            $this->db->where('(v.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.address LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR s.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR v.address LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.zip LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR v.zip LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR vc.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR s.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR vs.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR p.payment_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $post_date_filter = $this->input->get('post_date_filter');

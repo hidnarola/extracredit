@@ -85,9 +85,8 @@
                     data: "is_delete",
                     visible: true,
                     searchable: false,
+                    sortable: false,
                     render: function (data, type, full, meta) {
-//                        action += '<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i> Delete Account</a>'
-
                         return '<a href="' + site_url + 'communication_manager/check_communication/' + btoa(full.id) + '" onclick="return confirm_alert(this)" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" title="Check communication"><i class="icon-checkmark4"></i></a>';
                     }
                 }

@@ -139,21 +139,22 @@ class Accounts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_vendor_admin_report($type = 'result') {
-        $columns = ['check_date', 'check_number', 'id', 'vendor_name', 'address', 'city', 'state', 'zip', 'total_fund'];
+        $columns = [ 'id','check_date', 'check_number', 'v.name', 'address', 'city', 'state', 'zip', 'p.amount'];
         $keyword = $this->input->get('search');
-        $this->db->select('p.*,a.*,f.name as fund_type,c.name as city,s.name as state,f.type');
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id', 'left');
-        $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
-        $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
-        $this->db->join(TBL_STATES . ' as s', 'a.state_id=s.id', 'left');
+        $this->db->select('p.*,v.*,c.name as city,s.name as state');
+        $this->db->join(TBL_VENDORS . ' as v', 'v.id=p.account_id', 'left');
+        $this->db->join(TBL_CITIES . ' as c', 'v.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'v.state_id=s.id', 'left');
 
         if (!empty($keyword['value'])) {
-            $this->db->where('(vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+            $this->db->where('(v.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR address LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR s.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR a.zip LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR a.total_fund LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+                    ' OR s.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR v.zip LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR p.amount LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $post_date_filter = $this->input->get('post_date_filter');
         if ($post_date_filter != '') {
@@ -163,8 +164,7 @@ class Accounts_model extends MY_Model {
             $this->db->where('p.check_date >=', $startdate);
             $this->db->where('p.check_date <=', $enddate);
         }
-        $this->db->where(['p.is_delete' => 0]);
-        $this->db->where(['f.type' => 1]);
+        $this->db->where(['p.is_delete' => 0, 'p.payer' => 'vendor']);
         $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
@@ -191,7 +191,7 @@ class Accounts_model extends MY_Model {
         $this->db->select('a.*,f.name as fund_type,c.name as city,s.name as state,f.type,pt.type as program_type,ps.status,inc.income,f.name as fund_type,f.type,a.total_fund as balance_amount,p.no_of_payments,p.payment_amount,' . $select1 . ',' . $select2);
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join('(SELECT sum(account_fund) income,account_id FROM ' . TBL_FUNDS . ' WHERE is_delete=0 group by account_id) inc', 'a.id=inc.account_id', 'left');
-        $this->db->join('(SELECT sum(amount) payment_amount,count(id) no_of_payments,account_id FROM ' . TBL_PAYMENTS . ' WHERE is_delete=0 group by account_id) p', 'a.id=p.account_id', 'left');
+        $this->db->join('(SELECT sum(amount) payment_amount,count(id) no_of_payments,account_id FROM ' . TBL_PAYMENTS . ' WHERE is_delete=0 AND payer="account" group by account_id) p', 'a.id=p.account_id', 'left');
 
         $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'a.state_id=s.id', 'left');

@@ -158,7 +158,7 @@
                     data: "action_matters_campaign",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.type == 1) {
+                        if (full.payer == 'vendor') {
                             return full.vendor_name;
                         } else {
                             return data
@@ -167,19 +167,48 @@
                 },
                 {
                     data: "address",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.payer == 'vendor') {
+                            return full.vendor_address;
+                        } else {
+                            return data
+                        }
+                    }
                 },
                 {
                     data: "city",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.payer == 'vendor') {
+                            return full.vendor_city;
+                        } else {
+                            return data
+                        }
+                    }
+
                 },
                 {
                     data: "state",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.payer == 'vendor') {
+                            return full.vendor_state;
+                        } else {
+                            return data
+                        }
+                    }
                 },
                 {
                     data: "zip",
-                    visible: true
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        if (full.payer == 'vendor') {
+                            return full.vendor_zip;
+                        } else {
+                            return data
+                        }
+                    }
                 },
                 {
                     data: "amount",

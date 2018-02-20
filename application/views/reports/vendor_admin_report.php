@@ -102,7 +102,7 @@
                     <th>ID</th>                   
                     <th>Check Date</th>
                     <th>Check Number</th>
-                    <th>AMC</th>                   
+                    <th>Vendor</th>                   
                     <th>Address</th>                   
                     <th>City</th>
                     <th>State</th>
@@ -174,7 +174,7 @@
                     visible: true
                 },                
                 {
-                    data: "vendor_name",
+                    data: "name",
                     visible: true
                 },
                 {

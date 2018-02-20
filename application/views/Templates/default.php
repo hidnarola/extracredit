@@ -93,6 +93,12 @@
                                     <?php if (checkPrivileges('accounts', 'view', 1)) { ?>
                                         <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3"></i> <span>Accounts</span></a></li>
                                     <?php } ?>
+                                    <?php if (checkPrivileges('accounts', 'view', 1)) { ?>
+                                        <li class="<?php echo ($this->controller == 'vendors') ? 'active' : ''; ?>"><a href="<?php echo site_url('vendors'); ?>"><i class="icon-file-media"></i> <span>Vendors</span></a></li>
+                                    <?php } ?>
+                                    <?php if (checkPrivileges('accounts', 'view', 1)) { ?>
+                                        <li class="<?php echo ($this->controller == 'contacts') ? 'active' : ''; ?>"><a href="<?php echo site_url('contacts'); ?>"><i class="icon-notebook"></i> <span>Contacts</span></a></li>
+                                    <?php } ?>
                                     <?php if (checkPrivileges('communication_manager', 'view', 1)) { ?>
                                         <li class="<?php echo ($this->controller == 'communication_manager') ? 'active' : ''; ?>"><a href="<?php echo site_url('communication_manager'); ?>"><i class="icon-bubbles9"></i> <span>Communication Manager</span></a></li>
                                     <?php } ?>
