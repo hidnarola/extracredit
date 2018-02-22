@@ -248,7 +248,7 @@ class Guests_model extends MY_Model {
      * @author KU 
      */
     public function get_amc_accounts() {
-        $this->db->select('a.id,a.action_matters_campaign,a.vendor_name,f.type');
+        $this->db->select('a.id,a.action_matters_campaign,a.program_name,a.vendor_name,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->where(['a.is_delete' => 0, 'f.is_delete' => 0, 'f.type' => 0]);
         $query = $this->db->get(TBL_ACCOUNTS . ' a');

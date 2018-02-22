@@ -78,13 +78,13 @@
             ajax: site_url + 'donors/get_donations/<?php echo base64_encode($donor['id']) ?>',
             columns: [
                 {
-                    data: "action_matters_campaign",
+                    data: "program_name",
                     visible: true,
                     render: function (data, type, full, meta) {
-                        if (full.type == 1) {
-                            return full.vendor_name;
+                        if (data != '') {
+                            return data;
                         } else {
-                            return data
+                            return full.action_matters_campaign
                         }
                     }
                 },

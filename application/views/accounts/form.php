@@ -26,7 +26,7 @@ if (isset($account)) {
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-grid6 position-left"></i> Accounts</a></li>
+            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> Accounts</a></li>
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -48,7 +48,6 @@ if (isset($account)) {
                     <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Close</span></button>
                     <strong><?php echo $this->session->flashdata('error') ?></strong>
                 </div>
-
                 <?php
             }
             ?>
@@ -78,6 +77,15 @@ if (isset($account)) {
                                 ?>
                             </div>
                         </div>
+                        <div class="form-group program_div">
+                            <label class="col-lg-2 control-label">Program Name <span class="text-danger">*</span></label>
+                            <div class="col-lg-6">
+                                <input type="text" name="program_name" id="program_name" placeholder="Enter Program Name" class="form-control text-capitalize" value="<?php echo (isset($account)) ? $account['program_name'] : set_value('program_name'); ?>" required="required">
+                                <?php
+                                echo '<label id="program_name-error" class="validation-error-label" for="program_name">' . form_error('program_name') . '</label>';
+                                ?>
+                            </div>
+                        </div>
                         <?php
                         $program_div_style = '';
                         $vendor_div_style = 'style="display:none"';
@@ -91,12 +99,9 @@ if (isset($account)) {
                         }
                         ?>
                         <div class="form-group program_div" <?php echo $program_div_style ?>>
-                            <label class="col-lg-2 control-label">Action Matters Campaign <span class="text-danger">*</span></label>
+                            <label class="col-lg-2 control-label">Action Matters Campaign</label>
                             <div class="col-lg-6">
                                 <input type="text" name="action_matters_campaign" id="action_matters_campaign" placeholder="Enter Action Matters Campaign" class="form-control text-capitalize" value="<?php echo (isset($account)) ? $account['action_matters_campaign'] : set_value('action_matters_campaign'); ?>" <?php echo $program_required ?>>
-                                <?php
-                                echo '<label id="action_matters_campaign-error" class="validation-error-label" for="action_matters_campaign">' . form_error('action_matters_campaign') . '</label>';
-                                ?>
                             </div>
                         </div>
                         <div class="form-group vendor_div" <?php echo $vendor_div_style ?>>
@@ -111,7 +116,7 @@ if (isset($account)) {
                         <fieldset class="content-group">
                             <legend class="text-bold">Basic Account Details</legend>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Contact Name <span class="text-danger">*</span></label>
+                                <label class="col-lg-2 control-label">Contact Name <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <input type="text" name="contact_name" id="contact_name" placeholder="Enter Contact Name" class="form-control text-capitalize" required="required" value="<?php echo (isset($account)) ? $account['contact_name'] : set_value('contact_name'); ?>">
                                     <?php
@@ -127,7 +132,7 @@ if (isset($account)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Address </label>
+                                <label class="col-lg-2 control-label">Address </label>
                                 <div class="col-lg-4">
                                     <textarea name="address" id="address" placeholder="Enter Address" class="form-control text-capitalize" ><?php echo (isset($account)) ? $account['address'] : set_value('address'); ?></textarea>
                                     <?php
@@ -144,7 +149,7 @@ if (isset($account)) {
 
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">City </label>
+                                <label class="col-lg-2 control-label">City </label>
                                 <div class="col-lg-4" id="city_wrap">
                                     <input type="text" name="city_id" id="city_id" readonly="" class="form-control" value="<?php echo (isset($account)) ? $account['city'] : set_value('city_id'); ?>">
                                     <?php
@@ -162,7 +167,7 @@ if (isset($account)) {
                                 <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($account)) ? $account['state_short'] : set_value('state_short'); ?>"/>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Phone </label>
+                                <label class="col-lg-2 control-label">Phone </label>
                                 <div class="col-lg-4">
                                     <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control" value="<?php echo (isset($account) && $account['phone']) ? $account['phone'] : set_value('phone'); ?>" data-mask="999-999-9999">
                                     <?php
@@ -184,7 +189,7 @@ if (isset($account)) {
                         <fieldset class="content-group">
                             <legend class="text-bold">Extra Account Details</legend>
                             <div class="form-group program_div" <?php echo $program_div_style ?>>
-                                <label class="col-lg-1 control-label">Program Types </label>
+                                <label class="col-lg-2 control-label">Program Types </label>
                                 <div class="col-lg-4">
                                     <select name="program_type_id" id="program_type_id" class="select2" data-placeholder="Select Program Type" <?php echo '' ?>>
                                         <option value=""></option>
@@ -222,7 +227,7 @@ if (isset($account)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Website </label>
+                                <label class="col-lg-2 control-label">Website </label>
                                 <div class="col-lg-4">
                                     <input type="text" name="website" id="website" placeholder="Enter website" class="form-control" value="<?php echo (isset($account) && $account['website']) ? $account['website'] : set_value('website'); ?>" >
                                     <?php
@@ -261,17 +266,33 @@ if (isset($account)) {
     var edit = <?php echo $edit ?>;
     var email_url = site_url + 'accounts/checkUniqueEmail/';
     var vendor_url = site_url + 'accounts/checkUniqueVendor/';
+    var program_url = site_url + 'accounts/checkUniqueProgram/';
     var amc_url = site_url + 'accounts/checkUniqueAMC/';
     if (edit == 1) {
         var append_id = <?php echo (isset($account)) ? $account['id'] : 0 ?>;
+        var fund_type = <?php echo (isset($account)) ? $account['fund_type_id'] : 0 ?>;
         email_url += btoa(append_id);
         vendor_url += btoa(append_id);
         amc_url += btoa(append_id);
+        program_url += fund_type + '/' + btoa(append_id);
     }
     $('.select2').select2(); //-- Initialize select 2
     $(".switch").bootstrapSwitch(); //-- Initialize switch
     //-- fund type change event
     $('#fund_type_id').change(function () {
+        fund_type_val = $(this).val();
+        program_url = site_url + 'accounts/checkUniqueProgram/' + fund_type_val;
+        if (edit == 1) {
+            var append_id = <?php echo (isset($account)) ? $account['id'] : 0 ?>;
+            program_url = site_url + 'accounts/checkUniqueProgram/' + fund_type_val + '/' + btoa(append_id);
+        }
+        $('#program_name').rules('add', {
+            remote: program_url,
+            messages: {
+                remote: "This program name is already added",
+            }
+        });
+
         $.ajax({
             url: '<?php echo site_url('accounts/get_fund_type') ?>',
             data: {id: btoa($(this).val())},
@@ -362,6 +383,9 @@ if (isset($account)) {
                 email: true,
                 remote: email_url,
             },
+            program_name: {
+                remote: program_url,
+            },
             action_matters_campaign: {
                 remote: amc_url,
             },
@@ -381,6 +405,9 @@ if (isset($account)) {
         messages: {
             email: {
                 remote: $.validator.format("Email address is already in use!")
+            },
+            program_name: {
+                remote: $.validator.format("Program name is already added!")
             },
             vendor_name: {
                 remote: $.validator.format("Vendor name is already added!")

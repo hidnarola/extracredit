@@ -35,6 +35,7 @@
     </div>
     <div class="panel panel-flat">
         <div class="panel-heading text-right">
+            <a href="#" data-target="#import_modal" data-toggle="modal" class="btn bg-pink-400 btn-labeled"><b><i class="icon-file-upload2"></i></b> Import Account</a>
             <a href="<?php echo site_url('accounts/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Account</a>
         </div>
         <table class="table datatable-basic">
@@ -42,7 +43,7 @@
                 <tr>
                     <th>Action</th>
                     <th>Fund Type</th>
-                    <th>Program/Vendor</th>
+                    <th>Program/AMC</th>
                     <th>Contact Name</th>
                     <th>Email</th>
                     <th>Phone</th>
@@ -54,7 +55,41 @@
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
+<!-- Import Account modal -->
+<div id="import_modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="<?php echo site_url('accounts/import_account') ?>" class="form-horizontal form-validate-jquery" id="import_donor_form" method="post" enctype="multipart/form-data">
+                <div class="modal-header bg-teal">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h6 class="modal-title">Import Account</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label">Upload File</label>
+                            <div class="media no-margin-top">
+                                <div class="media-body">
+                                    <input type="file" name="import_account" id="import_account" class="file-styled">
+                                    <span class="help-block">Accepted formats: CSV. Max file size 2Mb</span>
+                                    <span class="help-block"><code>File should be in this format </code><a href="<?php echo base_url(DEMO_CSV . 'account_demo.csv') ?>">Download Demo File</a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn bg-teal">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
+    $(".file-styled").uniform({
+        fileButtonClass: 'action btn bg-blue'
+    });
     var profile_img_url = '<?php echo base_url() . USER_IMAGES ?>';
     var permissions = <?php echo json_encode($perArr); ?>;
     $(function () {
@@ -113,13 +148,15 @@
                     visible: true,
                 },
                 {
-                    data: "action_matters_campaign",
+                    data: "program_name",
                     visible: true,
                     render: function (data, type, full, meta) {
                         if (full.type == 1) {
                             return full.vendor_name;
+                        } else if (data != '') {
+                            return data
                         } else {
-                            return data;
+                            return full.action_matters_campaign;
                         }
                     }
                 },

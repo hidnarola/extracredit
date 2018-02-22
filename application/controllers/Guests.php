@@ -558,7 +558,6 @@ class Guests extends MY_Controller {
                 $data_format2 = array('firstname', 'lastname', 'companyname', 'invite_date', 'guest_date', 'AIR_date', 'AMC_created', 'amc', 'address', 'city', 'zip', 'email', 'phone', 'assistant', 'assistant_phone', 'assistant_email');
 //                p($data2);
 //                p($data_format2,1);
-
                 //-- check if first colums is according to predefined row
                 if ($data_format2 == $data2) {
                     while (($col_data = fgetcsv($handle)) !== FALSE) {
@@ -568,7 +567,6 @@ class Guests extends MY_Controller {
                             $this->session->set_flashdata('error', 'First Name is missing in Row No. ' . $row);
                             redirect('guests');
                         } else {
-                            $row++;
                             $guest['firstname'] = $col_data[0];
                             $guest['lastname'] = $col_data[1];
                             $guest['companyname'] = (!empty($col_data[2])) ? $col_data[2] : NULL;
@@ -710,6 +708,7 @@ class Guests extends MY_Controller {
                             }
                             $guest['created'] = date('Y-m-d H:i:s');
                             $guest_data[] = $guest;
+                            $row++;
                         }
                     }
 

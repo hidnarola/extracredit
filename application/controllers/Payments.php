@@ -182,7 +182,7 @@ class Payments extends MY_Controller {
         if ($id == 'vendor') {
             $accounts = $this->payments_model->sql_select(TBL_VENDORS, 'id,name', ['where' => ['is_delete' => 0]]);
         } else {
-            $accounts = $this->payments_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign as name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
+            $accounts = $this->payments_model->sql_select(TBL_ACCOUNTS, 'id,IF(program_name = \'\',action_matters_campaign,program_name) as name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
         }
         echo json_encode($accounts);
     }

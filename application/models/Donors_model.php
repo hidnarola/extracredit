@@ -99,9 +99,9 @@ class Donors_model extends MY_Model {
      * @return type
      */
     public function get_donors_reports($type = 'result') {
-        $columns = ['fund_type', 'action_matters_campaign,vendor_name', 'fu.date', 'fu.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'state', 'city', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'fu.payment_number', 'fu.memo', 'fu.ubi'];
+        $columns = ['fund_type', 'sub_category', 'fu.date', 'fu.post_date', 'id', 'd.firstname', 'd.lastname', 'd.address', 'state', 'city', 'd.zip', 'd.email', 'd.amount', 'd.refund', 'p.type', 'fu.payment_number', 'fu.memo', 'fu.ubi'];
         $keyword = $this->input->post('search');
-        $this->db->select('d.*,fu.date,fu.post_date,fu.payment_type_id,fu.payment_number,fu.memo,fu.ubi,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,fu.ubi,c.name as city,s.name as state,f.type,p.type as payment_type');
+        $this->db->select('d.*,fu.date,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as sub_category,fu.post_date,fu.payment_type_id,fu.payment_number,fu.memo,fu.ubi,f.type as fund_type,a.action_matters_campaign,a.vendor_name,f.name as fund_type,fu.ubi,c.name as city,s.name as state,f.type,p.type as payment_type');
 
         $this->db->join(TBL_DONORS . ' as d', 'fu.donor_id=d.id', 'left');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'fu.account_id=a.id', 'left');
@@ -113,6 +113,7 @@ class Donors_model extends MY_Model {
         if (!empty($keyword['value'])) {
             $this->db->where('(f.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR a.program_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR d.firstname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR d.lastname LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -175,16 +176,16 @@ class Donors_model extends MY_Model {
      * @author KU
      */
     public function get_donations($type = 'result', $id) {
-        $columns = ['a.action_matters_campaign,a.vendor_name', 'amount', 'f.date', 'f.post_date', 'f.payment_number', 'p.type', 'f.memo', 'f.ubi', 'f.is_delete'];
+        $columns = ['a.program_name,a.action_matters_campaign', 'amount', 'f.date', 'f.post_date', 'f.payment_number', 'p.type', 'f.memo', 'f.ubi', 'f.is_delete'];
         $keyword = $this->input->get('search');
-        $this->db->select('f.*,(f.admin_fund+f.account_fund) as amount,p.type as payment_type,a.action_matters_campaign,a.vendor_name,ft.type');
+        $this->db->select('f.*,(f.admin_fund+f.account_fund) as amount,p.type as payment_type,a.action_matters_campaign,a.program_name,ft.type');
         $this->db->join(TBL_PAYMENT_TYPES . ' as p', 'f.payment_type_id=p.id AND p.is_delete=0', 'left');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'f.account_id=a.id AND a.is_delete=0', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as ft', 'a.fund_type_id=ft.id AND ft.is_delete=0', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
-                    . 'OR a.vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
+                    . 'OR a.program_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
                     . 'OR (f.admin_fund+f.account_fund) LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
                     . 'OR f.date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''
                     . 'OR f.post_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ''

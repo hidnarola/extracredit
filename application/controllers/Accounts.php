@@ -58,28 +58,23 @@ class Accounts extends MY_Controller {
             $data['heading'] = 'Add Account';
             $data['cities'] = [];
         }
-        $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0, 'type!=' => 1]]);
         $data['program_types'] = $this->accounts_model->sql_select(TBL_PROGRAM_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['program_status'] = $this->accounts_model->sql_select(TBL_PROGRAM_STATUS, 'id,status', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->accounts_model->sql_select(TBL_STATES, NULL);
 
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
+        $this->form_validation->set_rules('program_name', 'Program Name', 'trim|required');
         $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
 
         if ($this->input->post('fund_type_id') != '') {
             $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
             if ($fund_type['type'] == 1) {
                 $this->form_validation->set_rules('vendor_name', 'Vendor Name', 'trim|required');
-            } else {
-                $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
             }
-        } else {
-            $this->form_validation->set_rules('action_matters_campaign', 'Action Matters Campaign', 'trim|required');
         }
 
-
         if ($this->form_validation->run() == TRUE) {
-
             //-- Get state id from post value
             $state_id = $city_id = NULL;
 
@@ -100,6 +95,7 @@ class Accounts extends MY_Controller {
 
             $dataArr = array(
                 'fund_type_id' => $this->input->post('fund_type_id'),
+                'program_name' => trim($this->input->post('program_name')),
                 'is_active' => ($this->input->post('is_active') == 1) ? 1 : 0,
                 'contact_name' => $this->input->post('contact_name'),
                 'address' => $this->input->post('address'),
@@ -318,6 +314,24 @@ class Accounts extends MY_Controller {
      * */
     public function checkUniqueAMC($id = NULL) {
         $where = ['action_matters_campaign' => trim($this->input->get('action_matters_campaign'))];
+        if (!is_null($id)) {
+            $id = base64_decode($id);
+            $where['id!='] = $id;
+        }
+        $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id', ['where' => $where], ['single' => true]);
+        if (!empty($account)) {
+            echo "false";
+        } else {
+            echo "true";
+        }
+        exit;
+    }
+
+    /**
+     * Ajax call to this function checks Unique Program at the time of accounts add and edit
+     * */
+    public function checkUniqueProgram($fund_type, $id = NULL) {
+        $where = ['fund_type_id' => $fund_type, 'program_name' => trim($this->input->get('program_name'))];
         if (!is_null($id)) {
             $id = base64_decode($id);
             $where['id!='] = $id;
@@ -605,6 +619,245 @@ class Accounts extends MY_Controller {
             redirect('accounts');
         }
         $this->template->load('default', 'accounts/transfer_account', $data);
+    }
+
+    /**
+     * Import account data from CSV file
+     * @author KU
+     */
+    public function import_account() {
+
+        checkPrivileges('account', 'add');
+        $fileDirectory = ACCOUNT_CSV;
+        $config['overwrite'] = FALSE;
+        $config['remove_spaces'] = TRUE;
+        $config['upload_path'] = ACCOUNT_CSV;
+        $config['allowed_types'] = 'csv|CSV';
+        $this->load->library('upload', $config);
+
+        //-- Upload csv file
+        if ($this->upload->do_upload('import_account')) {
+            $fileDetails = $this->upload->data();
+
+            //-- fund types array
+            $fund_types = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'name,id', ['where' => ['is_delete' => 0]]);
+            $fund_types_arr = $cities_arr = $states_arr = $program_types_arr = $program_status_arr = [];
+            foreach ($fund_types as $fund_type) {
+                $fund_types_arr[$fund_type['id']] = $fund_type['name'];
+            }
+
+            //-- cities array
+            $cities = $this->accounts_model->sql_select(TBL_CITIES);
+            foreach ($cities as $city) {
+                $cities_arr[$city['id']] = $city['name'];
+                $states_arr[$city['id']] = $city['state_id'];
+            }
+
+            //-- account email array
+            $account_emails = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'email', ['where' => ['is_delete' => 0, 'email!=' => '']]);
+            $account_emails_arr = array_column($account_emails, 'email');
+
+            //-- program type array
+            $program_types = $this->accounts_model->sql_select(TBL_PROGRAM_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
+            foreach ($program_types as $program_type) {
+                $program_types_arr[$program_type['id']] = $program_type['type'];
+            }
+
+            //-- program status array
+            $program_status = $this->accounts_model->sql_select(TBL_PROGRAM_STATUS, 'id,status', ['where' => ['is_delete' => 0]]);
+            foreach ($program_status as $status) {
+                $program_status_arr[$status['id']] = $status['status'];
+            }
+
+            $fund_types_arr = array_map('strtolower', $fund_types_arr);
+            $cities_arr = array_map('strtolower', $cities_arr);
+            $account_emails_arr = array_map('strtolower', $account_emails_arr);
+            $program_types_arr = array_map('strtolower', $program_types_arr);
+            $program_status_arr = array_map('strtolower', $program_status_arr);
+
+            $row = 1;
+            $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
+
+            $account_data = $check_fundtype = $check_email_valid = $check_email = $check_city = $check_program_type = $check_program_status = $imported_emails = [];
+            if (($data2 = fgetcsv($handle)) !== FALSE) {
+                $data_format2 = array('fundtype', 'program', 'contactname', 'email', 'address', 'zip', 'city', 'phone', 'tax', 'programtype', 'programstatus', 'website', 'active');
+
+                //-- check if first colums is according to predefined row
+                if ($data_format2 == $data2) {
+                    while (($col_data = fgetcsv($handle)) !== FALSE) {
+                        $account = [];
+                        if (empty($col_data[0])) {
+                            fclose($handle);
+                            $this->session->set_flashdata('error', 'Fund type is missing in Row No. ' . $row);
+                            redirect('accounts');
+                        } elseif ($col_data[1] == '') {
+                            fclose($handle);
+                            $this->session->set_flashdata('error', 'AMC/Program name is missing in Row No. ' . $row);
+                            redirect('accounts');
+                        } elseif ($col_data[2] == '') {
+                            fclose($handle);
+                            $this->session->set_flashdata('error', 'Contact name is missing in Row No. ' . $row);
+                            redirect('accounts');
+                        } else {
+
+                            //-- Check fund type is valid or not
+                            if (array_search(strtolower($col_data[0]), $fund_types_arr) != FALSE) {
+                                $account['fund_type_id'] = array_search(strtolower($col_data[0]), $fund_types_arr);
+                            } else {
+                                $check_fundtype[] = $row;
+                            }
+                            $account['program_name'] = $col_data[1];
+                            $account['contact_name'] = $col_data[2];
+
+                            //--check email is unique or not
+                            if (!empty($col_data[3])) {
+                                if (!filter_var($col_data[3], FILTER_VALIDATE_EMAIL)) {
+                                    $check_email_valid[] = $row;
+                                } else if (array_search(strtolower($col_data[3]), $account_emails_arr) != FALSE) {
+                                    $check_email[] = $row;
+                                } else {
+                                    $account['email'] = $col_data[3];
+                                }
+                            } else {
+                                $account['email'] = NULL;
+                            }
+
+                            $imported_emails[] = $col_data[3];
+                            $account['address'] = $col_data[4];
+                            $account['zip'] = $col_data[5];
+
+                            //--check city is valid or not
+                            if (!empty($col_data[6])) {
+                                if (array_search(strtolower($col_data[6]), $cities_arr) != FALSE) {
+                                    $account['city_id'] = array_search(strtolower($col_data[6]), $cities_arr);
+                                    $account['state_id'] = $states_arr[$account['city_id']];
+                                } else {
+                                    $check_city[] = $row;
+                                }
+                            } else {
+                                $account['city_id'] = NULL;
+                                $account['state_id'] = NULL;
+                            }
+
+                            $account['phone'] = $col_data[7];
+                            $account['tax_id'] = $col_data[8];
+
+                            //-- Check if program type is valid or not
+                            if (!empty($col_data[9])) {
+                                if (array_search(strtolower($col_data[9]), $program_types_arr) != FALSE) {
+                                    $account['program_type_id'] = array_search(strtolower($col_data[9]), $program_types_arr);
+                                } else {
+                                    $check_program_type[] = $row;
+                                }
+                            } else {
+                                $account['program_type_id'] = NULL;
+                            }
+
+                            //-- Check if program status is valid or not
+                            if (!empty($col_data[10])) {
+                                if (array_search(strtolower($col_data[10]), $program_status_arr) != FALSE) {
+                                    $account['program_status_id'] = array_search(strtolower($col_data[10]), $program_status_arr);
+                                } else {
+                                    $check_program_status[] = $row;
+                                }
+                            } else {
+                                $account['program_status_id'] = NULL;
+                            }
+
+                            $account['website'] = $col_data[11];
+
+                            if ($col_data[12] != '') {
+                                if (strtolower($col_data[12]) == 'yes') {
+                                    $account['is_active'] = 1;
+                                } else {
+                                    $account['is_active'] = 0;
+                                }
+                            } else {
+                                $account['is_active'] = 0;
+                            }
+
+                            $account_data[] = $account;
+                            $row++;
+                        }
+                    }
+                    //- check entered fundtype is valid or not
+                    if (!empty($check_fundtype)) {
+                        $rows = implode(',', $check_fundtype);
+                        $this->session->set_flashdata('error', "Fund type doesn't exist in the system. Please check entries at row number - " . $rows);
+                    } else if (count(array_unique($imported_emails)) != count($imported_emails)) { //-- check emails in column are unique or not
+                        fclose($handle);
+                        $this->session->set_flashdata('error', "Duplicate value in email column.");
+                    } else if (!empty($check_email_valid)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email_valid);
+                        $this->session->set_flashdata('error', "Account's Email is not in valid format. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_email)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email);
+                        $this->session->set_flashdata('error', "Account's Email already exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_city)) { //-- check city in column are unique or not
+                        $rows = implode(',', $check_city);
+                        $this->session->set_flashdata('error', "City doesn't exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_program_type)) {  //-- check dates in column are valid or not
+                        $rows = implode(',', $check_program_type);
+                        $this->session->set_flashdata('error', "Invalid program type in programtype column. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_program_status)) {   //-- check post dates in column are valid or not
+                        $rows = implode(',', $check_program_status);
+                        $this->session->set_flashdata('error', "Invalid post date in programstatus column. Please check entries at row number - " . $rows);
+                    } else {
+                        if (!empty($account_data)) {
+                            //-- Insert account details into database
+                            foreach ($account_data as $val) {
+                                /*
+                                  //-- If email is not empty subscribe email to accounts interest
+                                  if (!empty($val['email'])) {
+                                  $mailchimp_data = array(
+                                  'email_address' => $val['email'],
+                                  'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                  'merge_fields' => [
+                                  'FNAME' => $val['contact_name']
+                                  ],
+                                  'interests' => array(ACCOUNTS_GROUP_ID => true)
+                                  );
+                                  mailchimp($mailchimp_data);
+                                  }
+                                 */
+
+                                $account_arr = [
+                                    'fund_type_id' => $val['fund_type_id'],
+                                    'is_active' => $val['is_active'],
+                                    'action_matters_campaign' => $val['action_matters_campaign'],
+                                    'contact_name' => $val['contact_name'],
+                                    'address' => $val['address'],
+                                    'city_id' => $val['city_id'],
+                                    'state_id' => $val['state_id'],
+                                    'zip' => $val['zip'],
+                                    'email' => $val['email'],
+                                    'phone' => $val['phone'],
+                                    'tax_id' => $val['tax_id'],
+                                    'program_type_id' => $val['program_type_id'],
+                                    'program_status_id' => $val['program_status_id'],
+                                    'website' => $val['website'],
+                                    'created' => date('Y-m-d H:i:s')
+                                ];
+                                $account_id = $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $account_arr);
+                            }
+                            $this->session->set_flashdata('success', "CSV file imported successfully! Account data added successfully");
+                        } else {
+                            $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
+                        }
+                    }
+                } else {
+                    fclose($handle);
+                    $this->session->set_flashdata('error', 'The columns in this csv file does not match to the database');
+                }
+            } else {
+                $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
+            }
+            fclose($handle);
+            redirect('accounts');
+        } else {
+            $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
+            redirect('accounts');
+        }
     }
 
 }

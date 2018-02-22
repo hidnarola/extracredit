@@ -16,13 +16,14 @@ class Accounts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_accounts($type = 'result') {
-        $columns = ['a.is_delete', 'f.name', 'action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
+        $columns = ['a.is_delete', 'f.name', 'program_name,action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
         $keyword = $this->input->get('search');
         $this->db->select('a.*,f.name as fund_type,f.type');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR program_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR contact_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -139,10 +140,10 @@ class Accounts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_vendor_admin_report($type = 'result') {
-        $columns = [ 'id','check_date', 'check_number', 'v.name', 'address', 'city', 'state', 'zip', 'p.amount'];
+        $columns = ['id', 'check_date', 'check_number', 'v.name', 'address', 'city', 'state', 'zip', 'p.amount'];
         $keyword = $this->input->get('search');
         $this->db->select('p.*,v.*,c.name as city,s.name as state');
-        $this->db->join(TBL_VENDORS . ' as v', 'v.id=p.account_id', 'left');
+        $this->db->join(TBL_VENDORS . ' as v', 'v.id=p.account_id AND v.is_delete=0', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'v.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'v.state_id=s.id', 'left');
 

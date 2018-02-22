@@ -110,7 +110,7 @@
                     }
                 },
                 {
-                    data: "action_matters_campaign",
+                    data: "sub_category",
                     visible: true,
                     render: function (data, type, full, meta) {
                         if (full.payer == 'vendor') {

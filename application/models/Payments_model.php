@@ -16,15 +16,16 @@ class Payments_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_payments($type = 'result') {
-        $columns = ['f.type', 'a.action_matters_campaign,v.name', 'p.check_date', 'p.check_number', 'p.amount', 'p.created', 'p.is_delete'];
+        $columns = ['f.type', 'sub_category,v.name', 'p.check_date', 'p.check_number', 'p.amount', 'p.created', 'p.is_delete'];
         $keyword = $this->input->get('search');
-        $this->db->select('p.*,a.action_matters_campaign,v.name as vendor_name,f.name as fund_type,f.type');
-        $this->db->join(TBL_ACCOUNTS . ' a', 'p.account_id=a.id AND p.payer="account"', 'left');
-        $this->db->join(TBL_VENDORS . ' v', 'p.account_id=v.id AND p.payer="vendor"', 'left');
+        $this->db->select('p.*,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as sub_category,v.name as vendor_name,f.name as fund_type,f.type');
+        $this->db->join(TBL_ACCOUNTS . ' a', 'p.account_id=a.id AND p.payer="account" AND a.is_delete=0', 'left');
+        $this->db->join(TBL_VENDORS . ' v', 'p.account_id=v.id AND p.payer="vendor" AND v.is_delete=0', 'left');
         $this->db->join(TBL_FUND_TYPES . ' f', 'a.fund_type_id=f.id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR a.program_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR v.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_date LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR p.check_number LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -87,8 +88,8 @@ class Payments_model extends MY_Model {
         $keyword = $this->input->get('search');
         $this->db->select('a.action_matters_campaign,v.name as vendor_name,a.address,v.address as vendor_address,a.zip,'
                 . 'v.zip as vendor_zip,p.amount,p.check_date,p.check_number,p.payer,c.name as city,vc.name as vendor_city,s.name as state,vs.name as vendor_state');
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id AND p.payer="account"', 'left');
-        $this->db->join(TBL_VENDORS . ' as v', 'v.id=p.account_id AND p.payer="vendor"', 'left');
+        $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id AND p.payer="account" AND a.is_delete=0', 'left');
+        $this->db->join(TBL_VENDORS . ' as v', 'v.id=p.account_id AND p.payer="vendor" AND v.is_delete=0', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'a.state_id=s.id', 'left');
         $this->db->join(TBL_CITIES . ' as vc', 'v.city_id=vc.id', 'left');

@@ -386,10 +386,10 @@ if (isset($donor)) {
                 var options = "<option value=''></option>";
                 for (var i = 0; i < data.length; i++) {
                     options += '<option value="' + data[i]['id'] + '">';
-                    if (data[i]['action_matters_campaign'] != null) {
-                        options += data[i]['action_matters_campaign'];
+                    if (data[i]['program_name'] != '') {
+                        options += data[i]['program_name'];
                     } else {
-                        options += data[i]['vendor_name'];
+                        options += data[i]['action_matters_campaign'];
                     }
                     options += '</option>';
                 }

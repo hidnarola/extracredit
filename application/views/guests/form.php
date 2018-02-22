@@ -189,7 +189,7 @@ if (isset($guest)) {
                                             if (isset($guest) && $guest['account_id'] == $account['id'])
                                                 $selected = 'selected';
                                             ?>
-                                            <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?></option>
+                                            <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['program_name'] != '') ? $account['program_name'] : $account['action_matters_campaign'] ?></option>
                                         <?php } ?>
                                     </select>
                                     <?php

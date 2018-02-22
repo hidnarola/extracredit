@@ -306,7 +306,7 @@ class Donors extends MY_Controller {
      */
     public function get_accounts() {
         $id = base64_decode($this->input->post('id'));
-        $accounts = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
+        $accounts = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,program_name,action_matters_campaign,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
         echo json_encode($accounts);
     }
 
@@ -634,7 +634,6 @@ class Donors extends MY_Controller {
                             $this->session->set_flashdata('error', 'First Name is missing in Row No. ' . $row);
                             redirect('donors');
                         } else {
-                            $row++;
                             //--check email is unique or not
                             if (!empty($col_data[2])) {
                                 if (!filter_var($col_data[2], FILTER_VALIDATE_EMAIL)) {
@@ -739,6 +738,7 @@ class Donors extends MY_Controller {
                             $donor['memo'] = $col_data[13];
                             $donor['created'] = date('Y-m-d H:i:s');
                             $donor_data[] = $donor;
+                            $row++;
                         }
                     }
 
