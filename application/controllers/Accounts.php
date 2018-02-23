@@ -806,20 +806,20 @@ class Accounts extends MY_Controller {
                         if (!empty($account_data)) {
                             //-- Insert account details into database
                             foreach ($account_data as $val) {
-                                /*
-                                  //-- If email is not empty subscribe email to accounts interest
-                                  if (!empty($val['email'])) {
-                                  $mailchimp_data = array(
-                                  'email_address' => $val['email'],
-                                  'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                  'merge_fields' => [
-                                  'FNAME' => $val['contact_name']
-                                  ],
-                                  'interests' => array(ACCOUNTS_GROUP_ID => true)
-                                  );
-                                  mailchimp($mailchimp_data);
-                                  }
-                                 */
+
+                                //-- If email is not empty subscribe email to accounts interest
+                                if (!empty($val['email'])) {
+                                    $mailchimp_data = array(
+                                        'email_address' => $val['email'],
+                                        'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
+                                        'merge_fields' => [
+                                            'FNAME' => $val['contact_name']
+                                        ],
+                                        'interests' => array(ACCOUNTS_GROUP_ID => true)
+                                    );
+                                    mailchimp($mailchimp_data);
+                                }
+
 
                                 $account_arr = [
                                     'fund_type_id' => $val['fund_type_id'],
