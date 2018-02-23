@@ -231,7 +231,6 @@ class Funds_model extends MY_Model {
             return $query->result_array();
         } else {
             $query = $this->db->get(TBL_PAYMENTS . ' p');
-            qry();
             return $query->num_rows();
         }
     }
