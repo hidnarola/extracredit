@@ -78,15 +78,8 @@
             ajax: site_url + 'donors/get_donations/<?php echo base64_encode($donor['id']) ?>',
             columns: [
                 {
-                    data: "program_name",
+                    data: "program",
                     visible: true,
-                    render: function (data, type, full, meta) {
-                        if (data != '') {
-                            return data;
-                        } else {
-                            return full.action_matters_campaign
-                        }
-                    }
                 },
                 {
                     data: "amount",

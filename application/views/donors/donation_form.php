@@ -92,7 +92,7 @@ if (isset($donation)) {
                                             if (isset($donation) && $donation['account_id'] == $account['id'])
                                                 $selected = 'selected';
                                             ?>
-                                            <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?></option>
+                                            <option value="<?php echo $account['id']; ?>" <?php echo $selected ?>><?php echo ($account['name'] != '') ? $account['name'] : $account['vendor_name'] ?></option>
                                         <?php } ?>
                                     </select>
                                     <?php
@@ -308,11 +308,7 @@ if (isset($donation)) {
                 var options = "<option value=''></option>";
                 for (var i = 0; i < data.length; i++) {
                     options += '<option value="' + data[i]['id'] + '">';
-                    if (data[i]['program_name'] != '') {
-                        options += data[i]['program_name'];
-                    } else {
-                        options += data[i]['action_matters_campaign'];
-                    }
+                    options += data[i]['name'];
                     options += '</option>';
                 }
                 $('#account_id').empty().append(options);

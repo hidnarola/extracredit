@@ -24,6 +24,7 @@ if (isset($payment)) {
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
+            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> Accounts</a></li>
             <li class="active">Account Transfer</li>
         </ul>
     </div>
@@ -59,7 +60,7 @@ if (isset($payment)) {
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Account Name<span class="text-danger">*</span></label>
                             <div class="col-lg-6">
-                                <input type="text" placeholder="Account Name" class="form-control" name="account_id_from" id="account_id_from" value="<?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?>" readonly=""/>
+                                <input type="text" placeholder="Account Name" class="form-control" name="account_id_from" id="account_id_from" value="<?php echo ($account['program'] != '') ? $account['program'] : $account['vendor_name'] ?>" readonly=""/>
                                 <input type="hidden" name="hidden_account_id_from" value="<?php echo $account['id']; ?>">
                                 <?php
                                 echo '<label id="account_id_from-error" class="validation-error-label" for="account_id_from">' . form_error('account_id_from') . '</label>';
@@ -160,8 +161,8 @@ if (isset($payment)) {
                 var options = "<option value=''></option>";
                 for (var i = 0; i < data.length; i++) {
                     options += '<option value="' + data[i]['id'] + '">';
-                    if (data[i]['action_matters_campaign'] != null) {
-                        options += data[i]['action_matters_campaign'];
+                    if (data[i]['program'] != '') {
+                        options += data[i]['program'];
                     } else {
                         options += data[i]['vendor_name'];
                     }

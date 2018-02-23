@@ -150,6 +150,7 @@
     $(function () {
         $('#type1').closest("span").addClass('checked');
         $('.datatable-basic').dataTable({
+            order: [[1, "asc"]],
             autoWidth: false,
             processing: true,
             language: {
@@ -309,14 +310,14 @@
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-        function (isConfirm) {
-            if (isConfirm) {
-                window.location.href = $(e).attr('href');
-                return true;
-            } else {
-                return false;
-            }
-        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        window.location.href = $(e).attr('href');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
         return false;
     }
 

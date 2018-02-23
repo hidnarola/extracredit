@@ -14,8 +14,8 @@
             <th>Program</th>
             <td>
                 <?php
-                if ($guest_details['action_matters_campaign'] != '') {
-                    echo $guest_details['action_matters_campaign'];
+                if ($guest_details['program'] != '') {
+                    echo $guest_details['program'];
                 } else {
                     echo $guest_details['vendor_name'];
                 }

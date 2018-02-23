@@ -74,7 +74,7 @@ class Donors extends MY_Controller {
             $settings_arr[$val['setting_key']] = $val['setting_value'];
         }
         $data['settings'] = $settings_arr;
-        $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND type!=1')->result_array();
+        $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND type!=1 order by name')->result_array();
         $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->donors_model->sql_select(TBL_STATES, NULL);
 
@@ -306,7 +306,7 @@ class Donors extends MY_Controller {
      */
     public function get_accounts() {
         $id = base64_decode($this->input->post('id'));
-        $accounts = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,program_name,action_matters_campaign,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
+        $accounts = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,IF(program_name = \'\',action_matters_campaign,program_name) as name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]], ['order_by' => 'name']);
         echo json_encode($accounts);
     }
 
@@ -1057,7 +1057,7 @@ class Donors extends MY_Controller {
                     $data['donation'] = $donation;
                     $data['title'] = 'Extracredit | Edit Donation';
                     $data['heading'] = 'Edit ' . $donor['firstname'] . ' Donation';
-                    $data['accounts'] = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['fund_type_id' => $donation['fund_type_id']]]);
+                    $data['accounts'] = $this->donors_model->sql_select(TBL_ACCOUNTS, 'id,IF(program_name = \'\',action_matters_campaign,program_name) as name,vendor_name', ['where' => ['fund_type_id' => $donation['fund_type_id']]], ['order_by' => 'name']);
                     $this->form_validation->set_rules('amount', 'Amount', 'trim');
                 } else {
                     show_404();
@@ -1079,7 +1079,7 @@ class Donors extends MY_Controller {
                 $settings_arr[$val['setting_key']] = $val['setting_value'];
             }
             $data['settings'] = $settings_arr;
-            $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND type!=1')->result_array();
+            $data['fund_types'] = $this->donors_model->custom_Query('SELECT id,name FROM ' . TBL_FUND_TYPES . ' WHERE is_delete=0 AND type!=1 order by name')->result_array();
             $data['payment_types'] = $this->donors_model->sql_select(TBL_PAYMENT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
 
             if ($this->form_validation->run() == TRUE) {

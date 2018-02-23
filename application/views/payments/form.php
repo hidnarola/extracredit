@@ -67,7 +67,6 @@ if (isset($payment)) {
                             <div class="col-lg-6">
                                 <select name="fund_type_id" id="fund_type_id" class="select2" required="required" data-placeholder="Select Fund Type" <?php echo $account_disabled ?>>
                                     <option value=""></option>
-                                    <option value="vendor" <?php if (isset($payment) && $payment['payer'] == 'vendor') echo 'selected' ?>>Vendor</option>
                                     <?php
                                     foreach ($fund_types as $type) {
                                         $selected = '';
@@ -76,6 +75,7 @@ if (isset($payment)) {
                                         ?>
                                         <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['type'] ?></option>
                                     <?php } ?>
+                                    <option value="vendor" <?php if (isset($payment) && $payment['payer'] == 'vendor') echo 'selected' ?>>Vendor</option>
                                 </select>
                                 <?php
                                 echo '<label id="fund_type_id-error" class="validation-error-label" for="fund_type_id">' . form_error('fund_type_id') . '</label>';

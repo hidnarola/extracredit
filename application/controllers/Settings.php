@@ -52,7 +52,7 @@ class Settings extends MY_Controller {
         checkPrivileges('fund_types', 'view');
         $data['perArr'] = checkPrivileges('fund_types');
         $data['title'] = 'Extracredit | Fund Types';
-        $data['fund_types'] = $this->users_model->sql_select(TBL_FUND_TYPES, null, ['where' => ['is_delete' => 0]]);
+        $data['fund_types'] = $this->users_model->sql_select(TBL_FUND_TYPES, null, ['where' => ['is_delete' => 0]], ['order_by' => 'name']);
         $this->form_validation->set_rules('name', 'Fund Type', 'trim|required');
         if ($this->form_validation->run() == TRUE) {
             $id = $this->input->post('fund_type_id');

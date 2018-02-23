@@ -75,8 +75,7 @@ class Payments extends MY_Controller {
             $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
             $this->form_validation->set_rules('account_id', 'Program/AMC', 'trim|required');
         }
-        $data['fund_types'] = $this->payments_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type' => 0]]);
-
+        $data['fund_types'] = $this->payments_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type' => 0]], ['order_by' => 'name']);
         $this->form_validation->set_rules('check_date', 'Check Date', 'trim|required');
         $this->form_validation->set_rules('check_number', 'Post Date', 'trim|required');
         $this->form_validation->set_rules('amount', 'Amount', 'trim|required|numeric');
@@ -180,9 +179,9 @@ class Payments extends MY_Controller {
     public function get_accounts() {
         $id = base64_decode($this->input->post('id'));
         if ($id == 'vendor') {
-            $accounts = $this->payments_model->sql_select(TBL_VENDORS, 'id,name', ['where' => ['is_delete' => 0]]);
+            $accounts = $this->payments_model->sql_select(TBL_VENDORS, 'id,name', ['where' => ['is_delete' => 0]], ['order_by' => 'name']);
         } else {
-            $accounts = $this->payments_model->sql_select(TBL_ACCOUNTS, 'id,IF(program_name = \'\',action_matters_campaign,program_name) as name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]]);
+            $accounts = $this->payments_model->sql_select(TBL_ACCOUNTS, 'id,IF(program_name = \'\',action_matters_campaign,program_name) as name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id]], ['order_by' => 'name']);
         }
         echo json_encode($accounts);
     }

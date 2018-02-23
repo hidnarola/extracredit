@@ -50,7 +50,7 @@ class Accounts_model extends MY_Model {
      * @param int $id
      */
     public function get_account_details($id) {
-        $this->db->select('a.*,f.type,c.name as city,s.name as state,s.short_name as state_short');
+        $this->db->select('a.*,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as program,f.type,c.name as city,s.name as state,s.short_name as state_short');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'a.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'a.state_id=s.id', 'left');

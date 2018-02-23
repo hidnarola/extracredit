@@ -58,7 +58,7 @@ class Accounts extends MY_Controller {
             $data['heading'] = 'Add Account';
             $data['cities'] = [];
         }
-        $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0, 'type!=' => 1]]);
+        $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0, 'type!=' => 1]], ['order_by' => 'name']);
         $data['program_types'] = $this->accounts_model->sql_select(TBL_PROGRAM_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
         $data['program_status'] = $this->accounts_model->sql_select(TBL_PROGRAM_STATUS, 'id,status', ['where' => ['is_delete' => 0]]);
         $data['states'] = $this->accounts_model->sql_select(TBL_STATES, NULL);
@@ -368,7 +368,7 @@ class Accounts extends MY_Controller {
         checkPrivileges('accounts', 'view');
         $account_id = base64_decode($account_id);
         if (is_numeric($account_id)) {
-            $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
+            $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,,IF(program_name = \'\',action_matters_campaign,program_name) as program_name,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
             if (!empty($account)) {
                 $data['account'] = $account;
                 $data['title'] = 'Extracredit | Account Transactions';
@@ -558,7 +558,7 @@ class Accounts extends MY_Controller {
     public function get_accounts_transfer() {
         $id = base64_decode($this->input->post('id'));
         $account_id = base64_decode($this->input->post('account_id'));
-        $accounts = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id, 'id!=' => $account_id]]);
+        $accounts = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,IF(program_name = \'\',action_matters_campaign,program_name) as program,vendor_name', ['where' => ['is_delete' => 0, 'fund_type_id' => $id, 'id!=' => $account_id]], ['order_by' => 'program']);
         echo json_encode($accounts);
     }
 
@@ -580,7 +580,7 @@ class Accounts extends MY_Controller {
             $data['account'] = $account;
             $data['accounts'] = [];
             $data['account_fund'] = $account['total_fund'];
-            $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type!=' => 2]]);
+            $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name as type', ['where' => ['is_delete' => 0, 'type!=' => 2]], ['order_by' => 'name']);
         }
 
 //        $this->form_validation->set_rules('account_id_from', 'Account Name', 'trim|required|numeric');

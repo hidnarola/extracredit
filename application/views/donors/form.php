@@ -386,11 +386,7 @@ if (isset($donor)) {
                 var options = "<option value=''></option>";
                 for (var i = 0; i < data.length; i++) {
                     options += '<option value="' + data[i]['id'] + '">';
-                    if (data[i]['program_name'] != '') {
-                        options += data[i]['program_name'];
-                    } else {
-                        options += data[i]['action_matters_campaign'];
-                    }
+                    options += data[i]['name'];
                     options += '</option>';
                 }
                 $('#account_id').empty().append(options);

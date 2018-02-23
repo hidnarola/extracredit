@@ -181,7 +181,7 @@ class Guests_model extends MY_Model {
      * @param int $id
      */
     public function get_guest_details_view($id) {
-        $this->db->select('g.*,a.fund_type_id,f.type,f.name,a.action_matters_campaign,a.vendor_name,c.name as cityname, s.name as statename');
+        $this->db->select('g.*,a.fund_type_id,f.type,f.name,a.vendor_name,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as program,c.name as cityname, s.name as statename');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'f.id=a.fund_type_id', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
@@ -248,9 +248,10 @@ class Guests_model extends MY_Model {
      * @author KU 
      */
     public function get_amc_accounts() {
-        $this->db->select('a.id,a.action_matters_campaign,a.program_name,a.vendor_name,f.type');
+        $this->db->select('a.id,a.action_matters_campaign,a.program_name,a.vendor_name,f.type,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as name');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->where(['a.is_delete' => 0, 'f.is_delete' => 0, 'f.type' => 0]);
+        $this->db->order_by('name');
         $query = $this->db->get(TBL_ACCOUNTS . ' a');
         return $query->result_array();
     }

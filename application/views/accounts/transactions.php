@@ -3,7 +3,7 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-calculator3"></i> <span class="text-semibold"><?php echo ($account['action_matters_campaign'] != '') ? $account['action_matters_campaign'] : $account['vendor_name'] ?> Transactions</span></h4>
+            <h4><i class="icon-calculator3"></i> <span class="text-semibold"><?php echo ($account['program_name'] != '') ? $account['program_name'] : $account['vendor_name'] ?> Transactions</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
@@ -53,8 +53,9 @@
                 <?php
                 $total = 0;
                 foreach ($transactions as $key => $val) {
-                    $class=''
-;                    if ($val['is_refund'] == 1) {
+                    $class = ''
+                    ;
+                    if ($val['is_refund'] == 1) {
                         $class = 'danger';
                     } else if ($val['is_refund'] == -1) {
                         $class = 'warning';
@@ -62,7 +63,7 @@
                         $class = 'success';
                     }
                     ?>
-                <tr class="<?php echo $class;?>">
+                    <tr class="<?php echo $class; ?>">
                         <td><?php echo ($val['date'] != '') ? date('m/d/Y', strtotime($val['date'])) : ''; ?></td>
                         <td><?php echo($val['post_date'] != '') ? date('m/d/Y', strtotime($val['post_date'])) : ''; ?></td>
                         <td>
@@ -106,7 +107,7 @@
                             }
                         }
                         ?>
-                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''                                     ?></td>-->
+                        <!--<td><?php // echo ($val['balance'] != '') ? '$' . $val['balance'] : ''                                      ?></td>-->
                         <td><?php
                             if ($total < 0) {
                                 $t = substr($total, 1);
@@ -121,7 +122,7 @@
             </tbody>
         </table>
     </div>
-    <?php $this->load->view('Templates/footer'); ?>
+<?php $this->load->view('Templates/footer'); ?>
 </div>
 <script>
     $(function () {
