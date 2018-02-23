@@ -84,9 +84,9 @@ class Payments_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_payments_made_report($type = 'result') {
-        $columns = ['a.action_matters_campaign,v.name', 'a.address,v.address', 'city,vc.name', 'state,vs.name', 'a.zip', 'p.amount', 'p.check_date', 'p.check_number'];
+        $columns = ['sub_category,v.name', 'a.address,v.address', 'city,vc.name', 'state,vs.name', 'a.zip', 'p.amount', 'p.check_date', 'p.check_number'];
         $keyword = $this->input->get('search');
-        $this->db->select('a.action_matters_campaign,v.name as vendor_name,a.address,v.address as vendor_address,a.zip,'
+        $this->db->select('IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as sub_category,v.name as vendor_name,a.address,v.address as vendor_address,a.zip,'
                 . 'v.zip as vendor_zip,p.amount,p.check_date,p.check_number,p.payer,c.name as city,vc.name as vendor_city,s.name as state,vs.name as vendor_state');
         $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=p.account_id AND p.payer="account" AND a.is_delete=0', 'left');
         $this->db->join(TBL_VENDORS . ' as v', 'v.id=p.account_id AND p.payer="vendor" AND v.is_delete=0', 'left');
@@ -98,6 +98,7 @@ class Payments_model extends MY_Model {
         if (!empty($keyword['value'])) {
             $this->db->where('(v.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR a.program_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.address LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR v.address LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.zip LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .

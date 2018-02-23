@@ -184,12 +184,12 @@ class Accounts_model extends MY_Model {
      */
     public function get_amc_balance_report($type = 'result') {
 //               $columns = ['id', 'is_active', 'fund_type', 'action_matters_campaign,vendor_name', 'address', 'city', 'state', 'zip', 'contact_name', 'email', 'phone', 'tax_id', 'program_type', 'status', 'total_fund'];
-        $columns = ['a.is_active', 'a.action_matters_campaign,a.vendor_name', 'a.address', 'a.city', 'a.state', 'a.zip', 'a.contact_name', 'a.email', 'a.phone', 'a.tax_id', 'a.program_type', 'a.status', 'inc.income', 'p.no_of_payments', 'p.payment_amount', 'a.total_fund', 'address', 'city', 'state', 'zip', 'total_fund'];
+        $columns = ['a.is_active', 'sub_category', 'a.address', 'a.city', 'a.state', 'a.zip', 'a.contact_name', 'a.email', 'a.phone', 'a.tax_id', 'a.program_type', 'a.status', 'inc.income', 'p.no_of_payments', 'p.payment_amount', 'a.total_fund', 'address', 'city', 'state', 'zip', 'total_fund'];
         $keyword = $this->input->post('search');
         $select1 = '(SELECT post_date FROM ' . TBL_FUNDS . ' WHERE account_id=a.id AND is_delete=0 AND is_refund=0 order by id DESC LIMIT 1) post_date';
         $select2 = '(SELECT check_date FROM ' . TBL_PAYMENTS . ' WHERE account_id=a.id AND is_delete=0 order by id DESC LIMIT 1) check_date';
 //        $this->db->select('a.action_matters_campaign,a.vendor_name,inc.income,f.name as fund_type,f.type,a.total_fund as balance_amount,p.no_of_payments,p.payment_amount,' . $select1 . ',' . $select2);
-        $this->db->select('a.*,f.name as fund_type,c.name as city,s.name as state,f.type,pt.type as program_type,ps.status,inc.income,f.name as fund_type,f.type,a.total_fund as balance_amount,p.no_of_payments,p.payment_amount,' . $select1 . ',' . $select2);
+        $this->db->select('a.*,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as sub_category,f.name as fund_type,c.name as city,s.name as state,f.type,pt.type as program_type,ps.status,inc.income,f.name as fund_type,f.type,a.total_fund as balance_amount,p.no_of_payments,p.payment_amount,' . $select1 . ',' . $select2);
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
         $this->db->join('(SELECT sum(account_fund) income,account_id FROM ' . TBL_FUNDS . ' WHERE is_delete=0 group by account_id) inc', 'a.id=inc.account_id', 'left');
         $this->db->join('(SELECT sum(amount) payment_amount,count(id) no_of_payments,account_id FROM ' . TBL_PAYMENTS . ' WHERE is_delete=0 AND payer="account" group by account_id) p', 'a.id=p.account_id', 'left');
@@ -201,6 +201,7 @@ class Accounts_model extends MY_Model {
         if (!empty($keyword['value'])) {
             $this->db->where('(a.vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR a.program_name ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR a.address LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR c.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR s.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
