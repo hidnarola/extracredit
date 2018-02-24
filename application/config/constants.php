@@ -120,6 +120,7 @@ define('DONORS_CSV', 'uploads/csv/donors');
 define('GUEST_CSV', 'uploads/csv/guest');
 define('ACCOUNT_CSV', 'uploads/csv/account');
 define('VENDOR_CSV', 'uploads/csv/vendor');
+define('CONTACT_CSV', 'uploads/csv/contact');
 define('DEMO_CSV', 'uploads/demo_csv/');
 
 define('REMEMBER_ME_COOKIE_NAME', 'ecs908f7d89f');

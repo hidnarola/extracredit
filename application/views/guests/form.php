@@ -406,28 +406,28 @@ if (isset($guest)) {
             label.addClass("validation-valid-label")
         },
         rules: {
-//            email: {
+            email: {
 //                required: true,
-//                email: true,
-//            },
-//            company_website: {
-//                validUrl: true
-//            },
-//            assistant_email: {
+                email: true,
+            },
+            company_website: {
+                validUrl: true
+            },
+            assistant_email: {
 //                required: true,
-//                email: true,
-//            },
-//            phone: {
+                email: true,
+            },
+            phone: {
 //                required: true,
-//                phoneno: true
-//            },
-//            assistant_phone: {
+                phoneno: true
+            },
+            assistant_phone: {
 //                required: true,
-//                phoneno: true
-//            },
-//            zip: {
-//                zipcodeUS: true
-//            }
+                phoneno: true
+            },
+            zip: {
+                zipcodeUS: true
+            }
         },
         submitHandler: function (form) {
             $('#guest_btn_submit').attr('disabled', true);

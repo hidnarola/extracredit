@@ -173,6 +173,143 @@ class Contacts extends MY_Controller {
         exit;
     }
 
+    /**
+     * Import contact data from CSV file
+     * @author KU
+     */
+    public function import_contact() {
+
+        checkPrivileges('account', 'add');
+        $fileDirectory = CONTACT_CSV;
+        $config['overwrite'] = FALSE;
+        $config['remove_spaces'] = TRUE;
+        $config['upload_path'] = CONTACT_CSV;
+        $config['allowed_types'] = 'csv|CSV';
+        $this->load->library('upload', $config);
+
+        //-- Upload csv file
+        if ($this->upload->do_upload('import_contact')) {
+            $fileDetails = $this->upload->data();
+
+            //-- cities array
+            $cities = $this->contacts_model->sql_select(TBL_CITIES);
+            foreach ($cities as $city) {
+                $cities_arr[$city['id']] = $city['name'];
+                $states_arr[$city['id']] = $city['state_id'];
+            }
+            $cities_arr = array_map('strtolower', $cities_arr);
+
+            //-- vendor email array
+            $contact_emails = $this->contacts_model->sql_select(TBL_CONTACTS, 'email', ['where' => ['is_delete' => 0, 'email!=' => '']]);
+            $contact_emails_arr = array_column($contact_emails, 'email');
+            $contact_emails_arr = array_map('strtolower', $contact_emails_arr);
+
+
+            $row = 1;
+            $handle = fopen($fileDirectory . "/" . $fileDetails['file_name'], "r");
+
+            $contact_data = $check_email_valid = $check_email = $check_city = $imported_emails = [];
+            if (($data2 = fgetcsv($handle)) !== FALSE) {
+                $data_format2 = array('name', 'email', 'address', 'zip', 'city', 'phone', 'website');
+
+                //-- check if first colums is according to predefined row
+                if ($data_format2 == $data2) {
+                    while (($col_data = fgetcsv($handle)) !== FALSE) {
+                        $contact = [];
+                        if (empty($col_data[0])) {
+                            fclose($handle);
+                            $this->session->set_flashdata('error', 'Contact name is missing in Row No. ' . $row);
+                            redirect('contacts');
+                        } else {
+
+                            $contact['name'] = $col_data[0];
+
+                            //--check email is unique or not
+                            if (!empty($col_data[1])) {
+                                if (!filter_var($col_data[1], FILTER_VALIDATE_EMAIL)) {
+                                    $check_email_valid[] = $row;
+                                } else if (array_search(strtolower($col_data[1]), $contact_emails_arr) != FALSE) {
+                                    $check_email[] = $row;
+                                } else {
+                                    $contact['email'] = $col_data[1];
+                                }
+                            } else {
+                                $contact['email'] = NULL;
+                            }
+
+                            $imported_emails[] = $col_data[1];
+                            $contact['address'] = $col_data[2];
+                            $contact['zip'] = $col_data[3];
+
+                            //--check city is valid or not
+                            if (!empty($col_data[4])) {
+                                if (array_search(strtolower($col_data[4]), $cities_arr) != FALSE) {
+                                    $contact['city_id'] = array_search(strtolower($col_data[4]), $cities_arr);
+                                    $contact['state_id'] = $states_arr[$contact['city_id']];
+                                } else {
+                                    $check_city[] = $row;
+                                }
+                            } else {
+                                $contact['city_id'] = NULL;
+                                $contact['state_id'] = NULL;
+                            }
+
+                            $contact['phone'] = $col_data[5];
+                            $contact['website'] = $col_data[6];
+                            $contact_data[] = $contact;
+                            $row++;
+                        }
+                    }
+                    //- check if email is valid or not
+                    if (count(array_unique($imported_emails)) != count($imported_emails)) { //-- check emails in column are unique or not
+                        fclose($handle);
+                        $this->session->set_flashdata('error', "Duplicate value in email column.");
+                    } else if (!empty($check_email_valid)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email_valid);
+                        $this->session->set_flashdata('error', "Donor's Email is not in valid format. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_email)) { //-- check Account/Program in columns are valid or not
+                        $rows = implode(',', $check_email);
+                        $this->session->set_flashdata('error', "Account's Email already exist in the system. Please check entries at row number - " . $rows);
+                    } else if (!empty($check_city)) { //-- check city in column are unique or not
+                        $rows = implode(',', $check_city);
+                        $this->session->set_flashdata('error', "City doesn't exist in the system. Please check entries at row number - " . $rows);
+                    } else {
+                        if (!empty($contact_data)) {
+                            //-- Insert contact details into database
+                            foreach ($contact_data as $val) {
+                                $contact_arr = [
+                                    'name' => $val['name'],
+                                    'address' => $val['address'],
+                                    'city_id' => $val['city_id'],
+                                    'state_id' => $val['state_id'],
+                                    'zip' => $val['zip'],
+                                    'email' => $val['email'],
+                                    'phone' => $val['phone'],
+                                    'website' => $val['website'],
+                                    'created' => date('Y-m-d H:i:s')
+                                ];
+                                $contact_id = $this->contacts_model->common_insert_update('insert', TBL_CONTACTS, $contact_arr);
+                            }
+                            $this->session->set_flashdata('success', "CSV file imported successfully! Contact data added successfully");
+                        } else {
+                            $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
+                        }
+                    }
+                } else {
+                    fclose($handle);
+                    $this->session->set_flashdata('error', 'The columns in this csv file does not match to the database');
+                }
+            } else {
+                $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
+            }
+            fclose($handle);
+            redirect('contacts');
+        } else {
+            $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
+            redirect('contacts');
+        }
+    }
+
 }
 
 /* End of file Contacts.php */
