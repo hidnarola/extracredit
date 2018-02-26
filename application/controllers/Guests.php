@@ -49,7 +49,7 @@ class Guests extends MY_Controller {
                 $data['guest'] = $guest;
                 $data['title'] = 'Extracredit | Edit Guest';
                 $data['heading'] = 'Edit Guest';
-                if ($this->input->post('email')) {
+                if ($this->input->post('email') && $this->input->post('email_unavailable') != 1) {
                     $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_check_email_edit[' . $id . ']');
                 }
                 $logo = $guest['logo'];
@@ -59,7 +59,7 @@ class Guests extends MY_Controller {
         } else {
             checkPrivileges('guest', 'add');
 
-            if ($this->input->post('email')) {
+            if ($this->input->post('email') && $this->input->post('email_unavailable') != 1) {
                 $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|callback_is_uniquemail');
             }
 
@@ -124,7 +124,8 @@ class Guests extends MY_Controller {
                     'city_id' => $city_id,
                     'state_id' => $state_id,
                     'zip' => $this->input->post('zip'),
-                    'email' => $this->input->post('email'),
+                    'email' => ($this->input->post('email_unavailable') == 1) ? null : $this->input->post('email'),
+                    'email_unavailable' => ($this->input->post('email_unavailable') == 1) ? 1 : 0,
                     'phone' => $this->input->post('phone'),
                     'invite_date' => $invite_date,
                     'guest_date' => $guest_date,
@@ -141,6 +142,7 @@ class Guests extends MY_Controller {
                     $this->guests_model->common_insert_update('update', TBL_GUESTS, $dataArr, ['id' => $id]);
 
                     if ($guest['email'] != $dataArr['email']) {
+
                         if (!empty($guest['email'])) {
                             $subscriber = get_mailchimp_subscriber($guest['email']);
                             if (!empty($subscriber)) {
@@ -700,10 +702,12 @@ class Guests extends MY_Controller {
                             if (!empty($col_data[15])) {
                                 if (filter_var($col_data[15], FILTER_VALIDATE_EMAIL)) {
                                     $guest['assistant_email'] = $col_data[15];
+                                    $guest['email_unavailable'] = 0;
                                 } else {
                                     $check_assistant_email[] = $row;
                                 }
                             } else {
+                                $guest['email_unavailable'] = 1;
                                 $guest['assistant_email'] = NULL;
                             }
                             $guest['created'] = date('Y-m-d H:i:s');

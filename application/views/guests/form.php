@@ -132,22 +132,6 @@ if (isset($guest)) {
 
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-1 control-label">Email</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
-                                    <?php
-                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
-                                    ?>
-                                </div>
-                                <label class="col-lg-1 control-label">Phone</label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">                                
-                                    <?php
-                                    echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="control-label col-lg-1">Logo</label>
                                 <div class="col-lg-4">
                                     <div class="media no-margin-top">
@@ -172,6 +156,38 @@ if (isset($guest)) {
                                     <?php
                                     if (isset($logo_validation))
                                         echo '<label id="logo-error" class="validation-error-label" for="logo">' . $logo_validation . '</label>';
+                                    ?>
+                                </div>
+                                <label class="col-lg-1 control-label">Phone</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">                                
+                                    <?php
+                                    echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
+                                    ?>
+                                </div>
+                            </div>
+                            <?php
+                            $email_div_style = '';
+                            $unavailable_checked = '';
+                            if (form_error('email') == '' && isset($guest) && $guest['email_unavailable'] == 1) {
+                                $email_div_style = 'style="display:none"';
+                                $unavailable_checked = 'checked';
+                            }
+                            ?>
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <label class="checkbox-inline checkbox-right">
+                                        <input type="checkbox" class="styled" id="email_unavailable" name="email_unavailable" <?php echo $unavailable_checked; ?> value="1">
+                                        Email Unavailable?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group" id="email_div" <?php echo $email_div_style ?>>
+                                <label class="col-lg-1 control-label">Email</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
+                                    <?php
+                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
                                     ?>
                                 </div>
                             </div>
@@ -333,6 +349,13 @@ if (isset($guest)) {
     </div>
 </div>
 <script type="text/javascript">
+    var unavailable_checked = '<?php echo $unavailable_checked ?>';
+
+    //-- Style checkbox
+    $(".styled, .multiselect-container input").uniform({
+        radioClass: 'choice'
+    });
+
     // Styled file input
     $(".file-styled").uniform({
         fileButtonClass: 'action btn bg-blue'
@@ -343,6 +366,18 @@ if (isset($guest)) {
         format: 'd mmmm yyyy'
 //        max: new Date()
     });
+
+
+    $(document).on('click', '#email_unavailable', function () {
+        if ($(this).prop("checked") == false) {
+            $('#email_div').css('display', 'block');
+            $("#email").rules("add", {email: true});
+        } else if ($(this).prop("checked") == true) {
+            $('#email_div').css('display', 'none');
+            $("#email").rules("remove", "email");
+        }
+    });
+
 
     var edit = <?php echo $edit ?>;
     $('.select2').select2(); //-- Initialize select 2
@@ -406,23 +441,16 @@ if (isset($guest)) {
             label.addClass("validation-valid-label")
         },
         rules: {
-            email: {
-//                required: true,
-                email: true,
-            },
             company_website: {
                 validUrl: true
             },
             assistant_email: {
-//                required: true,
                 email: true,
             },
             phone: {
-//                required: true,
                 phoneno: true
             },
             assistant_phone: {
-//                required: true,
                 phoneno: true
             },
             zip: {
@@ -434,26 +462,16 @@ if (isset($guest)) {
             form.submit();
         }
     });
+    if (unavailable_checked == '') {
+        $("#email").rules("add", {email: true});
+    }
 
     jQuery.validator.addMethod("phoneno", function (phone_number, element) {
         phone_number = phone_number.replace(/\s+/g, "");
         return this.optional(element) || phone_number.length > 9 &&
                 phone_number.match(/^((\+[1-9]{1,4}[ \-]*)|(\([0-9]{2,3}\)[ \-]*)|([0-9]{2,4})[ \-]*)*?[0-9]{3,4}?[ \-]*[0-9]{3,4}?$/);
     }, "Please specify a valid phone number");
-    // Display the preview of image on image upload
-//    function readURL(input) {
-//        if (input.files && input.files[0]) {
-//            var reader = new FileReader();
-//
-//            reader.onload = function (e) {
-//                var html = '<img src="' + e.target.result + '" style="width: 58px; height: 58px; border-radius: 2px;" alt="">';
-//                $('#image_preview_div').html(html);
-//            }
-//            reader.readAsDataURL(input.files[0]);
-//        }
-//    }
-</script>
-<script>
+
     $(document).ready(function () {
         var geocoder = new google.maps.Geocoder();
         //when the user clicks off of the zip field:
