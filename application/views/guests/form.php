@@ -185,10 +185,18 @@ if (isset($guest)) {
                             <div class="form-group" id="email_div" <?php echo $email_div_style ?>>
                                 <label class="col-lg-1 control-label">Email</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($guest) && $guest['email']) ? $guest['email'] : set_value('email'); ?>">
-                                    <?php
-                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
-                                    ?>
+                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php
+                                    if (form_error('email') != '') {
+                                        echo set_value('email');
+                                    } elseif (isset($guest)) {
+                                        echo $guest['email'];
+                                    } else {
+                                        echo set_value('email');
+                                    }
+                                    ?>">
+                                           <?php
+                                           echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
+                                           ?>
                                 </div>
                             </div>
                         </fieldset>
