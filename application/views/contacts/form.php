@@ -286,6 +286,7 @@ if (isset($contact))
 
     /*Validator method for valid URL*/
     $.validator.addMethod('validUrl', function (value, element) {
+        value = $.trim(value);
         var url = $.validator.methods.url.bind(this);
         return url(value, element) || url('http://' + value, element);
     }, 'Please enter a valid URL');

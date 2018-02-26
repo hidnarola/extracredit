@@ -87,7 +87,7 @@ class Contacts extends MY_Controller {
                 'zip' => $this->input->post('zip'),
                 'email' => $this->input->post('email'),
                 'phone' => $this->input->post('phone'),
-                'website' => $this->input->post('website'),
+                'website' => trim($this->input->post('website')),
                 'created' => date('Y-m-d H:i:s')
             );
 

@@ -835,7 +835,7 @@ class Accounts extends MY_Controller {
                                     'tax_id' => $val['tax_id'],
                                     'program_type_id' => $val['program_type_id'],
                                     'program_status_id' => $val['program_status_id'],
-                                    'website' => $val['website'],
+                                    'website' => trim($val['website']),
                                     'created' => date('Y-m-d H:i:s')
                                 ];
                                 $account_id = $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $account_arr);

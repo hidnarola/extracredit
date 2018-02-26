@@ -118,7 +118,7 @@ class Guests extends MY_Controller {
                     'firstname' => $this->input->post('firstname'),
                     'lastname' => $this->input->post('lastname'),
                     'companyname' => $this->input->post('companyname'),
-                    'company_website' => $this->input->post('company_website'),
+                    'company_website' => trim($this->input->post('company_website')),
                     'logo' => $logo,
                     'address' => $this->input->post('address'),
                     'city_id' => $city_id,
