@@ -178,7 +178,7 @@ if (isset($guest)) {
                                 <div class="col-lg-12">
                                     <label class="checkbox-inline checkbox-right">
                                         <input type="checkbox" class="styled" id="email_unavailable" name="email_unavailable" <?php echo $unavailable_checked; ?> value="1">
-                                        Email Unavailable?
+                                        Submit Request Online?
                                     </label>
                                 </div>
                             </div>
