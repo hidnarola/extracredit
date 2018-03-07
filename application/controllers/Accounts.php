@@ -40,14 +40,18 @@ class Accounts extends MY_Controller {
      * @param type $id
      */
     public function add($id = NULL) {
-        if (!is_null($id))
+        $data['contacts'] = [];
+        if (!is_null($id)) {
             $id = base64_decode($id);
+            $account_id = $id;
+        }
         if (is_numeric($id)) {
             $account = $this->accounts_model->get_account_details($id);
             if ($account) {
                 $data['account'] = $account;
                 $data['title'] = 'Extracredit | Edit Account';
                 $data['heading'] = 'Edit Account';
+                $data['contacts'] = $this->accounts_model->sql_select(TBL_ASSOCIATED_CONTACTS, 'id,name,email,phone', ['where' => ['is_delete' => 0, 'type' => 'account', 'associated_id' => $id]]);
             } else {
                 show_404();
             }
@@ -65,7 +69,6 @@ class Accounts extends MY_Controller {
 
         $this->form_validation->set_rules('fund_type_id', 'Fund Type', 'trim|required');
         $this->form_validation->set_rules('program_name', 'Program Name', 'trim|required');
-        $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
 
         if ($this->input->post('fund_type_id') != '') {
             $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
@@ -97,12 +100,10 @@ class Accounts extends MY_Controller {
                 'fund_type_id' => $this->input->post('fund_type_id'),
                 'program_name' => trim($this->input->post('program_name')),
                 'is_active' => ($this->input->post('is_active') == 1) ? 1 : 0,
-                'contact_name' => $this->input->post('contact_name'),
                 'address' => $this->input->post('address'),
                 'state_id' => $state_id,
                 'city_id' => $city_id,
                 'zip' => $this->input->post('zip'),
-                'email' => $this->input->post('email'),
                 'phone' => $this->input->post('phone'),
                 'website' => $this->input->post('website'),
             );
@@ -124,63 +125,61 @@ class Accounts extends MY_Controller {
             if (is_numeric($id)) {
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $dataArr, ['id' => $id]);
-
-                if ($account['email'] != $dataArr['email']) {
-                    if (!empty($account['email'])) {
-                        $subscriber = get_mailchimp_subscriber($account['email']);
-                        if (!empty($subscriber)) {
-                            $interests = $subscriber['interests'];
-                            if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
-                                $mailchimp_data = array(
-                                    'email_address' => $account['email'],
-                                    'interests' => array(ACCOUNTS_GROUP_ID => false)
-                                );
-                                mailchimp($mailchimp_data);
-                            } else {
-                                //-- Update old entry to unsubscribed and add new to subscribed
-                                /*
-                                  $mailchimp_data = array(
-                                  'email_address' => $account['email'],
-                                  'status' => 'unsubscribed', // "subscribed","unsubscribed","cleaned","pending"
-                                  'interests' => array(ACCOUNTS_GROUP_ID => false)
-                                  ); */
-                                $mailchimp_data = array(
-                                    'email_address' => $account['email'],
-                                );
-                                delete_mailchimp_subscriber($mailchimp_data);
-                            }
-                        }
-                    }
-                    if (!empty($dataArr['email'])) {
-                        $mailchimp_data = array(
-                            'email_address' => $dataArr['email'],
-                            'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
-                            'merge_fields' => [
-                                'FNAME' => $dataArr['contact_name']
-                            ],
-                            'interests' => array(ACCOUNTS_GROUP_ID => true)
-                        );
-                        mailchimp($mailchimp_data);
-                    }
-                }
                 $this->session->set_flashdata('success', 'Account details has been updated successfully.');
             } else {
                 $dataArr['created'] = date('Y-m-d H:i:s');
-                $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $dataArr);
+                $account_id = $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $dataArr);
 
-                //-- Insert account email into mailchimp subscriber list
-                if (!empty($dataArr['email'])) {
+                $this->session->set_flashdata('success', 'Account has been added successfully');
+            }
+
+            foreach ($data['contacts'] as $contact) {
+                if (!empty($contact['email'])) {
+                    $subscriber = get_mailchimp_subscriber($contact['email']);
+                    if (!empty($subscriber)) {
+                        $interests = $subscriber['interests'];
+                        if ($interests[DONORS_GROUP_ID] == 1 || $interests[GUESTS_GROUP_ID] == 1) {
+                            $mailchimp_data = array(
+                                'email_address' => $contact['email'],
+                                'interests' => array(ACCOUNTS_GROUP_ID => false)
+                            );
+                            mailchimp($mailchimp_data);
+                        } else {
+                            $mailchimp_data = array(
+                                'email_address' => $contact['email'],
+                            );
+                            delete_mailchimp_subscriber($mailchimp_data);
+                        }
+                    }
+                }
+            }
+            //-- Delete old contact data
+            $this->accounts_model->common_delete(TBL_ASSOCIATED_CONTACTS, ['associated_id' => $account_id, 'type' => 'account']);
+
+            $contact_names = $this->input->post('contact_name');
+            $contact_arr = [];
+            foreach ($contact_names as $key => $name) {
+                $email = null;
+                if ($this->input->post('contact_email')[$key] != '') {
+                    $email = $this->input->post('contact_email')[$key];
+
+                    //-- Insert account email into mailchimp subscriber list
                     $mailchimp_data = array(
-                        'email_address' => $dataArr['email'],
+                        'email_address' => $email,
                         'status' => 'subscribed', // "subscribed","unsubscribed","cleaned","pending"
                         'merge_fields' => [
-                            'FNAME' => $dataArr['contact_name']
+                            'FNAME' => $name
                         ],
                         'interests' => array(ACCOUNTS_GROUP_ID => true)
                     );
                     mailchimp($mailchimp_data);
                 }
-                $this->session->set_flashdata('success', 'Account has been added successfully');
+                $arr = ['name' => $name, 'email' => $email, 'phone' => $this->input->post('contact_phone')[$key], 'type' => 'account', 'associated_id' => $account_id, 'created' => date('Y-m-d H:i:s')];
+                $contact_arr[] = $arr;
+            }
+
+            if (!empty($contact_arr)) {
+                $this->accounts_model->batch_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $contact_arr);
             }
             redirect('accounts');
         }
@@ -219,7 +218,7 @@ class Accounts extends MY_Controller {
      * This function used to check Unique email at the time of account's add and edit
      * */
     public function checkUniqueEmail($id = NULL) {
-        $where = ['email' => trim($this->input->get('email'))];
+        $where = ['email' => trim($this->input->get('email')), 'is_delete' => 0];
         if (!is_null($id)) {
             $id = base64_decode($id);
             $where['id!='] = $id;
@@ -295,7 +294,7 @@ class Accounts extends MY_Controller {
      * Ajax call to this function checks Unique Vedor at the time of account's add and edit
      * */
     public function checkUniqueVendor($id = NULL) {
-        $where = ['vendor_name' => trim($this->input->get('vendor_name'))];
+        $where = ['vendor_name' => trim($this->input->get('vendor_name')), 'is_delete' => 0];
         if (!is_null($id)) {
             $id = base64_decode($id);
             $where['id!='] = $id;
@@ -313,7 +312,7 @@ class Accounts extends MY_Controller {
      * Ajax call to this function checks Unique AMC at the time of accounts add and edit
      * */
     public function checkUniqueAMC($id = NULL) {
-        $where = ['action_matters_campaign' => trim($this->input->get('action_matters_campaign'))];
+        $where = ['action_matters_campaign' => trim($this->input->get('action_matters_campaign')), 'is_delete' => 0];
         if (!is_null($id)) {
             $id = base64_decode($id);
             $where['id!='] = $id;
@@ -331,7 +330,7 @@ class Accounts extends MY_Controller {
      * Ajax call to this function checks Unique Program at the time of accounts add and edit
      * */
     public function checkUniqueProgram($fund_type, $id = NULL) {
-        $where = ['fund_type_id' => $fund_type, 'program_name' => trim($this->input->get('program_name'))];
+        $where = ['fund_type_id' => $fund_type, 'program_name' => trim($this->input->get('program_name')), 'is_delete' => 0];
         if (!is_null($id)) {
             $id = base64_decode($id);
             $where['id!='] = $id;
@@ -389,10 +388,16 @@ class Accounts extends MY_Controller {
      */
     public function communication($id = null) {
         checkPrivileges('accounts_communication', 'view');
-        $data['perArr'] = checkPrivileges('accounts_communication');
-        $data['title'] = 'Extracredit | Accounts Communication';
-        $data['id'] = $id;
-        $this->template->load('default', 'accounts/list_communication', $data);
+        $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'program_name', ['where' => ['id' => base64_decode($id), 'is_delete' => 0]], ['single' => true]);
+        if (!empty($account)) {
+            $data['account'] = $account;
+            $data['perArr'] = checkPrivileges('accounts_communication');
+            $data['title'] = 'Extracredit | Accounts Communication';
+            $data['id'] = $id;
+            $this->template->load('default', 'accounts/list_communication', $data);
+        } else {
+            show_404();
+        }
     }
 
     /**
@@ -438,7 +443,8 @@ class Accounts extends MY_Controller {
         if (!is_null($account_id))
             $account_id = base64_decode($account_id);
 
-        $data['account'] = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
+        $data['account'] = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,program_name,action_matters_campaign,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
+        $data['contacts'] = $this->accounts_model->sql_select(TBL_ASSOCIATED_CONTACTS, 'id,name', ['where' => ['associated_id' => $account_id, 'type' => 'account', 'is_delete' => 0]]);
         $comm_id = base64_decode($comm_id);
         if (is_numeric($comm_id)) {
             checkPrivileges('accounts_communication', 'edit');
@@ -476,14 +482,15 @@ class Accounts extends MY_Controller {
 
             if ($flag == 0) {
                 $dataArr = array(
-                    'note' => $this->input->post('note'),
-                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
-                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
-                    'subject' => $this->input->post('subject'),
-                    'account_id' => $account_id,
-                    'guest_id' => 0,
-                    'donor_id' => 0,
                     'type' => 3,
+                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
+                    'subject' => $this->input->post('subject'),
+                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
+                    'donor_id' => 0,
+                    'guest_id' => 0,
+                    'account_id' => $account_id,
+                    'associated_contact_id' => $this->input->post('associated_contact_id'),
+                    'note' => $this->input->post('note'),
                     'media' => $media
                 );
 
@@ -824,7 +831,7 @@ class Accounts extends MY_Controller {
                                 $account_arr = [
                                     'fund_type_id' => $val['fund_type_id'],
                                     'is_active' => $val['is_active'],
-                                    'action_matters_campaign' => $val['action_matters_campaign'],
+                                    'program_name' => $val['program_name'],
                                     'contact_name' => $val['contact_name'],
                                     'address' => $val['address'],
                                     'city_id' => $val['city_id'],
@@ -839,6 +846,9 @@ class Accounts extends MY_Controller {
                                     'created' => date('Y-m-d H:i:s')
                                 ];
                                 $account_id = $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $account_arr);
+
+                                $associated_contact = ['name' => $val['contact_name'], 'email' => $val['email'], 'phone' => $val['phone'], 'type' => 'account', 'associated_id' => $account_id, 'created' => date('Y-m-d H:i:s')];
+                                $this->accounts_model->common_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $associated_contact);
                             }
                             $this->session->set_flashdata('success', "CSV file imported successfully! Account data added successfully");
                         } else {

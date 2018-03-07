@@ -11,10 +11,6 @@
             <td><?php echo $vendor['name']; ?></td>
         </tr>
         <tr>
-            <th>Contact Name</th>
-            <td><?php echo $vendor['contact_name']; ?></td>
-        </tr>
-        <tr>
             <th>Address</th>
             <td><?php echo $vendor['address']; ?></td>
         </tr>
@@ -31,17 +27,25 @@
             <td><?php echo $vendor['zip']; ?></td>
         </tr>   
         <tr>
-            <th>Email</th>
-            <td><?php echo $vendor['email']; ?></td>
-        </tr>
-        <tr>
             <th>Phone</th>
             <td><?php echo $vendor['phone']; ?></td>
         </tr>  
         <tr>
             <th>Website</th>
             <td><?php echo $vendor['website']; ?></td>
-        </tr>      
+        </tr>  
+        <tr>
+            <th>Contact Names</th>
+            <td><?php echo $vendor['contact_names']; ?></td>
+        </tr>   
+        <tr>
+            <th>Contact Emails</th>
+            <td><?php echo $vendor['contact_emails']; ?></td>
+        </tr>  
+        <tr>
+            <th>Contact Phones</th>
+            <td><?php echo $vendor['contact_phones']; ?></td>
+        </tr>  
         <tr>
             <th>Created</th>
             <td><?php echo $vendor['created']; ?></td>

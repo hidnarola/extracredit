@@ -15,7 +15,7 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Account Communication</span></h4>
+            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold"><?php echo $account['program_name'] ?> Communication</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
@@ -54,7 +54,6 @@
                 <tr>
                     <th>#</th>
                     <th>Media</th>    
-                    <th>Program</th>    
                     <th>Contact Name</th>    
                     <th>Subject</th>                   
                     <th>Communication Date</th>                   
@@ -154,18 +153,7 @@
                     }
                 },
                 {
-                    data: "action_matters_campaign",
-                    visible: true,
-                    render: function (data, type, full, meta) {
-                        if (full.type == 3) {
-                            return full.vendor_name;
-                        } else {
-                            return data
-                        }
-                    }
-                },
-                {
-                    data: "contact_name",
+                    data: "conversation_contact",
                     visible: true
                 },
                 {

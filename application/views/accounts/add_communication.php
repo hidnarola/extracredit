@@ -2,7 +2,6 @@
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
-<script type="text/javascript" src="assets/js/pages/editor_ckeditor.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
 <?php
@@ -83,6 +82,25 @@ if (isset($account_communication)) {
                                 </div>
                                 <?php
                                 echo '<label id="follow_up_date-error" class="validation-error-label" for="follow_up_date">' . form_error('follow_up_date') . '</label>';
+                                ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Contact <span class="text-danger">*</span></label>
+                            <div class="col-lg-6">
+                                <select name="associated_contact_id" id="associated_contact_id" class="select2" required="required" data-placeholder="Select Contacts">
+                                    <option value=""></option>
+                                    <?php
+                                    foreach ($contacts as $contact) {
+                                        $selected = '';
+                                        if (isset($account_communication) && $account_communication['associated_contact_id'] == $contact['id'])
+                                            $selected = 'selected';
+                                        ?>
+                                        <option value="<?php echo $contact['id']; ?>" <?php echo $selected ?>><?php echo $contact['name'] ?></option>
+                                    <?php } ?>
+                                </select>
+                                <?php
+                                echo '<label id="associated_contact_id-error" class="validation-error-label" for="associated_contact_id">' . form_error('associated_contact_id') . '</label>';
                                 ?>
                             </div>
                         </div>
@@ -281,4 +299,10 @@ if (isset($account_communication)) {
         }
         return true;
     }
+    // Full featured editor
+    CKEDITOR.replace( 'editor-full', {
+        height: '400px',
+        extraPlugins: 'forms'
+    });
+
 </script>

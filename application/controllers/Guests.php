@@ -41,14 +41,19 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function add($id = NULL) {
+        $data['contacts'] = [];
+
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
+            $guest_id = $id;
             $guest = $this->guests_model->get_guest_details($id);
             if ($guest) {
                 $data['guest'] = $guest;
                 $data['title'] = 'Extracredit | Edit Guest';
                 $data['heading'] = 'Edit Guest';
+                $data['contacts'] = $this->guests_model->sql_select(TBL_ASSOCIATED_CONTACTS, 'id,name,email,phone', ['where' => ['is_delete' => 0, 'type' => 'guest', 'associated_id' => $id]]);
+
                 if ($this->input->post('email') && $this->input->post('email_unavailable') != 1) {
                     $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_check_email_edit[' . $id . ']');
                 }
@@ -180,7 +185,7 @@ class Guests extends MY_Controller {
                     $this->session->set_flashdata('success', 'Guest details has been updated successfully.');
                 } else {
                     $dataArr['created'] = date('Y-m-d H:i:s');
-                    $this->guests_model->common_insert_update('insert', TBL_GUESTS, $dataArr);
+                    $guest_id = $this->guests_model->common_insert_update('insert', TBL_GUESTS, $dataArr);
                     //-- Insert account email into mailchimp subscriber list
                     if (!empty($dataArr['email'])) {
                         $mailchimp_data = array(
@@ -196,6 +201,25 @@ class Guests extends MY_Controller {
                     }
                     $this->session->set_flashdata('success', 'Guest has been added successfully');
                 }
+
+                //-- Delete old contact data
+                $this->guests_model->common_delete(TBL_ASSOCIATED_CONTACTS, ['associated_id' => $guest_id, 'type' => 'guest']);
+
+                $contact_names = $this->input->post('contact_name');
+                $contact_arr = [];
+                foreach ($contact_names as $key => $name) {
+                    $email = null;
+                    if ($this->input->post('contact_email')[$key] != '') {
+                        $email = $this->input->post('contact_email')[$key];
+                    }
+                    $arr = ['name' => $name, 'email' => $email, 'phone' => $this->input->post('contact_phone')[$key], 'type' => 'guest', 'associated_id' => $guest_id, 'created' => date('Y-m-d H:i:s')];
+                    $contact_arr[] = $arr;
+                }
+
+                if (!empty($contact_arr)) {
+                    $this->guests_model->batch_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $contact_arr);
+                }
+
                 redirect('guests');
             }
         }
@@ -351,10 +375,16 @@ class Guests extends MY_Controller {
      */
     public function communication($id = null) {
         checkPrivileges('guests_communication', 'view');
-        $data['perArr'] = checkPrivileges('guests_communication');
-        $data['title'] = 'Extracredit | Guests Communication';
-        $data['id'] = $id;
-        $this->template->load('default', 'guests/list_communication', $data);
+        $guest = $this->guests_model->sql_select(TBL_GUESTS, 'firstname,lastname', ['where' => ['id' => base64_decode($id), 'is_delete' => 0]], ['single' => true]);
+        if (!empty($guest)) {
+            $data['perArr'] = checkPrivileges('guests_communication');
+            $data['title'] = 'Extracredit | Guests Communication';
+            $data['guest'] = $guest;
+            $data['id'] = $id;
+            $this->template->load('default', 'guests/list_communication', $data);
+        } else {
+            show_404();
+        }
     }
 
     /**
@@ -395,6 +425,8 @@ class Guests extends MY_Controller {
             $guest_id = base64_decode($guest_id);
 
         $data['guest'] = $this->guests_model->sql_select(TBL_GUESTS, 'id,firstname,lastname', ['where' => ['id' => $guest_id]], ['single' => true]);
+        $data['contacts'] = $this->guests_model->sql_select(TBL_ASSOCIATED_CONTACTS, 'id,name', ['where' => ['associated_id' => $guest_id, 'type' => 'guest', 'is_delete' => 0]]);
+
         $comm_id = base64_decode($comm_id);
         if (is_numeric($comm_id)) {
             checkPrivileges('guests_communication', 'edit');
@@ -432,14 +464,15 @@ class Guests extends MY_Controller {
 
             if ($flag == 0) {
                 $dataArr = array(
-                    'note' => $this->input->post('note'),
-                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
-                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
-                    'subject' => $this->input->post('subject'),
-                    'guest_id' => $guest_id,
-                    'donor_id' => 0,
-                    'account_id' => 0,
                     'type' => 2,
+                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
+                    'subject' => $this->input->post('subject'),
+                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
+                    'donor_id' => 0,
+                    'guest_id' => $guest_id,
+                    'account_id' => 0,
+                    'associated_contact_id' => $this->input->post('associated_contact_id'),
+                    'note' => $this->input->post('note'),
                     'media' => $media
                 );
 

@@ -15,7 +15,7 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold">Guest Communication</span></h4>
+            <h4><i class="icon-comment-discussion"></i> <span class="text-semibold"><?php echo $guest['firstname'] . ' ' . $guest['lastname'] ?> Communication</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
@@ -54,7 +54,7 @@
                 <tr>
                     <th>#</th>
                     <th>Media</th>    
-                    <th>Full Name</th>    
+                    <th>Contact Name</th>    
                     <th>Company Name</th>    
                     <th>AMC Active</th>    
                     <th>Subject</th>                   
@@ -155,7 +155,7 @@
                     }
                 },
                 {
-                    data: "fullname",
+                    data: "contact_name",
                     visible: true
                 },
                 {
@@ -238,7 +238,6 @@
             dataType: 'JSON',
             data: {id: id},
             success: function (data) {
-                console.log(data);
                 $('.note').html(data.note);
                 $('.subject_value').html(data.subject);
                 $('.communication_date').html(data.communication_date);

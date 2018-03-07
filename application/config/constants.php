@@ -90,6 +90,7 @@ defined('EXIT__AUTO_MAX') OR define('EXIT__AUTO_MAX', 125); // highest automatic
  */
 define('TBL_ACCOUNTS', 'accounts');
 define('TBL_ACCOUNTS_TRANSFER', 'accounts_transfer');
+define('TBL_ASSOCIATED_CONTACTS', 'associated_contacts');
 define('TBL_CITIES', 'cities');
 define('TBL_COMMUNICATIONS', 'communications');
 define('TBL_COMMUNICATIONS_MANAGER', 'communication_manager');

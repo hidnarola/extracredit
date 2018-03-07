@@ -152,11 +152,11 @@
                     visible: true,
                 },
                 {
-                    data: "contact_name",
+                    data: "contact_names",
                     visible: true,
                 },
                 {
-                    data: "email",
+                    data: "contact_emails",
                     visible: true
                 },
                 {

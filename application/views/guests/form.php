@@ -5,7 +5,8 @@
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
 <script type="text/javascript" src="assets/js/jquery.custom_validate.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="assets/js/core/libraries/jasny_bootstrap.min.js"></script>
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>-->
 
 <?php
 $edit = 0;
@@ -160,7 +161,7 @@ if (isset($guest)) {
                                 </div>
                                 <label class="col-lg-1 control-label">Phone</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>">                                
+                                    <input type="text" name="phone" id="phone" placeholder="Enter Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['phone']) ? $guest['phone'] : set_value('phone'); ?>" data-mask="999-999-9999">                                
                                     <?php
                                     echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
                                     ?>
@@ -310,25 +311,81 @@ if (isset($guest)) {
                                         </label>
                                     </div>
                                 </div>
-
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">Assistant Email</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="assistant_email" id="assistant_email" placeholder="Enter Assistant Email" class="form-control"  value="<?php echo (isset($guest) && $guest['assistant_email']) ? $guest['assistant_email'] : set_value('assistant_email'); ?>">
+                                    <input type="text" name="assistant_email" id="assistant_email" placeholder="Enter Assistant Email" class="form-control" value="<?php echo (isset($guest) && $guest['assistant_email']) ? $guest['assistant_email'] : set_value('assistant_email'); ?>">
                                     <?php
                                     echo '<label id="assistant_email-error" class="validation-error-label" for="assistant_email">' . form_error('assistant_email') . '</label>';
                                     ?>
                                 </div>
                                 <label class="col-lg-1 control-label">Assistant Phone</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="assistant_phone" id="assistant_phone" placeholder="Enter Assistant Phone" class="form-control"  value="<?php echo (isset($guest) && $guest['assistant_phone']) ? $guest['assistant_phone'] : set_value('assistant_phone'); ?>">
+                                    <input type="text" name="assistant_phone" id="assistant_phone" placeholder="Enter Assistant Phone" class="form-control" value="<?php echo (isset($guest) && $guest['assistant_phone']) ? $guest['assistant_phone'] : set_value('assistant_phone'); ?>" data-mask="999-999-9999">
                                     <?php
                                     echo '<label id="assistant_phone-error" class="validation-error-label" for="assistant_phone">' . form_error('assistant_phone') . '</label>';
                                     ?>
                                 </div>
                             </div>
-
+                        </fieldset>
+                        <fieldset class="content-group">
+                            <legend class="text-bold">Contact Details</legend>
+                            <?php if (!empty($contacts)) { ?>
+                                <div class="contact-div">
+                                    <?php
+                                    $counter = 1;
+                                    $total_contacts = count($contacts);
+                                    foreach ($contacts as $contact) {
+                                        ?>
+                                        <div class="form-group">
+                                            <label class="col-lg-1 control-label">Name <span class="text-danger">*</span></label>
+                                            <div class="col-lg-3">
+                                                <input type="text" name="contact_name[]" id="contact_name_<?php echo $counter ?>" placeholder="Enter Contact Name" class="form-control text-capitalize" required="required" value="<?php echo $contact['name']; ?>">
+                                            </div>
+                                            <label class="col-lg-1 control-label">Email </label>
+                                            <div class="col-lg-3">
+                                                <input type="email" name="contact_email[]" id="contact_email_<?php echo $counter ?>" placeholder="Enter Email" class="form-control" value="<?php echo $contact['email']; ?>">
+                                            </div>
+                                            <label class="col-lg-1 control-label">Phone </label>
+                                            <div class="col-lg-2">
+                                                <input type="text" name="contact_phone[]" id="contact_phone_<?php echo $counter ?>" placeholder="Enter Phone" class="form-control" value="<?php echo $contact['phone']; ?>" data-mask="999-999-9999">
+                                            </div>
+                                            <div class="col-lg-1">
+                                                <?php if ($total_contacts == $counter) { ?>
+                                                    <a class="add_contact_btn btn btn-primary"><i class="icon-plus-circle2"></i></a>
+                                                <?php } else { ?>
+                                                    <a class="remove_contact_btn btn btn-danger"><i class="icon-trash"></i></a>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                        <?php
+                                        $counter++;
+                                    }
+                                    ?>
+                                </div>
+                            <?php } else {
+                                ?> 
+                                <div class="contact-div">
+                                    <div class="form-group">
+                                        <label class="col-lg-1 control-label">Name <span class="text-danger">*</span></label>
+                                        <div class="col-lg-3">
+                                            <input type="text" name="contact_name[]" id="contact_name_1" placeholder="Enter Name" class="form-control text-capitalize" required="required">
+                                        </div>
+                                        <label class="col-lg-1 control-label">Email </label>
+                                        <div class="col-lg-3">
+                                            <input type="email" name="contact_email[]" id="contact_email_1" placeholder="Enter Email" class="form-control">
+                                        </div>
+                                        <label class="col-lg-1 control-label">Phone </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" name="contact_phone[]" id="contact_phone_1" placeholder="Enter Phone" class="form-control" data-mask="999-999-9999">
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <a class="add_contact_btn btn btn-primary"><i class="icon-plus-circle2"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php } ?>
                         </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">
@@ -368,8 +425,8 @@ if (isset($guest)) {
     $(".file-styled").uniform({
         fileButtonClass: 'action btn bg-blue'
     });
-    $("#phone").mask("999-999-9999");
-    $("#assistant_phone").mask("999-999-9999");
+//    $("#phone").mask("999-999-9999");
+//    $("#assistant_phone").mask("999-999-9999");
     $('.pickadate').pickadate({
         format: 'd mmmm yyyy'
 //        max: new Date()
@@ -593,4 +650,34 @@ if (isset($guest)) {
         }
         return true;
     }
+    // Add contact button
+    $(document).on('click', '.add_contact_btn', function () {
+        if ($('input[name="contact_name[]"]').valid() && $('input[name="contact_email[]"]').valid()) {
+            contact_div = $(this).parent('.col-lg-1').parent('.form-group').clone();
+
+            field_count = contact_div.find('input[name="contact_name[]"]').attr('id');
+            field_count = field_count.split('_');
+            field_count = field_count[2];
+            field_count = parseInt(field_count) + 1;
+
+            contact_div.find('input[name="contact_name[]"]').val('');
+            contact_div.find('input[name="contact_name[]"]').attr('id', 'contact_name_' + field_count);
+            contact_div.find('input[name="contact_email[]"]').val('');
+            contact_div.find('input[name="contact_email[]"]').attr('id', 'contact_email_' + field_count);
+            contact_div.find('input[name="contact_phone[]"]').val('');
+            contact_div.find('input[name="contact_phone[]"]').attr('id', 'contact_phone_' + field_count);
+            contact_div.find('.validation-error-label').remove();
+
+            $('.contact-div').append(contact_div);
+            $(this).html('<i class="icon-trash"></i>');
+            $(this).removeClass('add_contact_btn');
+            $(this).removeClass('btn-primary');
+            $(this).addClass('remove_contact_btn');
+            $(this).addClass('btn-danger');
+        }
+    });
+    // Remove Add contact button
+    $(document).on('click', '.remove_contact_btn', function () {
+        $(this).parent('.col-lg-1').parent('.form-group').remove();
+    });
 </script>

@@ -16,13 +16,17 @@ class Accounts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_accounts($type = 'result') {
-        $columns = ['a.is_delete', 'f.name', 'program_name,action_matters_campaign,vendor_name', 'contact_name', 'email', 'phone', 'total_fund', 'created', 'is_active'];
+        $columns = ['a.is_delete', 'f.name', 'program_name,action_matters_campaign,vendor_name', 'contact_names', 'contact_emails', 'phone', 'total_fund', 'created', 'is_active'];
         $keyword = $this->input->get('search');
-        $this->db->select('a.*,f.name as fund_type,f.type');
+        $this->db->select('a.*,f.name as fund_type,f.type,contact_tbl.contact_names,contact_tbl.contact_emails');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'a.fund_type_id=f.id', 'left');
+        $this->db->join('(select GROUP_CONCAT(name) contact_names,GROUP_CONCAT(email) contact_emails,associated_id FROM ' . TBL_ASSOCIATED_CONTACTS . ' '
+                . 'WHERE type="account" AND is_delete=0 group by associated_id) as contact_tbl', 'a.id=contact_tbl.associated_id', 'left');
 
         if (!empty($keyword['value'])) {
             $this->db->where('(action_matters_campaign LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR contact_tbl.contact_names LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR contact_tbl.contact_emails LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR program_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR vendor_name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
                     ' OR email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
@@ -279,12 +283,12 @@ class Accounts_model extends MY_Model {
      * @author REP
      */
     public function get_accounts_communication($type = 'result', $id) {
-        $columns = ['id', 'action_matters_campaign,vendor_name', 'contact_name', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
+        $columns = ['id', 'ac.name', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
-        $this->db->select('c.*,a.action_matters_campaign,a.vendor_name,a.contact_name');
-        $this->db->join(TBL_ACCOUNTS . ' as a', 'a.id=c.account_id', 'left');
+        $this->db->select('c.*,ac.name as conversation_contact');
+        $this->db->join(TBL_ASSOCIATED_CONTACTS . ' as ac', 'ac.id=c.associated_contact_id', 'left');
         if (!empty($keyword['value'])) {
-            $this->db->where('(c.note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+            $this->db->where('(c.note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR ac.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR c.subject LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $this->db->where(['c.is_delete' => 0]);
         $this->db->where(['c.account_id' => $id]);

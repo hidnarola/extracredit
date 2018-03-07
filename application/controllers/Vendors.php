@@ -39,6 +39,7 @@ class Vendors extends MY_Controller {
      * @param type $id
      */
     public function add($id = NULL) {
+        $data['contacts'] = [];
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -47,6 +48,7 @@ class Vendors extends MY_Controller {
                 $data['vendor'] = $vendor;
                 $data['title'] = 'Extracredit | Edit Vendor';
                 $data['heading'] = 'Edit Vendor';
+                $data['contacts'] = $this->vendors_model->sql_select(TBL_ASSOCIATED_CONTACTS, 'id,name,email,phone', ['where' => ['is_delete' => 0, 'type' => 'vendor', 'associated_id' => $id]]);
             } else {
                 show_404();
             }
@@ -59,7 +61,7 @@ class Vendors extends MY_Controller {
         }
 
         $this->form_validation->set_rules('name', 'Vendor Name', 'trim|required');
-        $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
+//        $this->form_validation->set_rules('contact_name', 'Contact Name', 'trim|required');
 
         if ($this->form_validation->run() == TRUE) {
             //-- Get state id from post value
@@ -82,25 +84,44 @@ class Vendors extends MY_Controller {
 
             $dataArr = array(
                 'name' => trim($this->input->post('name')),
-                'contact_name' => trim($this->input->post('contact_name')),
+//                'contact_name' => trim($this->input->post('contact_name')),
                 'address' => trim($this->input->post('address')),
                 'city_id' => $city_id,
                 'state_id' => $state_id,
                 'zip' => $this->input->post('zip'),
-                'email' => $this->input->post('email'),
+//                'email' => $this->input->post('email'),
                 'phone' => $this->input->post('phone'),
                 'website' => trim($this->input->post('website')),
                 'created' => date('Y-m-d H:i:s')
             );
 
             if (is_numeric($id)) {
+                $vendor_id = $id;
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 $this->vendors_model->common_insert_update('update', TBL_VENDORS, $dataArr, ['id' => $id]);
                 $this->session->set_flashdata('success', 'Vendor details has been updated successfully.');
             } else {
                 $dataArr['created'] = date('Y-m-d H:i:s');
-                $this->vendors_model->common_insert_update('insert', TBL_VENDORS, $dataArr);
+                $vendor_id = $this->vendors_model->common_insert_update('insert', TBL_VENDORS, $dataArr);
                 $this->session->set_flashdata('success', 'Vendor details has been added successfully');
+            }
+
+            //-- Delete old contact data
+            $this->vendors_model->common_delete(TBL_ASSOCIATED_CONTACTS, ['associated_id' => $vendor_id, 'type' => 'vendor']);
+
+            $contact_names = $this->input->post('contact_name');
+            $contact_arr = [];
+            foreach ($contact_names as $key => $name) {
+                $email = null;
+                if ($this->input->post('contact_email')[$key] != '') {
+                    $email = $this->input->post('contact_email')[$key];
+                }
+                $arr = ['name' => $name, 'email' => $email, 'phone' => $this->input->post('contact_phone')[$key], 'type' => 'vendor', 'associated_id' => $vendor_id, 'created' => date('Y-m-d H:i:s')];
+                $contact_arr[] = $arr;
+            }
+
+            if (!empty($contact_arr)) {
+                $this->vendors_model->batch_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $contact_arr);
             }
             redirect('vendors');
         }
@@ -161,7 +182,7 @@ class Vendors extends MY_Controller {
      * Ajax call to this function checks Unique Vendor at the time of vendor's add and edit
      * */
     public function checkUniqueVendor($id = NULL) {
-        $where = ['name' => trim($this->input->get('name'))];
+        $where = ['name' => trim($this->input->get('name')), 'is_delete' => 0];
         if (!is_null($id)) {
             $id = base64_decode($id);
             $where['id!='] = $id;
@@ -286,17 +307,20 @@ class Vendors extends MY_Controller {
                             foreach ($vendor_data as $val) {
                                 $vendor_arr = [
                                     'name' => $val['name'],
-                                    'contact_name' => $val['contact_name'],
+//                                    'contact_name' => $val['contact_name'],
                                     'address' => $val['address'],
                                     'city_id' => $val['city_id'],
                                     'state_id' => $val['state_id'],
                                     'zip' => $val['zip'],
-                                    'email' => $val['email'],
+//                                    'email' => $val['email'],
                                     'phone' => $val['phone'],
                                     'website' => $val['website'],
                                     'created' => date('Y-m-d H:i:s')
                                 ];
                                 $vendor_id = $this->vendors_model->common_insert_update('insert', TBL_VENDORS, $vendor_arr);
+
+                                $associated_contact = ['name' => $val['contact_name'], 'email' => $val['email'], 'phone' => $val['phone'], 'type' => 'vendor', 'associated_id' => $vendor_id, 'created' => date('Y-m-d H:i:s')];
+                                $this->vendors_model->common_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $associated_contact);
                             }
                             $this->session->set_flashdata('success', "CSV file imported successfully! Vendor data added successfully");
                         } else {

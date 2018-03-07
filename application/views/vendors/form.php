@@ -66,11 +66,11 @@ if (isset($vendor))
                                 echo '<label id="name-error" class="validation-error-label" for="name">' . form_error('name') . '</label>';
                                 ?>
                             </div>
-                            <label class="col-lg-1 control-label">Contact <span class="text-danger">*</span></label>
+                            <label class="col-lg-1 control-label">Website </label>
                             <div class="col-lg-4">
-                                <input type="text" name="contact_name" id="contact_name" placeholder="Enter Contact Name" class="form-control" value="<?php echo (isset($vendor) && $vendor['contact_name']) ? $vendor['contact_name'] : set_value('contact_name'); ?>" required>
+                                <input type="text" name="website" id="website" placeholder="Enter website" class="form-control" value="<?php echo (isset($vendor) && $vendor['website']) ? $vendor['website'] : set_value('website'); ?>" >
                                 <?php
-                                echo '<label id="contact_name-error" class="validation-error-label" for="contact_name">' . form_error('contact_name') . '</label>';
+                                echo '<label id="website-error" class="validation-error-label" for="website">' . form_error('website') . '</label>';
                                 ?>
                             </div>
                         </div>
@@ -116,26 +116,65 @@ if (isset($vendor))
                                 echo '<label id="phone-error" class="validation-error-label" for="phone">' . form_error('phone') . '</label>';
                                 ?>
                             </div>
-
-                            <div class="program_div">
-                                <label class="col-lg-1 control-label">Email </label>
-                                <div class="col-lg-4">
-                                    <input type="text" name="email" id="email" placeholder="Enter Email" class="form-control" value="<?php echo (isset($vendor) && $vendor['email']) ? $vendor['email'] : set_value('email'); ?>">
+                        </div>
+                        <fieldset class="content-group">
+                            <legend class="text-bold">Contact Details</legend>
+                            <?php if (!empty($contacts)) { ?>
+                                <div class="contact-div">
                                     <?php
-                                    echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
+                                    $counter = 1;
+                                    $total_contacts = count($contacts);
+                                    foreach ($contacts as $contact) {
+                                        ?>
+                                        <div class="form-group">
+                                            <label class="col-lg-1 control-label">Name <span class="text-danger">*</span></label>
+                                            <div class="col-lg-3">
+                                                <input type="text" name="contact_name[]" id="contact_name_<?php echo $counter ?>" placeholder="Enter Contact Name" class="form-control text-capitalize" required="required" value="<?php echo $contact['name']; ?>">
+                                            </div>
+                                            <label class="col-lg-1 control-label">Email </label>
+                                            <div class="col-lg-3">
+                                                <input type="email" name="contact_email[]" id="contact_email_<?php echo $counter ?>" placeholder="Enter Email" class="form-control" value="<?php echo $contact['email']; ?>">
+                                            </div>
+                                            <label class="col-lg-1 control-label">Phone </label>
+                                            <div class="col-lg-2">
+                                                <input type="text" name="contact_phone[]" id="contact_phone_<?php echo $counter ?>" placeholder="Enter Phone" class="form-control" value="<?php echo $contact['phone']; ?>" data-mask="999-999-9999">
+                                            </div>
+                                            <div class="col-lg-1">
+                                                <?php if ($total_contacts == $counter) { ?>
+                                                    <a class="add_contact_btn btn btn-primary"><i class="icon-plus-circle2"></i></a>
+                                                <?php } else { ?>
+                                                    <a class="remove_contact_btn btn btn-danger"><i class="icon-trash"></i></a>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                        <?php
+                                        $counter++;
+                                    }
                                     ?>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-1 control-label">Website </label>
-                            <div class="col-lg-4">
-                                <input type="text" name="website" id="website" placeholder="Enter website" class="form-control" value="<?php echo (isset($vendor) && $vendor['website']) ? $vendor['website'] : set_value('website'); ?>" >
-                                <?php
-                                echo '<label id="website-error" class="validation-error-label" for="website">' . form_error('website') . '</label>';
-                                ?>
-                            </div>
-                        </div>
+                            <?php } else {
+                                ?> 
+                                <div class="contact-div">
+                                    <div class="form-group">
+                                        <label class="col-lg-1 control-label">Name <span class="text-danger">*</span></label>
+                                        <div class="col-lg-3">
+                                            <input type="text" name="contact_name[]" id="contact_name_1" placeholder="Enter Name" class="form-control text-capitalize" required="required">
+                                        </div>
+                                        <label class="col-lg-1 control-label">Email </label>
+                                        <div class="col-lg-3">
+                                            <input type="email" name="contact_email[]" id="contact_email_1" placeholder="Enter Email" class="form-control">
+                                        </div>
+                                        <label class="col-lg-1 control-label">Phone </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" name="contact_phone[]" id="contact_phone_1" placeholder="Enter Phone" class="form-control" data-mask="999-999-9999">
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <a class="add_contact_btn btn btn-primary"><i class="icon-plus-circle2"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="vendor_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
@@ -305,4 +344,35 @@ if (isset($vendor))
         var url = $.validator.methods.url.bind(this);
         return url(value, element) || url('http://' + value, element);
     }, 'Please enter a valid URL');
+
+    // Add contact button
+    $(document).on('click', '.add_contact_btn', function () {
+        if ($('input[name="contact_name[]"]').valid() && $('input[name="contact_email[]"]').valid()) {
+            contact_div = $(this).parent('.col-lg-1').parent('.form-group').clone();
+
+            field_count = contact_div.find('input[name="contact_name[]"]').attr('id');
+            field_count = field_count.split('_');
+            field_count = field_count[2];
+            field_count = parseInt(field_count) + 1;
+
+            contact_div.find('input[name="contact_name[]"]').val('');
+            contact_div.find('input[name="contact_name[]"]').attr('id', 'contact_name_' + field_count);
+            contact_div.find('input[name="contact_email[]"]').val('');
+            contact_div.find('input[name="contact_email[]"]').attr('id', 'contact_email_' + field_count);
+            contact_div.find('input[name="contact_phone[]"]').val('');
+            contact_div.find('input[name="contact_phone[]"]').attr('id', 'contact_phone_' + field_count);
+            contact_div.find('.validation-error-label').remove();
+
+            $('.contact-div').append(contact_div);
+            $(this).html('<i class="icon-trash"></i>');
+            $(this).removeClass('add_contact_btn');
+            $(this).removeClass('btn-primary');
+            $(this).addClass('remove_contact_btn');
+            $(this).addClass('btn-danger');
+        }
+    });
+    // Remove Add contact button
+    $(document).on('click', '.remove_contact_btn', function () {
+        $(this).parent('.col-lg-1').parent('.form-group').remove();
+    });
 </script>

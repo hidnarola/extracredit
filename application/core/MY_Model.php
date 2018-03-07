@@ -257,6 +257,15 @@ class MY_Model extends CI_Model {
         return $fund['total_fund'];
     }
 
+    /**
+     * Common delete function to delete records from table
+     * @param string $table
+     * @param array $condition
+     */
+    public function common_delete($table, $condition) {
+        $this->db->delete($table, $condition);  // Produces: // DELETE FROM $table WHERE $condition
+    }
+
 }
 
 /* End of file MY_Model.php */

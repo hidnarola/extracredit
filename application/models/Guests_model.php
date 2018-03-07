@@ -98,12 +98,14 @@ class Guests_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_guests_communication($type = 'result', $id) {
-        $columns = ['id', 'fullname', 'g.companyname', 'g.AMC_active', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
+        $columns = ['id', 'contact_name', 'g.companyname', 'g.AMC_active', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.media', 'c.created'];
         $keyword = $this->input->get('search');
-        $this->db->select('c.*,CONCAT(g.firstname, " ",g.lastname) AS fullname,g.companyname,g.AMC_active');
+        $this->db->select('c.*,CONCAT(g.firstname, " ",g.lastname) AS fullname,g.companyname,g.AMC_active,ac.name as contact_name');
         $this->db->join(TBL_GUESTS . ' as g', 'g.id=c.guest_id', 'left');
+        $this->db->join(TBL_ASSOCIATED_CONTACTS . ' as ac', 'ac.id=c.associated_contact_id', 'left');
+
         if (!empty($keyword['value'])) {
-            $this->db->where('(c.note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+            $this->db->where('(c.note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR ac.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR c.subject LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
         $this->db->where(['c.is_delete' => 0]);
         $this->db->where(['c.guest_id' => $id]);
@@ -181,11 +183,13 @@ class Guests_model extends MY_Model {
      * @param int $id
      */
     public function get_guest_details_view($id) {
-        $this->db->select('g.*,a.fund_type_id,f.type,f.name,a.vendor_name,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as program,c.name as cityname, s.name as statename');
+        $select = 'GROUP_CONCAT(ac.name) contact_names,GROUP_CONCAT(ac.email) contact_emails,GROUP_CONCAT(ac.phone) contact_phones';
+        $this->db->select('g.*,a.fund_type_id,f.type,f.name,a.vendor_name,IF(a.program_name = \'\',a.action_matters_campaign,a.program_name) as program,c.name as cityname,s.name as statename,' . $select);
         $this->db->join(TBL_ACCOUNTS . ' as a', 'g.account_id=a.id', 'left');
         $this->db->join(TBL_FUND_TYPES . ' as f', 'f.id=a.fund_type_id', 'left');
         $this->db->join(TBL_CITIES . ' as c', 'g.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'g.state_id=s.id', 'left');
+        $this->db->join(TBL_ASSOCIATED_CONTACTS . ' as ac', 'g.id=ac.associated_id AND ac.type="guest"', 'left');
         $this->db->where(['g.id' => $id, 'g.is_delete' => 0]);
         $query = $this->db->get(TBL_GUESTS . ' g');
         return $query->row_array();

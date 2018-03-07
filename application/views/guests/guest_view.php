@@ -86,6 +86,18 @@
         <tr>
             <th>Assistant Email </th>
             <td><?php echo $guest_details['assistant_email']; ?></td>
+        </tr>
+        <tr>
+            <th>Contact Name</th>
+            <td><?php echo $guest_details['contact_names']; ?></td>
         </tr>      
+        <tr>
+            <th>Contact Email </th>
+            <td><?php echo $guest_details['contact_emails']; ?></td>
+        </tr>      
+        <tr>
+            <th>Contact Phone </th>
+            <td><?php echo $guest_details['contact_phones']; ?></td>
+        </tr>
     </tbody>
 </table>
