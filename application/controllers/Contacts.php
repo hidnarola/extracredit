@@ -11,6 +11,7 @@ class Contacts extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('contacts_model');
+        $this->load->model('communication_manager_model');
     }
 
     /**
@@ -307,6 +308,175 @@ class Contacts extends MY_Controller {
         } else {
             $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
             redirect('contacts');
+        }
+    }
+
+    /**
+     * Listing of All Contact communication
+     * @author KU
+     */
+    public function communication($id = null) {
+        checkPrivileges('account', 'view');
+        $contact = $this->contacts_model->sql_select(TBL_CONTACTS, 'name', ['where' => ['id' => base64_decode($id), 'is_delete' => 0]], ['single' => true]);
+        if (!empty($contact)) {
+            $data['contact'] = $contact;
+            $data['perArr'] = checkPrivileges('accounts_communication');
+            $data['title'] = 'Extracredit | Contact Communication';
+            $data['id'] = $id;
+            $this->template->load('default', 'contacts/list_communication', $data);
+        } else {
+            show_404();
+        }
+    }
+
+    /**
+     * Get Contacts communication data for ajax table
+     * @author KU
+     * */
+    public function get_contacts_communication($id) {
+        checkPrivileges('accounts_communication', 'view');
+        $id = base64_decode($id);
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->contacts_model->get_contacts_communication('count', $id);
+        $final['redraw'] = 1;
+        $contacts_com = $this->contacts_model->get_contacts_communication('result', $id);
+        $start = $this->input->get('start') + 1;
+
+        foreach ($contacts_com as $key => $val) {
+            $contacts_com[$key] = $val;
+            $contacts_com[$key]['sr_no'] = $start;
+            $contacts_com[$key]['created'] = date('m/d/Y', strtotime($val['created']));
+            $contacts_com[$key]['follow_up_date'] = ($val['follow_up_date'] != '') ? date('m/d/Y', strtotime($val['follow_up_date'])) : '';
+            $contacts_com[$key]['communication_date'] = ($val['communication_date'] != '') ? date('m/d/Y', strtotime($val['communication_date'])) : '';
+            $start++;
+        }
+        $final['data'] = $contacts_com;
+        echo json_encode($final);
+    }
+
+    /**
+     * Get Contact communication data by its ID 
+     * @author KU
+     * */
+    public function get_communication_by_id() {
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        $contact_communication = $this->contacts_model->sql_select(TBL_COMMUNICATIONS, '*', ['where' => ['id' => $id, 'is_delete' => 0, 'type' => 5]], ['single' => true]);
+        if (!empty($contact_communication)) {
+            $contact_communication['follow_up_date'] = ($contact_communication['follow_up_date'] != '') ? date('m/d/Y', strtotime($contact_communication['follow_up_date'])) : '';
+            $contact_communication['communication_date'] = ($contact_communication['communication_date'] != '') ? date('m/d/Y', strtotime($contact_communication['communication_date'])) : '';
+        }
+        echo json_encode($contact_communication);
+    }
+
+    /**
+     * Add contact communication data
+     * @param type $contact_id
+     * @param type $comm_id
+     * @author KU
+     */
+    public function add_communication($contact_id = null, $comm_id = null) {
+        if (!is_null($contact_id))
+            $contact_id = base64_decode($contact_id);
+
+        $data['contact'] = $this->contacts_model->sql_select(TBL_CONTACTS, 'id', ['where' => ['id' => $contact_id]], ['single' => true]);
+        $comm_id = base64_decode($comm_id);
+        if (is_numeric($comm_id)) {
+            checkPrivileges('accounts_communication', 'edit');
+            $contact_communication = $this->contacts_model->sql_select(TBL_COMMUNICATIONS, '*', ['where' => ['id' => $comm_id, 'type' => 5, 'is_delete' => 0]], ['single' => true]);
+            $data['contact_communication'] = $contact_communication;
+            $data['title'] = 'Extracredit | Edit Communication';
+            $data['heading'] = 'Edit Communication';
+            if ($contact_communication['media'] != '')
+                $media = $contact_communication['media'];
+            else
+                $media = NULL;
+        } else {
+            checkPrivileges('accounts_communication', 'add');
+            $media = NULL;
+            $data['title'] = 'Extracredit | Add Communication';
+            $data['heading'] = 'Add Communication';
+            $data['cities'] = [];
+            $data['accounts'] = [];
+        }
+        $this->form_validation->set_rules('note', 'Note', 'trim|required');
+        if ($this->form_validation->run() == TRUE) {
+            $flag = 0;
+            if ($_FILES['media']['name'] != '') {
+                $image_data = upload_communication('media', COMMUNICATION_IMAGES);
+                if (is_array($image_data)) {
+                    $flag = 1;
+                    $data['media_validation'] = $image_data['errors'];
+                } else {
+                    if ($media != '') {
+                        unlink(COMMUNICATION_IMAGES . $media);
+                    }
+                    $media = $image_data;
+                }
+            }
+
+            if ($flag == 0) {
+                $dataArr = array(
+                    'type' => 5,
+                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
+                    'subject' => $this->input->post('subject'),
+                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
+                    'donor_id' => 0,
+                    'guest_id' => 0,
+                    'account_id' => 0,
+                    'vendor_id' => 0,
+                    'contact_id' => $contact_id,
+                    'note' => $this->input->post('note'),
+                    'media' => $media
+                );
+
+                if (is_numeric($comm_id)) {
+                    $dataArr['modified'] = date('Y-m-d H:i:s');
+                    $this->contacts_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
+                    $this->session->set_flashdata('success', 'Contact communication details has been updated successfully.');
+                } else {
+                    $dataArr['created'] = date('Y-m-d H:i:s');
+                    $communication_id = $this->contacts_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    if (!empty($this->input->post('follow_up_date'))) {
+                        $communication_ManagerArr = array(
+                            'communication_id' => $communication_id,
+                            'user_id' => $this->session->userdata('extracredit_user')['id'],
+                            'category' => 'Contact',
+                            'follow_up_date' => date('Y-m-d', strtotime($this->input->post('follow_up_date'))),
+                        );
+                        $this->communication_manager_model->common_insert_update('insert', TBL_COMMUNICATIONS_MANAGER, $communication_ManagerArr);
+                    }
+                    $this->session->set_flashdata('success', 'Contact communication has been added successfully');
+                }
+                redirect('contacts/communication/' . base64_encode($contact_id));
+            }
+        }
+        $this->template->load('default', 'contacts/add_communication', $data);
+    }
+
+    /**
+     * Delete contact communication
+     * @param int $contact_id Contact Id
+     * @param int $id Communication Id
+     * @author KU
+     */
+    public function delete_communication($contact_id = null, $id = NULL) {
+        checkPrivileges('accounts_communication', 'delete');
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $contact_communication = $this->contacts_model->sql_select(TBL_COMMUNICATIONS, '*', ['where' => ['id' => $id, 'type' => 5, 'is_delete' => 0]], ['single' => true]);
+            if ($contact_communication) {
+                $update_array = array(
+                    'is_delete' => 1
+                );
+
+                $this->contacts_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id, 'type' => 5]);
+                $this->session->set_flashdata('success', 'Contact communication has been deleted successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+            }
+            redirect('contacts/communication/' . $contact_id);
+        } else {
+            show_404();
         }
     }
 

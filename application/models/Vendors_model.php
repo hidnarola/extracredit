@@ -62,4 +62,34 @@ class Vendors_model extends MY_Model {
         return $query->row_array();
     }
 
+    /**
+     * Get vendors communication for data-table
+     * @param string/int $type Either result or count
+     * @param int $id
+     * @return array/int
+     * @author KU
+     */
+    public function get_vendors_communication($type = 'result', $id) {
+        $columns = ['id', 'ac.name', 'c.media', 'c.subject', 'c.communication_date', 'c.follow_up_date', 'c.note', 'c.created'];
+        $keyword = $this->input->get('search');
+        $this->db->select('c.*,ac.name as conversation_contact');
+        $this->db->join(TBL_ASSOCIATED_CONTACTS . ' as ac', 'ac.id=c.associated_contact_id', 'left');
+
+        if (!empty($keyword['value'])) {
+            $this->db->where('(c.note LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR ac.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ' OR c.subject LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+        }
+        $this->db->where(['c.is_delete' => 0]);
+        $this->db->where(['c.vendor_id' => $id]);
+        $this->db->where(['c.type' => 4]);
+        $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
+        if ($type == 'result') {
+            $this->db->limit($this->input->get('length'), $this->input->get('start'));
+            $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
+            return $query->result_array();
+        } else {
+            $query = $this->db->get(TBL_COMMUNICATIONS . ' c');
+            return $query->num_rows();
+        }
+    }
+
 }

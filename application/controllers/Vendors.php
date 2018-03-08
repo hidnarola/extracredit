@@ -11,6 +11,7 @@ class Vendors extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('vendors_model');
+        $this->load->model('communication_manager_model');
     }
 
     /**
@@ -84,12 +85,10 @@ class Vendors extends MY_Controller {
 
             $dataArr = array(
                 'name' => trim($this->input->post('name')),
-//                'contact_name' => trim($this->input->post('contact_name')),
                 'address' => trim($this->input->post('address')),
                 'city_id' => $city_id,
                 'state_id' => $state_id,
                 'zip' => $this->input->post('zip'),
-//                'email' => $this->input->post('email'),
                 'phone' => $this->input->post('phone'),
                 'website' => trim($this->input->post('website')),
                 'created' => date('Y-m-d H:i:s')
@@ -292,7 +291,7 @@ class Vendors extends MY_Controller {
                     if (count(array_unique($imported_emails)) != count($imported_emails)) { //-- check emails in column are unique or not
                         fclose($handle);
                         $this->session->set_flashdata('error', "Duplicate value in email column.");
-                    } else if (!empty($check_email_valid)) { //-- check Account/Program in columns are valid or not
+                    } else if (!empty($check_email_valid)) { //-- check Email is valid or not
                         $rows = implode(',', $check_email_valid);
                         $this->session->set_flashdata('error', "Donor's Email is not in valid format. Please check entries at row number - " . $rows);
                     } else if (!empty($check_email)) { //-- check Account/Program in columns are valid or not
@@ -307,12 +306,10 @@ class Vendors extends MY_Controller {
                             foreach ($vendor_data as $val) {
                                 $vendor_arr = [
                                     'name' => $val['name'],
-//                                    'contact_name' => $val['contact_name'],
                                     'address' => $val['address'],
                                     'city_id' => $val['city_id'],
                                     'state_id' => $val['state_id'],
                                     'zip' => $val['zip'],
-//                                    'email' => $val['email'],
                                     'phone' => $val['phone'],
                                     'website' => $val['website'],
                                     'created' => date('Y-m-d H:i:s')
@@ -339,6 +336,175 @@ class Vendors extends MY_Controller {
         } else {
             $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
             redirect('vendors');
+        }
+    }
+
+    /**
+     * Listing of All Vendor's communication
+     * @author KU
+     */
+    public function communication($id = null) {
+        checkPrivileges('account', 'view');
+        $vendor = $this->vendors_model->sql_select(TBL_VENDORS, 'name', ['where' => ['id' => base64_decode($id), 'is_delete' => 0]], ['single' => true]);
+        if (!empty($vendor)) {
+            $data['vendor'] = $vendor;
+            $data['perArr'] = checkPrivileges('accounts_communication');
+            $data['title'] = 'Extracredit | Vendor Communication';
+            $data['id'] = $id;
+            $this->template->load('default', 'vendors/list_communication', $data);
+        } else {
+            show_404();
+        }
+    }
+
+    /**
+     * Get Vendors communication data for ajax table
+     * @author REP
+     * */
+    public function get_vendors_communication($id) {
+        checkPrivileges('accounts_communication', 'view');
+        $id = base64_decode($id);
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->vendors_model->get_vendors_communication('count', $id);
+        $final['redraw'] = 1;
+        $vendors = $this->vendors_model->get_vendors_communication('result', $id);
+        $start = $this->input->get('start') + 1;
+
+        foreach ($vendors as $key => $val) {
+            $vendors[$key] = $val;
+            $vendors[$key]['sr_no'] = $start;
+            $vendors[$key]['created'] = date('m/d/Y', strtotime($val['created']));
+            $vendors[$key]['follow_up_date'] = ($val['follow_up_date'] != '') ? date('m/d/Y', strtotime($val['follow_up_date'])) : '';
+            $vendors[$key]['communication_date'] = ($val['communication_date'] != '') ? date('m/d/Y', strtotime($val['communication_date'])) : '';
+            $start++;
+        }
+        $final['data'] = $vendors;
+        echo json_encode($final);
+    }
+
+    /**
+     * Get Vendors communication data by its ID 
+     * @author KU
+     * */
+    public function get_communication_by_id() {
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        $vendor_communication = $this->vendors_model->sql_select(TBL_COMMUNICATIONS, '*', ['where' => ['id' => $id, 'is_delete' => 0, 'type' => 4]], ['single' => true]);
+        if (!empty($vendor_communication)) {
+            $vendor_communication['follow_up_date'] = ($vendor_communication['follow_up_date'] != '') ? date('m/d/Y', strtotime($vendor_communication['follow_up_date'])) : '';
+            $vendor_communication['communication_date'] = ($vendor_communication['communication_date'] != '') ? date('m/d/Y', strtotime($vendor_communication['communication_date'])) : '';
+        }
+        echo json_encode($vendor_communication);
+    }
+
+    /**
+     * Add vendor communication data
+     * @param int $vendor_id
+     * @param int $comm_id
+     */
+    public function add_communication($vendor_id = null, $comm_id = null) {
+        if (!is_null($vendor_id))
+            $vendor_id = base64_decode($vendor_id);
+
+        $data['vendor'] = $this->vendors_model->sql_select(TBL_VENDORS, 'id', ['where' => ['id' => $vendor_id]], ['single' => true]);
+        $data['contacts'] = $this->vendors_model->sql_select(TBL_ASSOCIATED_CONTACTS, 'id,name', ['where' => ['associated_id' => $vendor_id, 'type' => 'vendor', 'is_delete' => 0]]);
+        $comm_id = base64_decode($comm_id);
+        if (is_numeric($comm_id)) {
+            checkPrivileges('accounts_communication', 'edit');
+            $vendor_communication = $this->vendors_model->sql_select(TBL_COMMUNICATIONS, '*', ['where' => ['id' => $comm_id, 'type' => 4, 'is_delete' => 0]], ['single' => true]);
+            $data['vendor_communication'] = $vendor_communication;
+            $data['title'] = 'Extracredit | Edit Communication';
+            $data['heading'] = 'Edit Communication';
+            if ($vendor_communication['media'] != '')
+                $media = $vendor_communication['media'];
+            else
+                $media = NULL;
+        } else {
+            checkPrivileges('accounts_communication', 'add');
+            $media = NULL;
+            $data['title'] = 'Extracredit | Add Communication';
+            $data['heading'] = 'Add Communication';
+            $data['cities'] = [];
+            $data['accounts'] = [];
+        }
+        $this->form_validation->set_rules('note', 'Note', 'trim|required');
+        if ($this->form_validation->run() == TRUE) {
+            $flag = 0;
+            if ($_FILES['media']['name'] != '') {
+                $image_data = upload_communication('media', COMMUNICATION_IMAGES);
+                if (is_array($image_data)) {
+                    $flag = 1;
+                    $data['media_validation'] = $image_data['errors'];
+                } else {
+                    if ($media != '') {
+                        unlink(COMMUNICATION_IMAGES . $media);
+                    }
+                    $media = $image_data;
+                }
+            }
+
+            if ($flag == 0) {
+                $dataArr = array(
+                    'type' => 4,
+                    'communication_date' => ($this->input->post('communication_date') != '') ? date('Y-m-d', strtotime($this->input->post('communication_date'))) : NULL,
+                    'subject' => $this->input->post('subject'),
+                    'follow_up_date' => ($this->input->post('follow_up_date') != '') ? date('Y-m-d', strtotime($this->input->post('follow_up_date'))) : NULL,
+                    'donor_id' => 0,
+                    'guest_id' => 0,
+                    'account_id' => 0,
+                    'vendor_id' => $vendor_id,
+                    'associated_contact_id' => $this->input->post('associated_contact_id'),
+                    'note' => $this->input->post('note'),
+                    'media' => $media
+                );
+
+                if (is_numeric($comm_id)) {
+                    $dataArr['modified'] = date('Y-m-d H:i:s');
+                    $this->vendors_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
+                    $this->session->set_flashdata('success', 'Vendor communication details has been updated successfully.');
+                } else {
+                    $dataArr['created'] = date('Y-m-d H:i:s');
+                    $communication_id = $this->vendors_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
+                    if (!empty($this->input->post('follow_up_date'))) {
+                        $communication_ManagerArr = array(
+                            'communication_id' => $communication_id,
+                            'user_id' => $this->session->userdata('extracredit_user')['id'],
+                            'category' => 'Vendor',
+                            'follow_up_date' => date('Y-m-d', strtotime($this->input->post('follow_up_date'))),
+                        );
+                        $this->communication_manager_model->common_insert_update('insert', TBL_COMMUNICATIONS_MANAGER, $communication_ManagerArr);
+                    }
+                    $this->session->set_flashdata('success', 'Vendor communication has been added successfully');
+                }
+                redirect('vendors/communication/' . base64_encode($vendor_id));
+            }
+        }
+        $this->template->load('default', 'vendors/add_communication', $data);
+    }
+
+    /**
+     * Delete vendor communication 
+     * @param int $vendor_id - Vendor Id
+     * @param int $id - Communication Id
+     * @author KU
+     */
+    public function delete_communication($vendor_id = null, $id = NULL) {
+        checkPrivileges('accounts_communication', 'delete');
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $vendor_communication = $this->vendors_model->sql_select(TBL_COMMUNICATIONS, '*', ['where' => ['id' => $id, 'type' => 4, 'is_delete' => 0]], ['single' => true]);
+            if ($vendor_communication) {
+                $update_array = array(
+                    'is_delete' => 1
+                );
+
+                $this->vendors_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id, 'type' => 4]);
+                $this->session->set_flashdata('success', 'Vendor communication has been deleted successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request. Please try again!');
+            }
+            redirect('vendors/communication/' . $vendor_id);
+        } else {
+            show_404();
         }
     }
 

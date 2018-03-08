@@ -137,6 +137,9 @@
                         if ($.inArray('view', permissions) !== -1) {
                             action += '<a href="javascript:void(0)" class="vendor_view_btn" id=' + btoa(full.id) + ' title="View Vendor"><i class="icon-eye"></i> View Vendor</a>';
                         }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'vendors/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>';
+                        }
                         if ($.inArray('delete', permissions) !== -1) {
                             action += '<a href="' + site_url + 'vendors/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Vendor"><i class="icon-trash"></i> Delete Vendor</a>'
                         }

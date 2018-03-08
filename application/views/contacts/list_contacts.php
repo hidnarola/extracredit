@@ -135,6 +135,9 @@
                         if ($.inArray('view', permissions) !== -1) {
                             action += '<a href="javascript:void(0)" class="contact_view_btn" id=' + btoa(full.id) + ' title="View Contact"><i class="icon-eye"></i> View Contact</a>';
                         }
+                        if ($.inArray('view', permissions) !== -1) {
+                            action += '<a href="' + site_url + 'contacts/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>';
+                        }
                         if ($.inArray('delete', permissions) !== -1) {
                             action += '<a href="' + site_url + 'contacts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Contact"><i class="icon-trash"></i> Delete Contact</a>'
                         }
