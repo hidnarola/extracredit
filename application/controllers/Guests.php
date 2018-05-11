@@ -18,8 +18,8 @@ class Guests extends MY_Controller {
      * Listing of All Guests
      */
     public function index() {
-        checkPrivileges('guest', 'view');
-        $data['perArr'] = checkPrivileges('guest');
+        checkPrivileges('guests', 'view');
+        $data['perArr'] = checkPrivileges('guests');
         $data['comperArr'] = checkPrivileges('guests_communication');
         $data['title'] = 'Extracredit | Guests';
         $this->template->load('default', 'guests/list_guests', $data);
@@ -29,7 +29,7 @@ class Guests extends MY_Controller {
      * Get guests data for ajax table
      * */
     public function get_guests() {
-        checkPrivileges('guest', 'view');
+        checkPrivileges('guests', 'view');
         $final['recordsFiltered'] = $final['recordsTotal'] = $this->guests_model->get_guests('count');
         $final['redraw'] = 1;
         $final['data'] = $this->guests_model->get_guests('result');
@@ -62,7 +62,7 @@ class Guests extends MY_Controller {
                 show_404();
             }
         } else {
-            checkPrivileges('guest', 'add');
+            checkPrivileges('guests', 'add');
 
             if ($this->input->post('email') && $this->input->post('email_unavailable') != 1) {
                 $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|callback_is_uniquemail');
@@ -231,7 +231,7 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function edit($id) {
-        checkPrivileges('guest', 'edit');
+        checkPrivileges('guests', 'edit');
         $this->add($id);
     }
 
@@ -256,7 +256,7 @@ class Guests extends MY_Controller {
      * @param int $id
      * */
     public function delete($id = NULL) {
-        checkPrivileges('guest', 'delete');
+        checkPrivileges('guests', 'delete');
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $guest = $this->guests_model->get_guest_details($id);
@@ -530,7 +530,7 @@ class Guests extends MY_Controller {
      * @author : REP
      */
     public function view_guest() {
-        checkPrivileges('guest', 'view');
+        checkPrivileges('guests', 'view');
         $guest_id = base64_decode($this->input->post('id'));
         $guest = $this->guests_model->get_guest_details_view($guest_id);
         if ($guest) {
@@ -549,7 +549,7 @@ class Guests extends MY_Controller {
      * @author REP
      */
     public function import_guest() {
-        checkPrivileges('guest', 'add');
+        checkPrivileges('guests', 'add');
         $fileDirectory = GUEST_CSV;
         $config['overwrite'] = FALSE;
         $config['remove_spaces'] = TRUE;
