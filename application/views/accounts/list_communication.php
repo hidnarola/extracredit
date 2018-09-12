@@ -21,8 +21,8 @@
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> Accounts</a></li>
-            <li class="active">Account Communication</li>
+            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> <!--Accounts-->Award Recipients</a></li>
+            <li class="active"><!--Account-->Award Recipients Communication</li>
         </ul>
     </div>
 </div>
@@ -250,7 +250,7 @@
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this account communication!",
+            text: "You will not be able to recover this award recipients communication!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",

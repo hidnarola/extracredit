@@ -181,4 +181,22 @@
         return Number(value) >= 0;
     }, 'Please enter positive number');
 
+//save reminder when user navigate away from a record that user have been working on
+var form_changes = false;
+$(document).ready(function () {
+	$("form").on("change", ":input, select", function () {
+        form_changes = true;
+    });
+    $('form').submit(function () {
+        form_changes = false;
+    });
+});
+
+window.onbeforeunload = function () {
+    if (form_changes) {
+        return true; // you can make this dynamic, ofcourse...
+    } else {
+        return undefined;
+    }
+};
 </script>

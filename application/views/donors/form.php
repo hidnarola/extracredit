@@ -129,6 +129,27 @@ if (isset($donor)) {
                                     ?>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="col-lg-1 control-label">Company</label>
+                                <div class="col-lg-4">
+                                    <input type="text" name="company" id="company" placeholder="Enter Company Name" class="form-control" value="">
+                                    
+                                </div>
+                                <label class="col-lg-1 control-label">Is Subscribed? </label>
+                            <div class="col-lg-4">
+                               
+                                <div class="checkbox checkbox-switch">
+                                    <label>
+                                        <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
+                                            if (isset($donor) && $donor['is_subscribed'] == 0)
+                                                echo '';
+                                            else
+                                                echo 'checked="checked"';
+                                            ?> value="1">
+                                    </label>
+                                </div>
+                            </div>
+                            </div>
                             <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($donor)) ? $donor['state_short'] : set_value('state_short'); ?>"/>
                         </fieldset>
                         <?php if (!isset($donor)) { ?>
@@ -305,7 +326,13 @@ if (isset($donor)) {
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="donor_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
-                                <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
+                                <?php if(!isset($donor))
+                                { ?>
+                                    <button type="submit" name="save_add_another" style="width: 172px;display: inline-block;float: left;margin-right: 15px;border: none;padding: 8px 12px;" class="btn bg-teal" id="donor_btn_submit1">Save and Add Another<i class="icon-arrow-right14 position-right"></i></button>
+                                <?php   
+                                } ?>
+                                <a href="<?php echo base_url('donors') ?>" style="color:black" class="btn border-slate btn-flat cancel-btn custom_cancel_button">Cancel</a>
+                                <!-- <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button> -->
                             </div>
                         </div>                        
                     </form>
@@ -462,6 +489,7 @@ if (isset($donor)) {
         },
         submitHandler: function (form) {
             $('#donor_btn_submit').attr('disabled', true);
+            $('#donor_btn_submit1').attr('disabled', true);
             form.submit();
         }
     });
@@ -529,4 +557,23 @@ if (isset($donor)) {
     $.validator.addMethod("zipcodeUS", function (value, element) {
         return this.optional(element) || /^\d{5}-\d{4}$|^\d{5}$/.test(value);
     }, "The specified US ZIP Code is invalid");
+
+    
+var form_changes = false;
+$(document).ready(function () {
+	$("form").on("change", ":input, select", function () {
+        form_changes = true;
+    });
+    $('form').submit(function () {
+        form_changes = false;
+    });
+});
+
+window.onbeforeunload = function () {
+    if (form_changes) {
+        return true; // you can make this dynamic, ofcourse...
+    } else {
+        return undefined;
+    }
+};
 </script>

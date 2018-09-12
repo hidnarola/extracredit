@@ -10,7 +10,7 @@
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li>Funds</li>
-            <li class="active">Accounts</li>
+            <li class="active">Award Recipients <!--Accounts--></li>
         </ul>
     </div>
 </div>

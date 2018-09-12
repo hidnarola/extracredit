@@ -145,6 +145,102 @@ class Settings extends MY_Controller {
     }
 
     /**
+     * List all contact types added and add/update contact type
+     */
+    public function contact_types() {
+        checkPrivileges('payment_types', 'view');
+        $data['perArr'] = checkPrivileges('payment_types');
+        $data['title'] = 'Extracredit | Contact Types';
+        $data['contact_types'] = $this->users_model->sql_select(TBL_CONTACT_TYPES, null, ['where' => ['is_delete' => 0]]);
+        $this->form_validation->set_rules('contact_type', 'Contact Type', 'trim|required');
+        if ($this->form_validation->run() == TRUE) {
+            $id = $this->input->post('contact_type_id');
+            //-- If id is not blank then update payment type else insert new payment type
+            if ($id != '') {
+                $result = $this->users_model->sql_select(TBL_CONTACT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($result)) {
+                    checkPrivileges('payment_types', 'edit');
+                    $update_array = array(
+                        'type' => trim($this->input->post('contact_type')),
+                        'modified' => date('Y-m-d H:i:s')
+                    );
+                    $this->users_model->common_insert_update('update', TBL_CONTACT_TYPES, $update_array, ['id' => $id]);
+                    $this->session->set_flashdata('success', 'Contact type updated successfully');
+                } else {
+                    $this->session->set_flashdata('error', 'Invalid request! Please try again later');
+                }
+            } else {
+                checkPrivileges('payment_types', 'add');
+                $update_array = array(
+                    'type' => trim($this->input->post('contact_type')),
+                    'created' => date('Y-m-d H:i:s')
+                );
+                $this->users_model->common_insert_update('insert', TBL_CONTACT_TYPES, $update_array);
+                $this->session->set_flashdata('success', trim($this->input->post('contact_type')) . ' Contact Type inserted successfully');
+            }
+            redirect('settings/contact_types');
+        }
+        $this->template->load('default', 'settings/contact_types', $data);
+    }
+
+ /**
+     * Get contact type details by id
+     */
+    public function get_contact_type_by_id() {
+        $id = base64_decode($this->input->post('id'));
+        $contact_type = $this->users_model->sql_select(TBL_CONTACT_TYPES, null, ['where' => ['is_delete' => 0, 'id' => $id]], ['single' => true]);
+        echo json_encode($contact_type);
+    }
+
+/**
+     * Delete contact type
+     * @param int $id
+     */
+    public function delete_contacttype($id = NULL) {
+        checkPrivileges('payment_types', 'delete');
+        $id = base64_decode($id);
+        if (is_numeric($id)) {
+            $result = $this->users_model->sql_select(TBL_CONTACT_TYPES, NULL, ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
+            if (!empty($result)) {
+                //-- check if it is assigned to any donor or not
+                $is_assigned = $this->users_model->sql_select(TBL_CONTACTS, NULL, ['where' => ['contact_type_id' => $id, 'is_delete' => 0]], ['single' => true]);
+                if (!empty($is_assigned)) {
+                    $this->session->set_flashdata('error', 'You can not delete ' . $result['type'] . ' contact type,It is assigned to contact');
+                    redirect('settings/contact_types');
+                }
+
+                $update_array = array(
+                    'is_delete' => 1
+                );
+                $this->users_model->common_insert_update('update', TBL_CONTACT_TYPES, $update_array, ['id' => $id]);
+                $this->session->set_flashdata('success', $result['type'] . ' deleted successfully');
+            } else {
+                $this->session->set_flashdata('error', 'Invalid request! Please try again later');
+            }
+            redirect('settings/contact_types');
+        } else {
+            show_404();
+        }
+    }
+    /**
+     * Check contact type exist or not
+     * @param int $id If Id is passed then do not consider that id to check contact type
+     */
+    public function check_contact_type($id = NULL) {
+        $contact_type = trim($this->input->get('contact_type'));
+        $where = ['is_delete' => 0, 'type' => $contact_type];
+        if (!is_null($id)) {
+            $where = array_merge($where, ['id!=' => $id]);
+        }
+        $result = $this->users_model->sql_select(TBL_CONTACT_TYPES, NULL, ['where' => $where], ['single' => true]);
+        if (!empty($result)) {
+            echo "false";
+        } else {
+            echo "true";
+        }
+        exit;
+    }
+    /**
      * List all payment types added and add/update payment type
      */
     public function payment_types() {

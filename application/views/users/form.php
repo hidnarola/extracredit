@@ -85,7 +85,7 @@ if (isset($user)) {
                                         </div>
                                         <div class="form-group">
                                             <div class="col-md-12">
-                                                <label class=control-label">First Name <span class="text-danger">*</span></label>
+                                                <label class="control-label">First Name <span class="text-danger">*</span></label>
                                                 <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" class="form-control" required="required" value="<?php echo (isset($user) && $user['firstname']) ? $user['firstname'] : set_value('firstname'); ?>">
                                                 <?php
                                                 echo '<label id="firstname-error" class="validation-error-label" for="firstname">' . form_error('firstname') . '</label>';
@@ -483,4 +483,23 @@ if (isset($user)) {
     $(".styled, .multiselect-container input").uniform({
         radioClass: 'choice'
     });
+
+//save reminder when user navigate away from a record that user have been working on
+var form_changes = false;
+$(document).ready(function () {
+	$("form").on("change", ":input, select", function () {
+        form_changes = true;
+    });
+    $('form').submit(function () {
+        form_changes = false;
+    });
+});
+
+window.onbeforeunload = function () {
+    if (form_changes) {
+        return true; // you can make this dynamic, ofcourse...
+    } else {
+        return undefined;
+    }
+};
 </script>

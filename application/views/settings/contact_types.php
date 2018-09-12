@@ -6,14 +6,14 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Program Status</span></h4>
+            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Contact Types</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home') ?>"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="<?php echo site_url('settings') ?>"><i class="icon-gear position-left"></i> Settings</a></li>
-            <li class="active">Program Status</li>
+            <li class="active">Contact Types</li>
         </ul>
     </div>
 </div>
@@ -24,7 +24,7 @@
             if ($this->session->flashdata('success')) {
                 ?>
                 <div class="alert alert-success hide-msg">
-                    <button Status="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Close</span></button>
+                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Close</span></button>
                     <strong><?php echo $this->session->flashdata('success') ?></strong>
                 </div>
             <?php } ?>
@@ -38,32 +38,38 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4" id="program_status_row">
-            <form method="POST" class="form-validate-jquery" id="add_programstatus_form" name="add_programstatus_form">
+        <div class="col-md-4" id="contact_type_row">
+            <form method="POST" class="form-validate-jquery" id="add_contacttype_form" name="add_contacttype_form">
                 <div class="panel panel-flat">
                     <div class="panel-heading">
-                        <h5 class="panel-title">Add/Update Program Status</h5>
+                        <h5 class="panel-title">Add/Update Contact Type</h5>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group form-group-material has-feedback">
-                                    <label class="required">Program Status </label>
-                                    <input type="text" class="form-control" name="program_status" id="program_status" required="required">
+                                    <label class="required">Contact Type </label>
+                                    <input type="text" class="form-control" name="contact_type" id="contact_type" required="required">
                                     <?php
-                                    echo '<label id="program_status-error" class="validation-error-label" for="program_status">' . form_error('program_status') . '</label>';
+                                    echo '<label id="contact_type-error" class="validation-error-label" for="contact_type">' . form_error('contact_type') . '</label>';
                                     ?>
-                                    <input type="hidden" name="program_status_id" id="program_status_id">
+                                    <input type="hidden" name="contact_type_id" id="contact_type_id">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <button type="submit" name="save" class="btn bg-teal custom_save_button" id="programstatus_submit_btn">Save<i class="icon-arrow-right14 position-right"></i></button>
+                                    <button type="submit" name="save" class="btn bg-teal custom_save_button" id="contacttype_submit_btn">Save<i class="icon-arrow-right14 position-right"></i></button>
                                     <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="cancel_click()">Cancel</button>
                                 </div>
-                            </div> 
+                            </div>  
+                            <!--                            <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <button type="submit" class="btn btn-success custom_save_button" id="paymenttype_submit_btn">Save</button>
+                                                                <button type="button" class="btn btn-default custom_cancel_button" onclick="cancel_click()">Cancel</button>
+                                                            </div>
+                                                        </div>-->
                         </div>
                     </div>
                 </div>
@@ -72,29 +78,29 @@
         <div class="col-md-8">
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h5 class="panel-title">Program Status List</h5>
+                    <h5 class="panel-title">Contact Types List</h5>
                 </div>
                 <table class="table datatable-basic">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Status</th>
+                            <th>Type</th>
                             <th>Added Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($program_status as $key => $val) { ?>
+                        <?php foreach ($contact_types as $key => $val) { ?>
                             <tr>
                                 <td><?php echo $key + 1; ?></td>
-                                <td><?php echo $val['status']; ?></td>
+                                <td><?php echo $val['type']; ?></td>
                                 <td><?php echo date('m/d/Y', strtotime($val['created'])); ?></td>
                                 <td>
                                     <?php if (in_array('edit', $perArr)) { ?>
-                                        <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Program Status"><i class="icon-pencil3"></i></a>
+                                        <a id="edit_<?php echo base64_encode($val['id']) ?>" class="btn border-primary text-primary-600 btn-flat btn-icon btn-rounded btn-xs edit" title="Edit Contact Type"><i class="icon-pencil3"></i></a>
                                     <?php } ?>
                                     <?php if (in_array('delete', $perArr)) { ?>
-                                        &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_programstatus/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Program Status"><i class="icon-trash"></i></a>
+                                        &nbsp;&nbsp;<a href="<?php echo site_url('settings/delete_contacttype/' . base64_encode($val['id'])) ?>" class="btn border-danger text-danger-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return confirm_alert(this)" title="Delete Contact Type"><i class="icon-trash"></i></a>
                                         <?php } ?>
                                 </td>
                             </tr>
@@ -123,8 +129,8 @@
             width: 'auto'
         });
     });
-    //-- Validate Program status form
-    $("#add_programstatus_form").validate({
+    //-- Validate Payment type form
+    $("#add_contacttype_form").validate({
         ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
         errorClass: 'validation-error-label',
         successClass: 'validation-valid-label',
@@ -141,7 +147,8 @@
             if (element.parents('div').hasClass("checker") || element.parents('div').hasClass("choice") || element.parent().hasClass('bootstrap-switch-container')) {
                 if (element.parents('label').hasClass('checkbox-inline') || element.parents('label').hasClass('radio-inline')) {
                     error.appendTo(element.parent().parent().parent().parent());
-                } else {
+                }
+                else {
                     error.appendTo(element.parent().parent().parent().parent().parent());
                 }
             }
@@ -164,7 +171,9 @@
             // Input group, styled file input
             else if (element.parent().hasClass('uploader') || element.parents().hasClass('input-group')) {
                 error.appendTo(element.parent().parent());
-            } else {
+            }
+
+            else {
                 error.insertAfter(element);
             }
         },
@@ -173,28 +182,28 @@
             label.addClass("validation-valid-label")
         },
         rules: {
-            program_status: {
+            contact_type: {
                 required: true,
-                remote: site_url + "settings/check_program_status/",
+                remote: site_url + "settings/check_contact_type/",
             },
         },
         messages: {
-            program_status: {
-                remote: $.validator.format("This program status already exist!")
+            contact_type: {
+                remote: $.validator.format("This contact type already exist!")
             }
         },
         submitHandler: function (form) {
-            $('#programstatus_submit_btn').attr('disabled', true);
+            $('#contacttype_submit_btn').attr('disabled', true);
             form.submit();
         }
     });
+
     //-- This function is used to edit particular records
     $(document).on('click', '.edit', function () {
         var id = $(this).attr('id').replace('edit_', '');
-        var url = site_url + 'settings/get_program_status_by_id';
+        var url = site_url + 'settings/get_contact_type_by_id';
         $('#custom_loading').removeClass('hide');
         $('#custom_loading img').addClass('hide');
-//        $('#program_status_row').css('z-index', '999999');
         $.ajax({
             type: 'POST',
             url: url,
@@ -202,15 +211,15 @@
             dataType: 'JSON',
             data: {id: id},
             success: function (data) {
-                $('#program_status').val(data.status);
-                $('#program_status_id').val(data.id);
-                $("#program_status").rules("add", {
-                    remote: site_url + "settings/check_program_status/" + data.id,
+                $('#contact_type').val(data.type);
+                $('#contact_type_id').val(data.id);
+                $("#contact_type").rules("add", {
+                    remote: site_url + "settings/check_contact_type/" + data.id,
                     messages: {
-                        remote: $.validator.format("This program status already exist!")
+                        remote: $.validator.format("This contact type already exist!")
                     }
                 });
-                $("#add_programstatus_form").validate().resetForm();
+                $("#add_contacttype_form").validate().resetForm();
                 $('html, body').animate({scrollTop: 0}, 500);
                 setTimeout(function () {
                     $('body').css('overflow', 'hidden');
@@ -222,40 +231,41 @@
     function cancel_click() {
         $('#custom_loading').addClass('hide');
         $('#custom_loading img').removeClass('hide');
-//        $('#program_status_row').css('z-index', '0');
-        $('#program_status').val('');
-        $('#program_status_id').val('');
-        $("#program_status").rules("add", {
-            remote: site_url + "settings/check_program_status/",
+        $('#contact_type').val('');
+        $('#contact_type_id').val('');
+        $("#contact_type").rules("add", {
+            remote: site_url + "settings/check_contact_type/",
             messages: {
-                remote: $.validator.format("This program status already exist!")
+                remote: $.validator.format("This contact type already exist!")
             }
         });
-        $('#program_status').valid();
-        $("#add_programstatus_form").validate().resetForm();
+        $('#contact_type').valid();
+        $("#add_contacttype_form").validate().resetForm();
         $('body').css('overflow', 'auto');
     }
-    //-- Confirmation alert for delete program status
+
+    //-- Confirmation alert for delete payment type
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this Program Status!",
+            text: "You will not be able to recover this Contact Type!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",
             confirmButtonText: "Yes, delete it!"
         },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        window.location.href = $(e).attr('href');
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+        function (isConfirm) {
+            if (isConfirm) {
+                window.location.href = $(e).attr('href');
+                return true;
+            } else {
+                return false;
+            }
+        });
         return false;
     }
 
+    
 //save reminder when user navigate away from a record that user have been working on
 var form_changes = false;
 $(document).ready(function () {

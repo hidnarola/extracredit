@@ -94,6 +94,19 @@ class Vendors extends MY_Controller {
                 'created' => date('Y-m-d H:i:s')
             );
 
+            require_once(APPPATH."libraries/Mailin.php");
+            $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+            //Api Key(v2.0) : VGcJrUg9ypYRjExh
+            
+            if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
+            {
+                $dataArr['is_subscribed'] = 1; //insert in guest table
+            }
+            else
+            {
+                $dataArr['is_subscribed'] = 0; //update in guest table
+            }
+
             if (is_numeric($id)) {
                 $vendor_id = $id;
                 $dataArr['modified'] = date('Y-m-d H:i:s');
@@ -117,12 +130,36 @@ class Vendors extends MY_Controller {
                 }
                 $arr = ['name' => $name, 'email' => $email, 'phone' => $this->input->post('contact_phone')[$key], 'type' => 'vendor', 'associated_id' => $vendor_id, 'created' => date('Y-m-d H:i:s')];
                 $contact_arr[] = $arr;
+                //-- Insert account email into sendinblue subscriber list
+                if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
+                {
+                    $data = array( "email" => $email,
+                    "attributes" => array("FIRSTNAME" => $name, "LASTNAME"=>""),
+                    "listid" => array(7)
+                    );
+                    $mailin->create_update_user($data);
+                }
+                else
+                {
+                    $data = array( "email" =>  $email,
+                    "listid_unlink" => array(7)
+                    );
+                    $mailin->create_update_user($data);
+                }
             }
 
             if (!empty($contact_arr)) {
                 $this->vendors_model->batch_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $contact_arr);
             }
-            redirect('vendors');
+            if (isset($_POST['save_add_another']))
+            {
+                redirect('vendors/add');
+            }
+            else
+            {
+                redirect('vendors');
+            }
+            
         }
         $this->template->load('default', 'vendors/form', $data);
     }
@@ -147,9 +184,19 @@ class Vendors extends MY_Controller {
         if (is_numeric($id)) {
             $vendor = $this->vendors_model->sql_select(TBL_VENDORS, 'id,email', ['where' => ['id' => $id]], ['single' => true]);
             if (!empty($vendor)) {
-                $update_array = array(
-                    'is_delete' => 1
+                //Remove Subscribed user from SendInBlue.com
+                require_once(APPPATH."libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+                $data = array( "email" => $vendor['email'],
+                "listid_unlink" => array(7)
                 );
+                $mailin->create_update_user($data);
+
+                $update_array = array(
+                    'is_delete' => 1,
+                    'is_subscribed' => 0
+                );
+
                 $this->vendors_model->common_insert_update('update', TBL_VENDORS, $update_array, ['id' => $id]);
                 $this->session->set_flashdata('success', 'Vendor has been deleted successfully!');
             } else {

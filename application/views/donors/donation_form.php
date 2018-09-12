@@ -378,4 +378,21 @@ if (isset($donation)) {
         return Number(value) > 0;
     }, 'Please enter valid amount');
 
+var form_changes = false;
+$(document).ready(function () {
+	$("form").on("change", ":input, select", function () {
+        form_changes = true;
+    });
+    $('form').submit(function () {
+        form_changes = false;
+    });
+});
+
+window.onbeforeunload = function () {
+    if (form_changes) {
+        return true; // you can make this dynamic, ofcourse...
+    } else {
+        return undefined;
+    }
+};
 </script>

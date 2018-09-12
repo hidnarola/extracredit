@@ -339,4 +339,12 @@ class Accounts_model extends MY_Model {
         return $query->row_array();
     }
 
+    public function get_accounts_report()
+    {
+        $this->db->select('*');
+        $this->db->where(['a.is_delete' => 0,'a.is_subscribed' => 1]);
+        $query = $this->db->get(TBL_ACCOUNTS . ' a');
+        return $query->result_array();
+    }
+
 }

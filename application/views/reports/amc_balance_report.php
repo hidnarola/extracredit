@@ -96,7 +96,7 @@
         <table class="table datatable-basic">
             <thead>
                 <tr>
-                    <th>Active</th>
+                    <th>AMC Active</th>
                     <th>Program Name</th>
                     <th>Address</th>
                     <th>City</th>
@@ -169,9 +169,9 @@
                     searchable: false,
                     sortable: false,
                     render: function (data, type, full, meta) {
-                        var status = '<span class="label bg-success">Active</span>';
+                        var status = '<span class="label bg-success">Yes</span>';
                         if (full.is_active == 0) {
-                            status = '<span class="label bg-warning">Not Active</span>';
+                            status = '<span class="label bg-warning">No</span>';
                         }
                         return status;
                     }

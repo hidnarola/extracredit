@@ -20,7 +20,7 @@ class Accounts extends MY_Controller {
     public function index() {
         checkPrivileges('accounts', 'view');
         $data['perArr'] = checkPrivileges('accounts');
-        $data['title'] = 'Extracredit | Accounts';
+        $data['title'] = 'Extracredit | Award Recipients';
         $this->template->load('default', 'accounts/list_accounts', $data);
     }
 
@@ -49,8 +49,8 @@ class Accounts extends MY_Controller {
             $account = $this->accounts_model->get_account_details($id);
             if ($account) {
                 $data['account'] = $account;
-                $data['title'] = 'Extracredit | Edit Account';
-                $data['heading'] = 'Edit Account';
+                $data['title'] = 'Extracredit | Edit Award Recipient';
+                $data['heading'] = 'Edit Award Recipient';
                 $data['contacts'] = $this->accounts_model->sql_select(TBL_ASSOCIATED_CONTACTS, 'id,name,email,phone', ['where' => ['is_delete' => 0, 'type' => 'account', 'associated_id' => $id]]);
             } else {
                 show_404();
@@ -58,8 +58,8 @@ class Accounts extends MY_Controller {
         } else {
             //-- Check logged in user has access to add account
             checkPrivileges('accounts', 'add');
-            $data['title'] = 'Extracredit | Add Account';
-            $data['heading'] = 'Add Account';
+            $data['title'] = 'Extracredit | Add Award Recipient';
+            $data['heading'] = 'Add Award Recipient';
             $data['cities'] = [];
         }
         $data['fund_types'] = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'id,name,type', ['where' => ['is_delete' => 0, 'type!=' => 1]], ['order_by' => 'name']);
@@ -108,6 +108,19 @@ class Accounts extends MY_Controller {
                 'website' => $this->input->post('website'),
             );
 
+            require_once(APPPATH."libraries/Mailin.php");
+            $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+            //Api Key(v2.0) : VGcJrUg9ypYRjExh
+            
+            if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
+            {
+                $dataArr['is_subscribed'] = 1; //insert in guest table
+            }
+            else
+            {
+                $dataArr['is_subscribed'] = 0; //update in guest table
+            }
+
             $fund_type = $this->accounts_model->sql_select(TBL_FUND_TYPES, 'type', ['where' => ['is_delete' => 0, 'id' => $this->input->post('fund_type_id')]], ['single' => true]);
             if ($fund_type['type'] == 1) {
                 $dataArr['vendor_name'] = $this->input->post('vendor_name');
@@ -125,12 +138,12 @@ class Accounts extends MY_Controller {
             if (is_numeric($id)) {
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $dataArr, ['id' => $id]);
-                $this->session->set_flashdata('success', 'Account details has been updated successfully.');
+                $this->session->set_flashdata('success', 'Award recipient details has been updated successfully.');
             } else {
                 $dataArr['created'] = date('Y-m-d H:i:s');
                 $account_id = $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS, $dataArr);
 
-                $this->session->set_flashdata('success', 'Account has been added successfully');
+                $this->session->set_flashdata('success', 'Award recipient has been added successfully');
             }
 
             foreach ($data['contacts'] as $contact) {
@@ -173,6 +186,23 @@ class Accounts extends MY_Controller {
                         'interests' => array(ACCOUNTS_GROUP_ID => true)
                     );
                     mailchimp($mailchimp_data);
+
+                      //-- Insert account email into sendinblue subscriber list
+                    if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
+                    {
+                        $data = array( "email" => $email,
+                        "attributes" => array("FIRSTNAME" => $name, "LASTNAME"=>""),
+                        "listid" => array(6)
+                        );
+                        $mailin->create_update_user($data);
+                    }
+                    else
+                    {
+                        $data = array( "email" =>  $email,
+                        "listid_unlink" => array(6)
+                        );
+                        $mailin->create_update_user($data);
+                    }
                 }
                 $arr = ['name' => $name, 'email' => $email, 'phone' => $this->input->post('contact_phone')[$key], 'type' => 'account', 'associated_id' => $account_id, 'created' => date('Y-m-d H:i:s')];
                 $contact_arr[] = $arr;
@@ -181,7 +211,15 @@ class Accounts extends MY_Controller {
             if (!empty($contact_arr)) {
                 $this->accounts_model->batch_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $contact_arr);
             }
-            redirect('accounts');
+
+            if (isset($_POST['save_add_another']))
+            {
+                redirect('accounts/add');
+            }
+            else
+            {
+                redirect('accounts');
+            }
         }
         $this->template->load('default', 'accounts/form', $data);
     }
@@ -246,12 +284,23 @@ class Accounts extends MY_Controller {
 //                $is_assigned = $this->accounts_model->sql_select(TBL_FUNDS, NULL, ['where' => ['account_id' => $id, 'is_delete' => 0, 'is_refund' => 0]]);
                 $is_assigned = $this->accounts_model->allow_delete($id);
                 if (!empty($is_assigned)) {
-                    $this->session->set_flashdata('error', 'You can not delete account,It is assigned to donor');
+                    $this->session->set_flashdata('error', 'You can not delete award recipient,It is assigned to donor');
                     redirect('accounts');
                 }
-                $update_array = array(
-                    'is_delete' => 1
+
+                //Remove Subscribed user from SendInBlue.com
+                require_once(APPPATH."libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+                $data = array( "email" => $account['email'],
+                "listid_unlink" => array(6)
                 );
+                $mailin->create_update_user($data);
+
+                $update_array = array(
+                    'is_delete' => 1,
+                    'is_subscribed' => 0
+                );
+
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, $update_array, ['id' => $id]);
 
                 //--Delete subscriber from account list
@@ -280,7 +329,7 @@ class Accounts extends MY_Controller {
                         }
                     }
                 }
-                $this->session->set_flashdata('success', 'Account has been deleted successfully!');
+                $this->session->set_flashdata('success', 'Award recipient has been deleted successfully!');
             } else {
                 $this->session->set_flashdata('error', 'Invalid request. Please try again!');
             }
@@ -370,7 +419,7 @@ class Accounts extends MY_Controller {
             $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,,IF(program_name = \'\',action_matters_campaign,program_name) as program_name,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
             if (!empty($account)) {
                 $data['account'] = $account;
-                $data['title'] = 'Extracredit | Account Transactions';
+                $data['title'] = 'Extracredit | Award Recipient Transactions';
                 $data['transactions'] = $this->accounts_model->get_account_transactions($account_id);
                 $this->template->load('default', 'accounts/transactions', $data);
             } else {
@@ -392,7 +441,7 @@ class Accounts extends MY_Controller {
         if (!empty($account)) {
             $data['account'] = $account;
             $data['perArr'] = checkPrivileges('accounts_communication');
-            $data['title'] = 'Extracredit | Accounts Communication';
+            $data['title'] = 'Extracredit | Award Recipient Communication';
             $data['id'] = $id;
             $this->template->load('default', 'accounts/list_communication', $data);
         } else {
@@ -497,7 +546,7 @@ class Accounts extends MY_Controller {
                 if (is_numeric($comm_id)) {
                     $dataArr['modified'] = date('Y-m-d H:i:s');
                     $this->accounts_model->common_insert_update('update', TBL_COMMUNICATIONS, $dataArr, ['id' => $comm_id]);
-                    $this->session->set_flashdata('success', 'Account communication details has been updated successfully.');
+                    $this->session->set_flashdata('success', 'Award recipient communication details has been updated successfully.');
                 } else {
                     $dataArr['created'] = date('Y-m-d H:i:s');
                     $this->accounts_model->common_insert_update('insert', TBL_COMMUNICATIONS, $dataArr);
@@ -510,7 +559,7 @@ class Accounts extends MY_Controller {
                         );
                         $this->communication_manager_model->common_insert_update('insert', TBL_COMMUNICATIONS_MANAGER, $communication_ManagerArr);
                     }
-                    $this->session->set_flashdata('success', 'Account communication has been added successfully');
+                    $this->session->set_flashdata('success', 'Award recipient communication has been added successfully');
                 }
                 redirect('accounts/communication/' . base64_encode($account_id));
             }
@@ -533,7 +582,7 @@ class Accounts extends MY_Controller {
                     'is_delete' => 1
                 );
                 $this->accounts_model->common_insert_update('update', TBL_COMMUNICATIONS, $update_array, ['id' => $id, 'type' => 3]);
-                $this->session->set_flashdata('success', 'Account communication has been deleted successfully!');
+                $this->session->set_flashdata('success', 'Award recipient communication has been deleted successfully!');
             } else {
                 $this->session->set_flashdata('error', 'Invalid request. Please try again!');
             }
@@ -583,7 +632,7 @@ class Accounts extends MY_Controller {
 //             p($account,1);
             checkPrivileges('transfer_account', 'add');
             $data['title'] = 'Extracredit | Transfer Money';
-            $data['heading'] = 'Account Transfer';
+            $data['heading'] = 'Award Recipient Transfer';
             $data['account'] = $account;
             $data['accounts'] = [];
             $data['account_fund'] = $account['total_fund'];
@@ -591,7 +640,7 @@ class Accounts extends MY_Controller {
         }
 
 //        $this->form_validation->set_rules('account_id_from', 'Account Name', 'trim|required|numeric');
-        $this->form_validation->set_rules('account_id_to', 'Account To Name', 'trim|required|numeric');
+        $this->form_validation->set_rules('account_id_to', 'Award Recipient To Name', 'trim|required|numeric');
         $this->form_validation->set_rules('amount', 'Amount', 'trim|required|numeric');
 
         if ($this->form_validation->run() == TRUE) {
@@ -616,7 +665,7 @@ class Accounts extends MY_Controller {
                 $this->accounts_model->common_insert_update('update', TBL_ACCOUNTS, ['total_fund' => $account_fund_to], ['id' => $this->input->post('account_id_to')]);
             } else {
                 $is_valid = 0;
-                $this->session->set_flashdata('error', 'Fail to update payment! You have entered more amount than Account fund');
+                $this->session->set_flashdata('error', 'Fail to update payment! You have entered more amount than award recipient fund');
             }
             if ($is_valid == 1) {
                 $this->accounts_model->common_insert_update('insert', TBL_ACCOUNTS_TRANSFER, $dataArr);
@@ -796,10 +845,10 @@ class Accounts extends MY_Controller {
                         $this->session->set_flashdata('error', "Duplicate value in email column.");
                     } else if (!empty($check_email_valid)) { //-- check Account/Program in columns are valid or not
                         $rows = implode(',', $check_email_valid);
-                        $this->session->set_flashdata('error', "Account's Email is not in valid format. Please check entries at row number - " . $rows);
+                        $this->session->set_flashdata('error', "Award Recipient's Email is not in valid format. Please check entries at row number - " . $rows);
                     } else if (!empty($check_email)) { //-- check Account/Program in columns are valid or not
                         $rows = implode(',', $check_email);
-                        $this->session->set_flashdata('error', "Account's Email already exist in the system. Please check entries at row number - " . $rows);
+                        $this->session->set_flashdata('error', "Award Recipient's Email already exist in the system. Please check entries at row number - " . $rows);
                     } else if (!empty($check_city)) { //-- check city in column are unique or not
                         $rows = implode(',', $check_city);
                         $this->session->set_flashdata('error', "City doesn't exist in the system. Please check entries at row number - " . $rows);
@@ -850,7 +899,7 @@ class Accounts extends MY_Controller {
                                 $associated_contact = ['name' => $val['contact_name'], 'email' => $val['email'], 'phone' => $val['phone'], 'type' => 'account', 'associated_id' => $account_id, 'created' => date('Y-m-d H:i:s')];
                                 $this->accounts_model->common_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $associated_contact);
                             }
-                            $this->session->set_flashdata('success', "CSV file imported successfully! Account data added successfully");
+                            $this->session->set_flashdata('success', "CSV file imported successfully! Award Recipient data added successfully");
                         } else {
                             $this->session->set_flashdata('error', "CSV file is empty! Please upload valid file");
                         }

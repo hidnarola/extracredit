@@ -199,6 +199,20 @@ if (isset($guest)) {
                                            echo '<label id="email-error" class="validation-error-label" for="email">' . form_error('email') . '</label>';
                                            ?>
                                 </div>
+                                <label class="col-lg-1 control-label">Is Subscribed? </label>
+                                <div class="col-lg-4">
+                                
+                                    <div class="checkbox checkbox-switch">
+                                        <label>
+                                            <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
+                                                if (isset($guest) && $guest['is_subscribed'] == 0)
+                                                    echo '';
+                                                else
+                                                    echo 'checked="checked"';
+                                                ?> value="1">
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </fieldset>
                         <fieldset>
@@ -390,7 +404,13 @@ if (isset($guest)) {
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="guest_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
-                                <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
+                                <?php if(!isset($guest))
+                                { ?>
+                                    <button type="submit" name="save_add_another" style="width: 172px;display: inline-block;float: left;margin-right: 15px;border: none;padding: 8px 12px;" class="btn bg-teal" id="guest_btn_submit1">Save and Add Another<i class="icon-arrow-right14 position-right"></i></button>
+                                <?php   
+                                } ?>
+                                <a href="<?php echo base_url('guests') ?>" style="color:black" class="btn border-slate btn-flat cancel-btn custom_cancel_button">Cancel</a>
+                                <!-- <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button> -->
                             </div>
                         </div>                          
                     </form>
@@ -524,6 +544,7 @@ if (isset($guest)) {
         },
         submitHandler: function (form) {
             $('#guest_btn_submit').attr('disabled', true);
+            $('#guest_btn_submit1').attr('disabled', true);
             form.submit();
         }
     });
@@ -680,4 +701,23 @@ if (isset($guest)) {
     $(document).on('click', '.remove_contact_btn', function () {
         $(this).parent('.col-lg-1').parent('.form-group').remove();
     });
+
+//save reminder when user navigate away from a record that user have been working on
+var form_changes = false;
+$(document).ready(function () {
+	$("form").on("change", ":input, select", function () {
+        form_changes = true;
+    });
+    $('form').submit(function () {
+        form_changes = false;
+    });
+});
+
+window.onbeforeunload = function () {
+    if (form_changes) {
+        return true; // you can make this dynamic, ofcourse...
+    } else {
+        return undefined;
+    }
+};
 </script>

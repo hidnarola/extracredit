@@ -26,7 +26,7 @@ if (isset($account)) {
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> Accounts</a></li>
+            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> <!--Accounts-->Award Recipients</a></li>
             <li class="active"><?php echo $heading; ?></li>
         </ul>
     </div>
@@ -114,7 +114,7 @@ if (isset($account)) {
                             </div>
                         </div>
                         <fieldset class="content-group">
-                            <legend class="text-bold">Basic Account Details</legend>
+                            <legend class="text-bold">Basic <!--Account-->Award Recipient Details</legend>
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">Address </label>
                                 <div class="col-lg-4">
@@ -171,7 +171,7 @@ if (isset($account)) {
                             </div>
                         </fieldset>
                         <fieldset class="content-group">
-                            <legend class="text-bold">Extra Account Details</legend>
+                            <legend class="text-bold">Extra <!--Account-->Award Recipient Details</legend>
                             <div class="form-group program_div" <?php echo $program_div_style ?>>
                                 <label class="col-lg-2 control-label">Program Types </label>
                                 <div class="col-lg-4">
@@ -218,7 +218,7 @@ if (isset($account)) {
                                     echo '<label id="website-error" class="validation-error-label" for="website">' . form_error('website') . '</label>';
                                     ?>
                                 </div>
-                                <label class="col-lg-1 control-label">Is Active? </label>
+                                <label class="col-lg-1 control-label">AMC is Active? </label>
                                 <div class="col-lg-4">
                                     <div class="checkbox checkbox-switch">
                                         <label>
@@ -290,11 +290,31 @@ if (isset($account)) {
                                     </div>
                                 </div>
                             <?php } ?>
+                            <label class="col-lg-1 control-label">Is Subscribed? </label>
+                                <div class="col-lg-4">
+                                
+                                    <div class="checkbox checkbox-switch">
+                                        <label>
+                                            <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
+                                                if (isset($account) && $account['is_subscribed'] == 0)
+                                                    echo '';
+                                                else
+                                                    echo 'checked="checked"';
+                                                ?> value="1">
+                                        </label>
+                                    </div>
+                                </div>
                         </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="account_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
-                                <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
+                                <?php if(!isset($account))
+                                { ?>
+                                    <button type="submit" name="save_add_another" style="width: 172px;display: inline-block;float: left;margin-right: 15px;border: none;padding: 8px 12px;" class="btn bg-teal" id="account_btn_submit1">Save and Add Another<i class="icon-arrow-right14 position-right"></i></button>
+                                <?php   
+                                } ?>
+                                <a href="<?php echo base_url('accounts') ?>" style="color:black" class="btn border-slate btn-flat cancel-btn custom_cancel_button">Cancel</a>
+                                <!-- <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button> -->
                             </div>
                         </div>
                     </form>
@@ -452,6 +472,7 @@ if (isset($account)) {
         submitHandler: function (form) {
             if ($('input[name="contact_name[]"]').valid() && $('input[name="contact_email[]"]').valid()) {
                 $('#account_btn_submit').attr('disabled', true);
+                $('#account_btn_submit1').attr('disabled', true);
                 form.submit();
             }
         }
@@ -559,4 +580,23 @@ if (isset($account)) {
     $(document).on('click', '.remove_contact_btn', function () {
         $(this).parent('.col-lg-1').parent('.form-group').remove();
     });
+
+//save reminder when user navigate away from a record that user have been working on
+var form_changes = false;
+$(document).ready(function () {
+	$("form").on("change", ":input, select", function () {
+        form_changes = true;
+    });
+    $('form').submit(function () {
+        form_changes = false;
+    });
+});
+
+window.onbeforeunload = function () {
+    if (form_changes) {
+        return true; // you can make this dynamic, ofcourse...
+    } else {
+        return undefined;
+    }
+};
 </script>

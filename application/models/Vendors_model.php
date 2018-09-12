@@ -53,7 +53,7 @@ class Vendors_model extends MY_Model {
      */
     public function get_vendor_details($id) {
         $select = 'GROUP_CONCAT(ac.name) contact_names,GROUP_CONCAT(ac.email) contact_emails,GROUP_CONCAT(ac.phone) contact_phones';
-        $this->db->select('v.id,v.name,v.contact_name,v.address,v.zip,v.email,v.phone,v.website,date(v.created) created,c.name as city,s.name as state,s.short_name as state_short,' . $select);
+        $this->db->select('v.id,v.name,v.contact_name,v.is_subscribed,v.address,v.zip,v.email,v.phone,v.website,date(v.created) created,c.name as city,s.name as state,s.short_name as state_short,' . $select);
         $this->db->join(TBL_CITIES . ' as c', 'v.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'v.state_id=s.id', 'left');
         $this->db->join(TBL_ASSOCIATED_CONTACTS . ' as ac', 'v.id=ac.associated_id AND ac.type="vendor" AND ac.is_delete=0', 'left');
@@ -91,5 +91,11 @@ class Vendors_model extends MY_Model {
             return $query->num_rows();
         }
     }
-
+    public function get_vendors_report()
+    {
+        $this->db->select('*');
+        $this->db->where(['v.is_delete' => 0,'v.is_subscribed' => 1]);
+        $query = $this->db->get(TBL_VENDORS . ' v');
+        return $query->result_array();
+    }
 }

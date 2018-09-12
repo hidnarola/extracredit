@@ -257,4 +257,16 @@ class Donors_model extends MY_Model {
         return $query->row_array();
     }
 
+
+    /**
+     * Get donors for datatable
+     * @param string $type - Either result or count
+     * @return array for result or int for count
+     */
+    public function get_donors_report($type = 'result') {
+        $this->db->select('*');
+        $this->db->where(['d.is_delete' => 0,'d.is_subscribed' => 1]);
+        $query = $this->db->get(TBL_DONORS . ' d');
+        return $query->result_array();
+    }
 }

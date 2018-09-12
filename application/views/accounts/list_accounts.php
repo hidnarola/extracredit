@@ -4,13 +4,13 @@
 <div class="page-header page-header-default">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-calculator3"></i> <span class="text-semibold">Accounts</span></h4>
+            <h4><i class="icon-calculator3"></i> <span class="text-semibold"><!--Accounts-->Award Recipients</span></h4>
         </div>
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li class="active">Accounts</li>
+            <li class="active"><!--Accounts-->Award Recipients</li>
         </ul>
     </div>
 </div>
@@ -35,8 +35,8 @@
     </div>
     <div class="panel panel-flat">
         <div class="panel-heading text-right">
-            <a href="#" data-target="#import_modal" data-toggle="modal" class="btn bg-pink-400 btn-labeled"><b><i class="icon-file-upload2"></i></b> Import Account</a>
-            <a href="<?php echo site_url('accounts/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Account</a>
+            <a href="#" data-target="#import_modal" data-toggle="modal" class="btn bg-pink-400 btn-labeled"><b><i class="icon-file-upload2"></i></b> Import Award Recipient<!--Account--></a>
+            <a href="<?php echo site_url('accounts/add'); ?>" class="btn btn-success btn-labeled"><b><i class="icon-plus-circle2"></i></b> Add Award Recipient<!--Account--></a>
         </div>
         <table class="table datatable-basic">
             <thead>
@@ -62,7 +62,7 @@
             <form action="<?php echo site_url('accounts/import_account') ?>" class="form-horizontal form-validate-jquery" id="import_donor_form" method="post" enctype="multipart/form-data">
                 <div class="modal-header bg-teal">
                     <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h6 class="modal-title">Import Account</h6>
+                    <h6 class="modal-title">Import <!--Account-->Award Recipient</h6>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -72,7 +72,7 @@
                                 <div class="media-body">
                                     <input type="file" name="import_account" id="import_account" class="file-styled">
                                     <span class="help-block">Accepted formats: CSV. Max file size 2Mb</span>
-                                    <span class="help-block"><code>File should be in this format </code><a href="<?php echo base_url(DEMO_CSV . 'account_demo.csv') ?>">Download Demo File</a></span>
+                                    <span class="help-block"><code>File should be in this format </code><a href="<?php echo base_url(DEMO_CSV . 'award_recipient_demo.csv') ?>">Download Demo File</a></span>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +122,7 @@
                         action += '<ul class="dropdown-menu dropdown-menu-right">';
                         action += '<li>';
                         if ($.inArray('edit', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" title="Edit Account"><i class="icon-pencil3"></i> Edit Account</a>';
+                            action += '<a href="' + site_url + 'accounts/edit/' + btoa(full.id) + '" title="Edit Award Recipient"><i class="icon-pencil3"></i> Edit Award Recipient</a>';
                         }
                         if ($.inArray('view', permissions) !== -1) {
                             action += '<a href="' + site_url + 'accounts/transactions/' + btoa(full.id) + '" title="View Transactions"><i class="icon-coins"></i> View Transactions</a>';
@@ -134,7 +134,7 @@
                             action += '<a href="' + site_url + 'accounts/communication/' + btoa(full.id) + '" title="View Communication"><i class="icon-comment-discussion"></i> View Communication</a>';
                         }
                         if ($.inArray('delete', permissions) !== -1) {
-                            action += '<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Account"><i class="icon-trash"></i> Delete Account</a>'
+                            action += '<a href="' + site_url + 'accounts/delete/' + btoa(full.id) + '" onclick="return confirm_alert(this)" title="Delete Award Recipient"><i class="icon-trash"></i> Delete Award Recipient</a>'
                         }
                         action += '</li>';
                         action += '</ul>';
@@ -204,7 +204,7 @@
     function confirm_alert(e) {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this account!",
+            text: "You will not be able to recover this award recipient!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#FF7043",

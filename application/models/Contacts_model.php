@@ -16,27 +16,29 @@ class Contacts_model extends MY_Model {
      * @return array for result or int for count
      */
     public function get_contacts($type = 'result') {
-        $columns = ['is_delete', 'name', 'email', 'phone', 'website', 'created', 'is_active'];
+        $columns = ['co.is_delete', 'co.name', 'co.email','ct.type', 'co.phone', 'co.website', 'co.created', 'co.is_active'];
         $keyword = $this->input->get('search');
-        $this->db->select('id,name,email,phone,website,date(created) created');
+        $this->db->select('co.id,co.name,co.email,ct.type,co.phone,co.website,date(co.created) created');
+        $this->db->join(TBL_CONTACT_TYPES . ' as ct', 'ct.id=co.contact_type_id', 'left');
 
         if (!empty($keyword['value'])) {
-            $this->db->where('(name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR phone LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR website LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
-                    ' OR created LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
+            $this->db->where('(co.name LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR co.email LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR ct.type LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR co.phone LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR co.website LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') .
+                    ' OR co.created LIKE ' . $this->db->escape('%' . $keyword['value'] . '%') . ')');
         }
-        $this->db->where(['is_delete' => 0]);
+        $this->db->where(['co.is_delete' => 0]);
         if ($this->input->get('order')) {
             $this->db->order_by($columns[$this->input->get('order')[0]['column']], $this->input->get('order')[0]['dir']);
         }
         if ($type == 'result') {
             $this->db->limit($this->input->get('length'), $this->input->get('start'));
-            $query = $this->db->get(TBL_CONTACTS);
+            $query = $this->db->get(TBL_CONTACTS.' co');
             return $query->result_array();
         } else {
-            $query = $this->db->get(TBL_CONTACTS);
+            $query = $this->db->get(TBL_CONTACTS.' co');
             return $query->num_rows();
         }
     }
@@ -46,9 +48,10 @@ class Contacts_model extends MY_Model {
      * @param int $id
      */
     public function get_contact_details($id) {
-        $this->db->select('co.id,co.name,co.address,co.zip,co.email,co.phone,co.website,date(co.created) created,c.name as city,s.name as state,s.short_name as state_short');
+        $this->db->select('co.id,co.name,co.address,co.zip,co.email,co.contact_type_id,co.phone,co.website,date(co.created) created,c.name as city,s.name as state,s.short_name as state_short,ct.type as contact_type,co.is_subscribed');
         $this->db->join(TBL_CITIES . ' as c', 'co.city_id=c.id', 'left');
         $this->db->join(TBL_STATES . ' as s', 'co.state_id=s.id', 'left');
+        $this->db->join(TBL_CONTACT_TYPES . ' as ct', 'co.contact_type_id=ct.id', 'left');
         $this->db->where(['co.id' => $id, 'co.is_delete' => 0]);
         $query = $this->db->get(TBL_CONTACTS . ' co');
         return $query->row_array();
@@ -83,4 +86,13 @@ class Contacts_model extends MY_Model {
         }
     }
 
+    public function get_contacts_report($type = 'result') {
+        $this->db->select('co.id,co.name,co.address,co.zip,co.email,co.contact_type_id,co.phone,co.website,date(co.created) created,c.name as city,s.name as state,s.short_name as state_short,ct.type as contact_type,co.is_subscribed,co.modified');
+        $this->db->join(TBL_CITIES . ' as c', 'co.city_id=c.id', 'left');
+        $this->db->join(TBL_STATES . ' as s', 'co.state_id=s.id', 'left');
+        $this->db->join(TBL_CONTACT_TYPES . ' as ct', 'ct.id=co.contact_type_id', 'left');
+        $this->db->where(['co.is_delete' => 0, 'co.is_subscribed' => 1]);
+        $query = $this->db->get(TBL_CONTACTS.' co');
+        return $query->result_array();
+    }
 }

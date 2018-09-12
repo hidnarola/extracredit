@@ -2,6 +2,7 @@
 <script type="text/javascript" src="assets/js/plugins/forms/validation/validate.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
+<script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
 <script type="text/javascript" src="assets/js/core/libraries/jasny_bootstrap.min.js"></script>
 <?php
 $edit = 0;
@@ -125,9 +126,48 @@ if (isset($contact))
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-lg-1 control-label">Contact Types </label>
+                            <div class="col-lg-4">
+                                <select name="contact_type_id" id="contact_type_id" class="select2" required="required" data-placeholder="Select Contact Type">
+                                <option value=""></option>
+                                    <?php
+                                    foreach ($contact_types as $type) {
+                                        $selected = '';
+                                        if (isset($contact) && $contact['contact_type_id'] == $type['id'])
+                                            $selected = 'selected';
+                                        ?>
+                                        <option value="<?php echo $type['id']; ?>" <?php echo $selected ?>><?php echo $type['type'] ?></option>
+                                    <?php } ?>
+                                </select>
+                                <?php
+                                echo '<label id="contact_type_id-error" class="validation-error-label" for="contact_type_id">' . form_error('contact_type_id') . '</label>';
+                                ?>
+                            </div>
+                            <label class="col-lg-1 control-label">Is Subscribed? </label>
+                            <div class="col-lg-4">
+                               
+                                <div class="checkbox checkbox-switch">
+                                    <label>
+                                        <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
+                                            if (isset($contact) && $contact['is_subscribed'] == 0)
+                                                echo '';
+                                            else
+                                                echo 'checked="checked"';
+                                            ?> value="1">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="contact_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
-                                <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button>
+                                <?php if(!isset($contact))
+                                { ?>
+                                    <button type="submit" name="save_add_another" style="width: 172px;display: inline-block;float: left;margin-right: 15px;border: none;padding: 8px 12px;" class="btn bg-teal" id="contact_btn_submit1">Save and Add Another<i class="icon-arrow-right14 position-right"></i></button>
+                                <?php   
+                                } ?>
+                                <a href="<?php echo base_url('contacts') ?>" style="color:black" class="btn border-slate btn-flat cancel-btn custom_cancel_button">Cancel</a>
+                                <!-- <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button> -->
                             </div>
                         </div>
                     </form>
@@ -135,6 +175,7 @@ if (isset($contact))
             </div>
         </div>
     </div>
+    
     <?php $this->load->view('Templates/footer'); ?>
 </div>
 <script type="text/javascript">
@@ -217,6 +258,7 @@ if (isset($contact))
         },
         submitHandler: function (form) {
             $('#contact_btn_submit').attr('disabled', true);
+            $('#contact_btn_submit1').attr('disabled', true);
             form.submit();
         }
     });
@@ -290,4 +332,24 @@ if (isset($contact))
         var url = $.validator.methods.url.bind(this);
         return url(value, element) || url('http://' + value, element);
     }, 'Please enter a valid URL');
+
+
+var form_changes = false;
+$(document).ready(function () {
+	$("form").on("change", ":input, select", function () {
+        form_changes = true;
+    });
+    $('form').submit(function () {
+        form_changes = false;
+    });
+});
+
+window.onbeforeunload = function () {
+    if (form_changes) {
+        return true; // you can make this dynamic, ofcourse...
+    } else {
+        return undefined;
+    }
+};
+
 </script>

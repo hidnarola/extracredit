@@ -72,7 +72,7 @@ if ($get_date != '') {
                 <div class="media no-margin">
                     <div class="media-body">
                         <h3 class="no-margin"><?php echo $accounts; ?></h3>
-                        <span class="text-uppercase text-size-mini">Accounts</span>
+                        <span class="text-uppercase text-size-mini"><!--Accounts-->Award Recipients</span>
                     </div>
                     <div class="media-right media-middle">
                         <i class="icon-calculator3 icon-3x opacity-75"></i>
@@ -135,7 +135,7 @@ if ($get_date != '') {
         <div class="col-lg-5">
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h6 class="panel-title">Accounts Fund</h6>
+                    <h6 class="panel-title"><!--Accounts--> Award Recipients Fund</h6>
                     <div class="heading-elements">
                         <span class="heading-text"><i class="icon-history text-warning position-left"></i> <?php echo date('d F, Y'); ?></span>                       
                     </div>

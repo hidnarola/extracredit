@@ -31,6 +31,10 @@
             <td><?php echo $contact['email']; ?></td>
         </tr>
         <tr>
+            <th>Contact Type</th>
+            <td><?php echo $contact['contact_type']; ?></td>
+        </tr>
+        <tr>
             <th>Phone</th>
             <td><?php echo $contact['phone']; ?></td>
         </tr>  

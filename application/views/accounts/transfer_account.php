@@ -24,8 +24,8 @@ if (isset($payment)) {
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
             <li><a href="<?php echo site_url('home'); ?>"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> Accounts</a></li>
-            <li class="active">Account Transfer</li>
+            <li><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3 position-left"></i> <!--Accounts-->Award Recipients</a></li>
+            <li class="active"><!--Account-->Award Recipient Transfer</li>
         </ul>
     </div>
 </div>
@@ -58,7 +58,7 @@ if (isset($payment)) {
                 <div class="panel-body">
                     <form class="form-horizontal form-validate-jquery" action="" id="add_transfer_money_form" method="post" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label class="col-lg-2 control-label">Account Name<span class="text-danger">*</span></label>
+                            <label class="col-lg-2 control-label"><!--Account-->Award Recipient Name<span class="text-danger">*</span></label>
                             <div class="col-lg-6">
                                 <input type="text" placeholder="Account Name" class="form-control" name="account_id_from" id="account_id_from" value="<?php echo ($account['program'] != '') ? $account['program'] : $account['vendor_name'] ?>" readonly=""/>
                                 <input type="hidden" name="hidden_account_id_from" value="<?php echo $account['id']; ?>">
@@ -68,7 +68,7 @@ if (isset($payment)) {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-2 control-label required" id="account_fund_label">Account Fund</label>
+                            <label class="col-lg-2 control-label required" id="account_fund_label"><!--Account-->Award Recipient Fund</label>
                             <div class="col-lg-6">
                                 <input type="text" placeholder="Account Fund" class="form-control" name="account_fund" id="account_fund" value="<?php echo $account['total_fund'] ?>" disabled="disabled"/>
                             </div>
@@ -258,7 +258,7 @@ if (isset($payment)) {
             if (amount_val > account_fund) {
                 swal({
                     title: "Oops...",
-                    text: "You can not enter amount value more than account's fund!",
+                    text: "You can not enter amount value more than award recipient's fund!",
                     confirmButtonColor: "#EF5350",
                     type: "error"
                 });

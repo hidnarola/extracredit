@@ -44,6 +44,7 @@
                     <th>Action</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Contact Type</th>
                     <th>Phone</th>
                     <th>Website</th>
                     <th>Created</th>
@@ -155,6 +156,11 @@
                 {
                     data: "email",
                     visible: true
+                },
+                {
+                    data: "type",
+                    visible: true,
+                    defaultContent: "<i>Null</i>"
                 },
                 {
                     data: "phone",

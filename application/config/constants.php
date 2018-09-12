@@ -95,6 +95,7 @@ define('TBL_CITIES', 'cities');
 define('TBL_COMMUNICATIONS', 'communications');
 define('TBL_COMMUNICATIONS_MANAGER', 'communication_manager');
 define('TBL_CONTACTS', 'contacts');
+define('TBL_CONTACT_TYPES', 'contact_types');
 define('TBL_DONORS', 'donors');
 define('TBL_FUNDS', 'funds');
 define('TBL_FUND_TYPES', 'fund_types');

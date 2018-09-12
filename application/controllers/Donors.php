@@ -154,6 +154,7 @@ class Donors extends MY_Controller {
             $dataArr = array(
                 'firstname' => $this->input->post('firstname'),
                 'lastname' => $this->input->post('lastname'),
+                'company' => $this->input->post('company'),
                 'address' => $this->input->post('address'),
                 'email' => $this->input->post('email'),
                 'phone' => $this->input->post('phone'),
@@ -161,6 +162,30 @@ class Donors extends MY_Controller {
                 'city_id' => $city_id,
                 'zip' => $this->input->post('zip'),
             );
+
+            require_once(APPPATH."libraries/Mailin.php");
+            // $this->load->library('Mailin'); //Load library for subscribe user in SendInBlue.com
+            $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+            //Api Key(v2.0) : VGcJrUg9ypYRjExh
+            
+            if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
+            {
+                $dataArr['is_subscribed'] = 1; //insert in contact table
+                $data = array( "email" => $this->input->post('email'),
+                "attributes" => array("FIRSTNAME" => $this->input->post('firstname'), "LASTNAME"=>$this->input->post('lastname')),
+                "listid" => array(4)
+                );
+
+                $mailin->create_update_user($data);
+            }
+            else
+            {
+                $dataArr['is_subscribed'] = 0; //update in contact table
+                $data = array( "email" =>  $this->input->post('email'),
+                "listid_unlink" => array(4)
+                );
+                $mailin->create_update_user($data);
+            }
 
             $this->db->trans_begin();
             if (is_numeric($id)) {
@@ -249,7 +274,16 @@ class Donors extends MY_Controller {
             }
 
             $this->db->trans_complete();
-            redirect('donors');
+            //check which button is click.
+            if (isset($_POST['save_add_another']))
+            {
+                redirect('donors/add');
+            }
+            else
+            {
+                redirect('donors');
+            }
+            
         }
         $this->template->load('default', 'donors/form', $data);
     }
@@ -347,8 +381,18 @@ class Donors extends MY_Controller {
         if (is_numeric($id)) {
             $donor = $this->donors_model->get_donor_details($id);
             if ($donor) {
+                
+                //Remove Subscribed user from SendInBlue.com
+                require_once(APPPATH."libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+                $data = array( "email" => $donor['email'],
+                "listid_unlink" => array(4)
+                );
+                $mailin->create_update_user($data);
+                
                 $update_array = array(
-                    'is_delete' => 1
+                    'is_delete' => 1,
+                    'is_subscribed' => 0
                 );
 
                 //-- If donor is not refunded money then only update account and admin fund

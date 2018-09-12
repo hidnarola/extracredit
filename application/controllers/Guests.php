@@ -141,6 +141,30 @@ class Guests extends MY_Controller {
                     'assistant_phone' => $this->input->post('assistant_phone'),
                     'assistant_email' => $this->input->post('assistant_email'),
                 );
+
+                require_once(APPPATH."libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+                //Api Key(v2.0) : VGcJrUg9ypYRjExh
+                
+                if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
+                {
+                    $dataArr['is_subscribed'] = 1; //insert in guest table
+                    $data = array( "email" => $this->input->post('email'),
+                    "attributes" => array("FIRSTNAME" => $this->input->post('firstname'), "LASTNAME"=>$this->input->post('lastname')),
+                    "listid" => array(5)
+                    );
+
+                    $mailin->create_update_user($data);
+                }
+                else
+                {
+                    $dataArr['is_subscribed'] = 0; //update in guest table
+                    $data = array( "email" => $this->input->post('email'),
+                    "listid_unlink" => array(5)
+                    );
+                    $mailin->create_update_user($data);
+                }
+
 //                p($dataArr, 1);
                 if (is_numeric($id)) {
                     $dataArr['modified'] = date('Y-m-d H:i:s');
@@ -219,8 +243,15 @@ class Guests extends MY_Controller {
                 if (!empty($contact_arr)) {
                     $this->guests_model->batch_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $contact_arr);
                 }
-
-                redirect('guests');
+                
+                if (isset($_POST['save_add_another']))
+                {
+                    redirect('guests/add');
+                }
+                else
+                {
+                    redirect('guests');
+                }
             }
         }
         $this->template->load('default', 'guests/form', $data);
@@ -261,8 +292,17 @@ class Guests extends MY_Controller {
         if (is_numeric($id)) {
             $guest = $this->guests_model->get_guest_details($id);
             if ($guest) {
+                //Remove Subscribed user from SendInBlue.com
+                require_once(APPPATH."libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+                $data = array( "email" => $guest['email'],
+                "listid_unlink" => array(5)
+                );
+                $mailin->create_update_user($data);
+
                 $update_array = array(
-                    'is_delete' => 1
+                    'is_delete' => 1,
+                    'is_subscribed' => 0
                 );
                 $this->guests_model->common_insert_update('update', TBL_GUESTS, $update_array, ['id' => $id]);
                 //--delete subscriber from list

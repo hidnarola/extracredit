@@ -53,7 +53,7 @@ class Funds extends MY_Controller {
      */
     public function accounts() {
         checkPrivileges('account_fund', 'view');
-        $data['title'] = 'Extracredit | Account Fund';
+        $data['title'] = 'Extracredit |  Award Recipient Fund';
         $this->template->load('default', 'funds/accounts', $data);
     }
 
@@ -137,7 +137,7 @@ class Funds extends MY_Controller {
             $account = $this->accounts_model->sql_select(TBL_ACCOUNTS, 'id,action_matters_campaign,vendor_name', ['where' => ['id' => $account_id]], ['single' => true]);
             if (!empty($account)) {
                 $data['account'] = $account;
-                $data['title'] = 'Extracredit | Account Transactions';
+                $data['title'] = 'Extracredit |  Award Recipient Transactions';
                 $data['transactions'] = $this->accounts_model->get_account_transactions($account_id);
                 $this->template->load('default', 'funds/transactions', $data);
             } else {

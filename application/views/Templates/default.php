@@ -91,7 +91,7 @@
                                         <li class="<?php echo ($this->controller == 'guests') ? 'active' : ''; ?>"><a href="<?php echo site_url('guests'); ?>"><i class="icon-people"></i> <span>Guests</span></a></li>
                                     <?php } ?>
                                     <?php if (checkPrivileges('accounts', 'view', 1)) { ?>
-                                        <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3"></i> <span>Accounts</span></a></li>
+                                        <li class="<?php echo ($this->controller == 'accounts') ? 'active' : ''; ?>"><a href="<?php echo site_url('accounts'); ?>"><i class="icon-calculator3"></i> <span><!--Accounts-->Award Recipients</span></a></li>
                                     <?php } ?>
                                     <?php if (checkPrivileges('accounts', 'view', 1)) { ?>
                                         <li class="<?php echo ($this->controller == 'vendors') ? 'active' : ''; ?>"><a href="<?php echo site_url('vendors'); ?>"><i class="icon-file-media"></i> <span>Vendors</span></a></li>
@@ -110,7 +110,7 @@
                                                     <li class="<?php echo ($this->controller == 'funds' && ($this->action == 'admin_fund')) ? 'active' : ''; ?>"><a href="<?php echo site_url('funds/admin_fund'); ?>">Admin Fund</a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('account_fund', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'funds' && ($this->action == 'accounts' || $this->action == 'transactions') ) ? 'active' : ''; ?>" ><a href="<?php echo site_url('funds/accounts'); ?>">Accounts</a></li>
+                                                    <li class="<?php echo ($this->controller == 'funds' && ($this->action == 'accounts' || $this->action == 'transactions') ) ? 'active' : ''; ?>" ><a href="<?php echo site_url('funds/accounts'); ?>">Award Recipients <!--Accounts--></a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('donor_fund', 'view', 1)) { ?>
                                                     <li class="<?php echo ($this->controller == 'funds' && ($this->action == 'donors')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('funds/donors'); ?>">Donors</a></li>
@@ -128,6 +128,16 @@
                                         <li class="<?php echo ($this->controller == 'reports') ? 'active' : ''; ?>">
                                             <a href="#" class="has-ul"><i class="icon-graph"></i><span>Reports</span></a>
                                             <ul class="hidden-ul" style="<?php echo ($this->controller == 'reports' || in_array($this->action, array('donors_report'))) ? 'display: block;' : ''; ?>">
+                                                <li  class="<?php echo ($this->controller == 'reports' && ($this->action == 'get_donor_subscriber')) ? 'active' : ''; ?>">
+                                                    <a href="#" class="has-ul"><i class="icon-graph"></i><span>Subscribers</span></a>
+                                                    <ul class="hidden-ul" style="<?php echo ($this->controller == 'reports' || in_array($this->action, array('donors_report'))) ? 'display: block;' : ''; ?>">
+                                                        <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'get_donor_subscriber')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/get_donor_subscriber'); ?>"><span>Donors Report</span></a></li>
+                                                        <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'get_guests_subscriber')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/get_guests_subscriber'); ?>"><span>Guests Report</span></a></li>
+                                                        <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'get_accounts_subscriber')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/get_accounts_subscriber'); ?>"><span>Award Recipients Report</span></a></li>
+                                                        <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'get_vendors_subscriber')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/get_vendors_subscriber'); ?>"><span>Vendors Report</span></a></li>
+                                                        <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'get_contact_subscriber')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/get_contact_subscriber'); ?>"><span>Contacts Report</span></a></li>
+                                                    </ul>
+                                                </li>
                                                 <?php if (checkPrivileges('donor_report', 'view', 1)) { ?>
                                                     <li class="<?php echo ($this->controller == 'reports' && ($this->action == 'donors_report')) ? 'active' : ''; ?>"><a href="<?php echo site_url('reports/donors_report'); ?>"><span>Ultimate Donor Report</span></a></li>
                                                 <?php } ?>
@@ -165,7 +175,10 @@
                                                     <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'index')) ? 'active' : ''; ?>"><a href="<?php echo site_url('settings'); ?>">Donation Split Settings</a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('fund_types', 'view', 1)) { ?>
-                                                    <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Fund/Account Types</a></li>
+                                                    <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'fund_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/fund_types'); ?>">Fund/Award Recipient Types</a></li>
+                                                <?php } ?>
+                                                <?php if (checkPrivileges('contact_types', 'view', 1)) { ?>
+                                                    <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'contact_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/contact_types'); ?>">Contact Types</a></li>
                                                 <?php } ?>
                                                 <?php if (checkPrivileges('payment_types', 'view', 1)) { ?>
                                                     <li class="<?php echo ($this->controller == 'settings' && ($this->action == 'payment_types')) ? 'active' : ''; ?>" ><a href="<?php echo site_url('settings/payment_types'); ?>">Payment Types</a></li>

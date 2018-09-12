@@ -260,4 +260,11 @@ class Guests_model extends MY_Model {
         return $query->result_array();
     }
 
+    public function get_guests_report()
+    {
+        $this->db->select('*');
+        $this->db->where(['g.is_delete' => 0,'g.is_subscribed' => 1]);
+        $query = $this->db->get(TBL_GUESTS . ' g');
+        return $query->result_array();
+    }
 }

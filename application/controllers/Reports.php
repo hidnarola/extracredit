@@ -10,7 +10,7 @@ class Reports extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model(['guests_model', 'donors_model', 'accounts_model', 'payments_model']);
+        $this->load->model(['guests_model', 'donors_model', 'accounts_model', 'payments_model','contacts_model','vendors_model']);
     }
 
     /**
@@ -210,4 +210,78 @@ class Reports extends MY_Controller {
         echo json_encode($final);
     }
 
+     /**
+     * Get Donor subscriber report
+     * developed by : sm
+     * */
+    public function get_donor_subscriber()
+    {
+        $data['title'] = 'Extracredit | Donors Report';
+        $data['donor'] = $this->donors_model->get_donors_report();
+        $this->template->load('default', 'subscribers/donors_report', $data);
+    }
+
+    /**
+     * Get Donor subscriber report via AJAX call
+     * */
+    public function get_donor_subscriber_report() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->donors_model->get_donors_report('count');
+        $final['redraw'] = 1;
+        $balance_report = $this->donors_model->get_donors_report('result');
+        $final['data'] = $balance_report;
+        // print_r($final);
+        // die;
+        echo json_encode($final);
+    }
+
+    /**
+     * Get Donor subscriber report via AJAX call
+     * */
+    public function get_contact_subscriber_report() {
+        $final['recordsFiltered'] = $final['recordsTotal'] = $this->contacts_model->get_contacts_report('count');
+        $final['redraw'] = 1;
+        $balance_report = $this->contacts_model->get_contacts_report('result');
+        $final['data'] = $balance_report;
+        echo json_encode($final);
+    }
+
+    /**
+     * Get Contacts subscriber report
+     * developed by : sm
+     * */
+    public function get_contact_subscriber()
+    {
+        $data['title'] = 'Extracredit | Contacts Report';
+        $data['contacts'] = $this->contacts_model->get_contacts_report('result');
+        $this->template->load('default', 'subscribers/contacts_report', $data);
+    }
+
+    /**
+     * Get Account subscriber report
+     * developed by : sm
+     * */
+    public function get_accounts_subscriber()
+    {
+        $data['title'] = 'Extracredit | Award Recipients Report';
+        $data['accounts'] = $this->accounts_model->get_accounts_report();
+        $this->template->load('default', 'subscribers/accounts_report', $data);
+    }
+
+    /**
+     * Get Guests subscriber report
+     * developed by : sm
+     * */
+    public function get_guests_subscriber()
+    {
+        $data['title'] = 'Extracredit | Guests Report';
+        $data['guests'] = $this->guests_model->get_guests_report();
+        $this->template->load('default', 'subscribers/guests_report', $data);
+    }
+
+    public function get_vendors_subscriber()
+    {
+        $data['title'] = 'Extracredit | Vendors Report';
+        $data['vendors'] = $this->vendors_model->get_vendors_report();
+        $this->template->load('default', 'subscribers/vendors_report', $data);  
+    }
 }
