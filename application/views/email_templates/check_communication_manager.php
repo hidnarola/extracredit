@@ -77,6 +77,7 @@
                                 </p>                                
                             </td>
                         </tr>
+                        <?php if($phone_number !=''){ ?>
                         <tr>
                             <td style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
                                 <p style='margin: 1em 0;'>
@@ -85,6 +86,8 @@
                                 </p>                                
                             </td>
                         </tr>
+                        <?php } ?>
+                        <?php if($ofemail !=''){ ?>
                         <tr>
                             <td style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
                                 <p style='margin: 1em 0;'>
@@ -93,6 +96,7 @@
                                 </p>                                
                             </td>
                         </tr>
+                        <?php } ?>
                         <tr>
                             <td style='border-top: 1px solid #dce1e5;border-bottom: 1px solid #dce1e5;' valign='top'>
                                 <p style='margin: 1em 0;'>

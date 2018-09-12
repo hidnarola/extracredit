@@ -40,7 +40,7 @@ class MY_Controller extends CI_Controller {
             }
         }
         $this->admin_fund = $this->users_model->get_admin_fund();
-        $this->total_users = ($this->users_model->sql_select(TBL_USERS, 'id', ['where' => ['is_delete' => 0]], ['count' => true]))-1;
+        $this->total_users = ($this->users_model->sql_select(TBL_USERS, 'id', ['where' => ['is_delete' => 0]], ['count' => true])) - 1;
     }
 
 }

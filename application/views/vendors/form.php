@@ -180,8 +180,7 @@ if (isset($vendor))
                                     <div class="checkbox checkbox-switch">
                                         <label>
                                             <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
-                                           
-                                              if (isset($vendor) && $vendor['is_subscribed'] == 0)
+                                                if (isset($vendor) && $vendor['is_subscribed'] == 0)
                                                     echo '';
                                                 else
                                                     echo 'checked="checked"';
