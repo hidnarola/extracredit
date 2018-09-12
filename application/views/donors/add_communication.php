@@ -2,7 +2,6 @@
 <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
 <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
-<script type="text/javascript" src="assets/js/pages/editor_ckeditor.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
 <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
 <?php
@@ -282,11 +281,15 @@ if (isset($donor_communication)) {
         }
         return true;
     }
- 
+    // Full featured editor
+    CKEDITOR.replace('editor-full', {
+        height: '400px',
+        extraPlugins: 'forms'
+    });
 //save reminder when user navigate away from a record that user have been working on
-var form_changes = false;
+    var form_changes = false;
 
-	$("form").on("change", ":input, select", function () {
+    $("form").on("change", ":input, select", function () {
         form_changes = true;
     });
     $('form').submit(function () {
@@ -294,11 +297,11 @@ var form_changes = false;
     });
 
 
-window.onbeforeunload = function () {
-    if (form_changes) {
-        return true; // you can make this dynamic, ofcourse...
-    } else {
-        return undefined;
-    }
-};
+    window.onbeforeunload = function () {
+        if (form_changes) {
+            return true; // you can make this dynamic, ofcourse...
+        } else {
+            return undefined;
+        }
+    };
 </script>
