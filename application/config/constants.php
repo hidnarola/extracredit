@@ -133,3 +133,4 @@ define('LIST_ID', 'd2028b5221');
 define('DONORS_GROUP_ID', 'c6e2307e09');
 define('GUESTS_GROUP_ID', 'af24fc6eb0');
 define('ACCOUNTS_GROUP_ID', '44d6a93d29');
+define('MAPS_API', 'AIzaSyClbXmKazU37f9h-24WqgWXtOICsnKe7IU');

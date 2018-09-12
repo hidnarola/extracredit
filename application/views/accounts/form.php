@@ -135,14 +135,14 @@ if (isset($account)) {
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">City </label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city_id" id="city_id" readonly="" class="form-control" value="<?php echo (isset($account)) ? $account['city'] : set_value('city_id'); ?>">
+                                    <input type="text" name="city_id" id="city_id" class="form-control" value="<?php echo (isset($account)) ? $account['city'] : set_value('city_id'); ?>">
                                     <?php
                                     echo '<label id="city_id-error" class="validation-error-label" for="city_id">' . form_error('city_id') . '</label>';
                                     ?>
                                 </div>
                                 <label class="col-lg-1 control-label">State </label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state_id" id="state_id" readonly="" class="form-control"  value="<?php echo (isset($account)) ? $account['state'] : set_value('state_id'); ?>">
+                                    <input type="text" name="state_id" id="state_id" class="form-control"  value="<?php echo (isset($account)) ? $account['state'] : set_value('state_id'); ?>">
 
                                     <?php
                                     echo '<label id="state_id-error" class="validation-error-label" for="state_id">' . form_error('state_id') . '</label>';
@@ -291,28 +291,28 @@ if (isset($account)) {
                                 </div>
                             <?php } ?>
                             <label class="col-lg-1 control-label">Is Subscribed? </label>
-                                <div class="col-lg-4">
-                                
-                                    <div class="checkbox checkbox-switch">
-                                        <label>
-                                            <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
-                                                if (isset($account) && $account['is_subscribed'] == 0)
-                                                    echo '';
-                                                else
-                                                    echo 'checked="checked"';
-                                                ?> value="1">
-                                        </label>
-                                    </div>
+                            <div class="col-lg-4">
+
+                                <div class="checkbox checkbox-switch">
+                                    <label>
+                                        <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
+                                        if (isset($account) && $account['is_subscribed'] == 0)
+                                            echo '';
+                                        else
+                                            echo 'checked="checked"';
+                                        ?> value="1">
+                                    </label>
                                 </div>
+                            </div>
                         </fieldset>
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="account_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
-                                <?php if(!isset($account))
-                                { ?>
+                                <?php if (!isset($account)) {
+                                    ?>
                                     <button type="submit" name="save_add_another" style="width: 172px;display: inline-block;float: left;margin-right: 15px;border: none;padding: 8px 12px;" class="btn bg-teal" id="account_btn_submit1">Save and Add Another<i class="icon-arrow-right14 position-right"></i></button>
-                                <?php   
-                                } ?>
+                                <?php }
+                                ?>
                                 <a href="<?php echo base_url('accounts') ?>" style="color:black" class="btn border-slate btn-flat cancel-btn custom_cancel_button">Cancel</a>
                                 <!-- <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button> -->
                             </div>
@@ -485,13 +485,13 @@ if (isset($account)) {
         var geocoder = new google.maps.Geocoder();
         //when the user clicks off of the zip field:
         $("#zip").on("keyup keydown change", function () {
-            if ($(this).val().length == 5) {
+            if ($(this).valid() && $(this).val() != '') {
                 var zip = $(this).val();
                 var city = '';
                 var state = '';
                 var state_short = '';
                 //make a request to the google geocode api
-                $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?address=' + zip)
+                $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?address=' + zip + '&key=<?php echo MAPS_API ?>')
                         .success(function (response) {
                             //find the city and state
                             var address_components = response.results[0].address_components;
@@ -528,13 +528,17 @@ if (isset($account)) {
                                 $('#city_id').select2();
 
                             } else {
-                                var txtbox = '<input type="text" name="city_id" id="city_id" placeholder="City" class="form-control" required="required" value="' + city + '" readonly>'
+                                var txtbox = '<input type="text" name="city_id" id="city_id" placeholder="City" class="form-control" required="required" value="' + city + '">'
                                 $('#city_wrap').html(txtbox);
                                 $('#city_id').val(city);
                             }
                             $('#state_id').val(state);
                             $('#state_short').val(state_short);
                         });
+            } else if ($(this).val() == '') {
+                $('#city_id').val('');
+                $('#state_id').val('');
+                $('#state_short').val('');
             }
         });
     });
@@ -582,21 +586,21 @@ if (isset($account)) {
     });
 
 //save reminder when user navigate away from a record that user have been working on
-var form_changes = false;
-$(document).ready(function () {
-	$("form").on("change", ":input, select", function () {
-        form_changes = true;
+    var form_changes = false;
+    $(document).ready(function () {
+        $("form").on("change", ":input, select", function () {
+            form_changes = true;
+        });
+        $('form').submit(function () {
+            form_changes = false;
+        });
     });
-    $('form').submit(function () {
-        form_changes = false;
-    });
-});
 
-window.onbeforeunload = function () {
-    if (form_changes) {
-        return true; // you can make this dynamic, ofcourse...
-    } else {
-        return undefined;
-    }
-};
+    window.onbeforeunload = function () {
+        if (form_changes) {
+            return true; // you can make this dynamic, ofcourse...
+        } else {
+            return undefined;
+        }
+    };
 </script>

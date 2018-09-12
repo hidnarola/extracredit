@@ -100,14 +100,14 @@ if (isset($donor)) {
                             <div class="form-group">
                                 <label class="col-lg-1 control-label">City</label>
                                 <div class="col-lg-4" id="city_wrap">
-                                    <input type="text" name="city" id="city" class="form-control" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>" readonly>
+                                    <input type="text" name="city" id="city" class="form-control" value="<?php echo (isset($donor) && $donor['city']) ? $donor['city'] : set_value('city'); ?>">
                                     <?php
                                     echo '<label id="city-error" class="validation-error-label" for="city">' . form_error('city') . '</label>';
                                     ?>
                                 </div>
                                 <label class="col-lg-1 control-label">State</label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="state" id="state"class="form-control" value="<?php echo (isset($donor) && $donor['state']) ? $donor['state'] : set_value('state'); ?>" readonly>
+                                    <input type="text" name="state" id="state"class="form-control" value="<?php echo (isset($donor) && $donor['state']) ? $donor['state'] : set_value('state'); ?>">
                                     <?php
                                     echo '<label id="state-error" class="validation-error-label" for="state">' . form_error('state') . '</label>';
                                     ?>
@@ -133,22 +133,22 @@ if (isset($donor)) {
                                 <label class="col-lg-1 control-label">Company</label>
                                 <div class="col-lg-4">
                                     <input type="text" name="company" id="company" placeholder="Enter Company Name" class="form-control" value="">
-                                    
+
                                 </div>
                                 <label class="col-lg-1 control-label">Is Subscribed? </label>
-                            <div class="col-lg-4">
-                               
-                                <div class="checkbox checkbox-switch">
-                                    <label>
-                                        <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
+                                <div class="col-lg-4">
+
+                                    <div class="checkbox checkbox-switch">
+                                        <label>
+                                            <input type="checkbox" name="is_subscribed" id="is_subscribed" data-off-color="danger" data-on-text="Yes" data-off-text="No" class="switch" <?php
                                             if (isset($donor) && $donor['is_subscribed'] == 0)
                                                 echo '';
                                             else
                                                 echo 'checked="checked"';
                                             ?> value="1">
-                                    </label>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                             <input type="hidden" name="state_short" id="state_short" value="<?php echo (isset($donor)) ? $donor['state_short'] : set_value('state_short'); ?>"/>
                         </fieldset>
@@ -326,11 +326,11 @@ if (isset($donor)) {
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="donor_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
-                                <?php if(!isset($donor))
-                                { ?>
+                                <?php if (!isset($donor)) {
+                                    ?>
                                     <button type="submit" name="save_add_another" style="width: 172px;display: inline-block;float: left;margin-right: 15px;border: none;padding: 8px 12px;" class="btn bg-teal" id="donor_btn_submit1">Save and Add Another<i class="icon-arrow-right14 position-right"></i></button>
-                                <?php   
-                                } ?>
+                                <?php }
+                                ?>
                                 <a href="<?php echo base_url('donors') ?>" style="color:black" class="btn border-slate btn-flat cancel-btn custom_cancel_button">Cancel</a>
                                 <!-- <button type="button" class="btn border-slate btn-flat cancel-btn custom_cancel_button" onclick="window.history.back()">Cancel</button> -->
                             </div>
@@ -495,14 +495,14 @@ if (isset($donor)) {
     });
     //when the user clicks off of the zip field:
     $("#zip").on("keyup keydown change", function () {
-        if ($(this).valid()) {
+        if ($(this).valid() && $(this).val() != '') {
             var zip = $(this).val();
             var city = '';
             var state = '';
             var state_short = '';
 
             //make a request to the google geocode api
-            $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?address=' + zip)
+            $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?address=' + zip + '&key=<?php echo MAPS_API ?>')
                     .success(function (response) {
                         //find the city and state
                         var address_components = response.results[0].address_components;
@@ -537,13 +537,17 @@ if (isset($donor)) {
                             $('#city_wrap').html($select);
                             $('#city').select2();
                         } else {
-                            var txtbox = '<input type="text" name="city" id="city" placeholder="City" class="form-control" required="required" value="' + city + '" readonly>'
+                            var txtbox = '<input type="text" name="city" id="city" placeholder="City" class="form-control" required="required" value="' + city + '">'
                             $('#city_wrap').html(txtbox);
                             $('#city').val(city);
                         }
                         $('#state').val(state);
                         $('#state_short').val(state_short);
                     });
+        } else if ($(this).val() == '') {
+            $('#city').val('');
+            $('#state').val('');
+            $('#state_short').val('');
         }
     });
     /*Validator method for positive number*/
@@ -558,22 +562,22 @@ if (isset($donor)) {
         return this.optional(element) || /^\d{5}-\d{4}$|^\d{5}$/.test(value);
     }, "The specified US ZIP Code is invalid");
 
-    
-var form_changes = false;
-$(document).ready(function () {
-	$("form").on("change", ":input, select", function () {
-        form_changes = true;
-    });
-    $('form').submit(function () {
-        form_changes = false;
-    });
-});
 
-window.onbeforeunload = function () {
-    if (form_changes) {
-        return true; // you can make this dynamic, ofcourse...
-    } else {
-        return undefined;
-    }
-};
+    var form_changes = false;
+    $(document).ready(function () {
+        $("form").on("change", ":input, select", function () {
+            form_changes = true;
+        });
+        $('form').submit(function () {
+            form_changes = false;
+        });
+    });
+
+    window.onbeforeunload = function () {
+        if (form_changes) {
+            return true; // you can make this dynamic, ofcourse...
+        } else {
+            return undefined;
+        }
+    };
 </script>
