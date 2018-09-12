@@ -104,13 +104,18 @@ class Donors extends MY_Controller {
                 //-- Get state id from post value
                 $post_city = $this->input->post('city');
                 $state = $this->donors_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-                $state_id = $state['id'];
-                if (!empty($post_city)) {
-                    $city = $this->donors_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
-                    if (!empty($city)) {
-                        $city_id = $city['id'];
-                    } else {
-                        $city_id = $this->donors_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                if (empty($state) && $this->input->post('state') != '') {
+                    $state = $this->vendors_model->sql_select(TBL_STATES, 'id', ['where' => ['name' => $this->input->post('state')]], ['single' => true]);
+                }
+                if (!empty($state)) {
+                    $state_id = $state['id'];
+                    if (!empty($post_city)) {
+                        $city = $this->donors_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+                        if (!empty($city)) {
+                            $city_id = $city['id'];
+                        } else {
+                            $city_id = $this->donors_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                        }
                     }
                 }
             }
@@ -163,26 +168,23 @@ class Donors extends MY_Controller {
                 'zip' => $this->input->post('zip'),
             );
 
-            require_once(APPPATH."libraries/Mailin.php");
+            require_once(APPPATH . "libraries/Mailin.php");
             // $this->load->library('Mailin'); //Load library for subscribe user in SendInBlue.com
-            $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+            $mailin = new Mailin('https://api.sendinblue.com/v2.0', 'VGcJrUg9ypYRjExh', 50000);    //Optional parameter: Timeout in MS
             //Api Key(v2.0) : VGcJrUg9ypYRjExh
-            
-            if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
-            {
+
+            if ($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '') {
                 $dataArr['is_subscribed'] = 1; //insert in contact table
-                $data = array( "email" => $this->input->post('email'),
-                "attributes" => array("FIRSTNAME" => $this->input->post('firstname'), "LASTNAME"=>$this->input->post('lastname')),
-                "listid" => array(4)
+                $data = array("email" => $this->input->post('email'),
+                    "attributes" => array("FIRSTNAME" => $this->input->post('firstname'), "LASTNAME" => $this->input->post('lastname')),
+                    "listid" => array(4)
                 );
 
                 $mailin->create_update_user($data);
-            }
-            else
-            {
+            } else {
                 $dataArr['is_subscribed'] = 0; //update in contact table
-                $data = array( "email" =>  $this->input->post('email'),
-                "listid_unlink" => array(4)
+                $data = array("email" => $this->input->post('email'),
+                    "listid_unlink" => array(4)
                 );
                 $mailin->create_update_user($data);
             }
@@ -275,15 +277,11 @@ class Donors extends MY_Controller {
 
             $this->db->trans_complete();
             //check which button is click.
-            if (isset($_POST['save_add_another']))
-            {
+            if (isset($_POST['save_add_another'])) {
                 redirect('donors/add');
-            }
-            else
-            {
+            } else {
                 redirect('donors');
             }
-            
         }
         $this->template->load('default', 'donors/form', $data);
     }
@@ -381,15 +379,15 @@ class Donors extends MY_Controller {
         if (is_numeric($id)) {
             $donor = $this->donors_model->get_donor_details($id);
             if ($donor) {
-                
+
                 //Remove Subscribed user from SendInBlue.com
-                require_once(APPPATH."libraries/Mailin.php");
-                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
-                $data = array( "email" => $donor['email'],
-                "listid_unlink" => array(4)
+                require_once(APPPATH . "libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0', 'VGcJrUg9ypYRjExh', 50000);    //Optional parameter: Timeout in MS
+                $data = array("email" => $donor['email'],
+                    "listid_unlink" => array(4)
                 );
                 $mailin->create_update_user($data);
-                
+
                 $update_array = array(
                     'is_delete' => 1,
                     'is_subscribed' => 0

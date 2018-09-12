@@ -97,13 +97,18 @@ class Guests extends MY_Controller {
             $post_city = $this->input->post('city_id');
             if (!empty($state_code)) {
                 $state = $this->guests_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-                $state_id = $state['id'];
-                if (!empty($post_city)) {
-                    $city = $this->guests_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
-                    if (!empty($city)) {
-                        $city_id = $city['id'];
-                    } else {
-                        $city_id = $this->guests_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                if (empty($state) && $this->input->post('state_id') != '') {
+                    $state = $this->vendors_model->sql_select(TBL_STATES, 'id', ['where' => ['name' => $this->input->post('state_id')]], ['single' => true]);
+                }
+                if (!empty($state)) {
+                    $state_id = $state['id'];
+                    if (!empty($post_city)) {
+                        $city = $this->guests_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+                        if (!empty($city)) {
+                            $city_id = $city['id'];
+                        } else {
+                            $city_id = $this->guests_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                        }
                     }
                 }
             }
@@ -142,25 +147,22 @@ class Guests extends MY_Controller {
                     'assistant_email' => $this->input->post('assistant_email'),
                 );
 
-                require_once(APPPATH."libraries/Mailin.php");
-                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+                require_once(APPPATH . "libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0', 'VGcJrUg9ypYRjExh', 50000);    //Optional parameter: Timeout in MS
                 //Api Key(v2.0) : VGcJrUg9ypYRjExh
-                
-                if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
-                {
+
+                if ($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '') {
                     $dataArr['is_subscribed'] = 1; //insert in guest table
-                    $data = array( "email" => $this->input->post('email'),
-                    "attributes" => array("FIRSTNAME" => $this->input->post('firstname'), "LASTNAME"=>$this->input->post('lastname')),
-                    "listid" => array(5)
+                    $data = array("email" => $this->input->post('email'),
+                        "attributes" => array("FIRSTNAME" => $this->input->post('firstname'), "LASTNAME" => $this->input->post('lastname')),
+                        "listid" => array(5)
                     );
 
                     $mailin->create_update_user($data);
-                }
-                else
-                {
+                } else {
                     $dataArr['is_subscribed'] = 0; //update in guest table
-                    $data = array( "email" => $this->input->post('email'),
-                    "listid_unlink" => array(5)
+                    $data = array("email" => $this->input->post('email'),
+                        "listid_unlink" => array(5)
                     );
                     $mailin->create_update_user($data);
                 }
@@ -243,13 +245,10 @@ class Guests extends MY_Controller {
                 if (!empty($contact_arr)) {
                     $this->guests_model->batch_insert_update('insert', TBL_ASSOCIATED_CONTACTS, $contact_arr);
                 }
-                
-                if (isset($_POST['save_add_another']))
-                {
+
+                if (isset($_POST['save_add_another'])) {
                     redirect('guests/add');
-                }
-                else
-                {
+                } else {
                     redirect('guests');
                 }
             }
@@ -293,10 +292,10 @@ class Guests extends MY_Controller {
             $guest = $this->guests_model->get_guest_details($id);
             if ($guest) {
                 //Remove Subscribed user from SendInBlue.com
-                require_once(APPPATH."libraries/Mailin.php");
-                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
-                $data = array( "email" => $guest['email'],
-                "listid_unlink" => array(5)
+                require_once(APPPATH . "libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0', 'VGcJrUg9ypYRjExh', 50000);    //Optional parameter: Timeout in MS
+                $data = array("email" => $guest['email'],
+                    "listid_unlink" => array(5)
                 );
                 $mailin->create_update_user($data);
 

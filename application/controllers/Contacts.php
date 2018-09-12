@@ -40,7 +40,7 @@ class Contacts extends MY_Controller {
      * @param type $id
      */
     public function add($id = NULL) {
-      
+
         if (!is_null($id))
             $id = base64_decode($id);
         if (is_numeric($id)) {
@@ -60,7 +60,7 @@ class Contacts extends MY_Controller {
             $data['cities'] = [];
         }
         $data['contact_types'] = $this->contacts_model->sql_select(TBL_CONTACT_TYPES, 'id,type', ['where' => ['is_delete' => 0]]);
-        
+
         $this->form_validation->set_rules('name', 'Contact Name', 'trim|required');
 
         if ($this->form_validation->run() == TRUE) {
@@ -71,13 +71,18 @@ class Contacts extends MY_Controller {
             if (!empty($state_code)) {
                 $post_city = $this->input->post('city_id');
                 $state = $this->contacts_model->sql_select(TBL_STATES, 'id', ['where' => ['short_name' => $state_code]], ['single' => true]);
-                $state_id = $state['id'];
-                if (!empty($post_city)) {
-                    $city = $this->contacts_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
-                    if (!empty($city)) {
-                        $city_id = $city['id'];
-                    } else {
-                        $city_id = $this->contacts_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                if (empty($state) && $this->input->post('state_id') != '') {
+                    $state = $this->vendors_model->sql_select(TBL_STATES, 'id', ['where' => ['name' => $this->input->post('state_id')]], ['single' => true]);
+                }
+                if (!empty($state)) {
+                    $state_id = $state['id'];
+                    if (!empty($post_city)) {
+                        $city = $this->contacts_model->sql_select(TBL_CITIES, 'id', ['where' => ['state_id' => $state_id, 'name' => $post_city]], ['single' => true]);
+                        if (!empty($city)) {
+                            $city_id = $city['id'];
+                        } else {
+                            $city_id = $this->contacts_model->common_insert_update('insert', TBL_CITIES, ['name' => $post_city, 'state_id' => $state_id]);
+                        }
                     }
                 }
             }
@@ -95,50 +100,43 @@ class Contacts extends MY_Controller {
                 'created' => date('Y-m-d H:i:s')
             );
 
-            require_once(APPPATH."libraries/Mailin.php");
+            require_once(APPPATH . "libraries/Mailin.php");
             // $this->load->library('Mailin'); //Load library for subscribe user in SendInBlue.com
-            $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
+            $mailin = new Mailin('https://api.sendinblue.com/v2.0', 'VGcJrUg9ypYRjExh', 50000);    //Optional parameter: Timeout in MS
             //Api Key(v2.0) : VGcJrUg9ypYRjExh
-            
-            if($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '')
-            {
+
+            if ($this->input->post('is_subscribed') == 1 && $this->input->post('is_subscribed') != '') {
                 $dataArr['is_subscribed'] = 1; //insert in contact table
-                $data = array( "email" => $this->input->post('email'),
-                "attributes" => array("FIRSTNAME" => $this->input->post('name'), "LASTNAME"=>""),
-                "listid" => array(2)
+                $data = array("email" => $this->input->post('email'),
+                    "attributes" => array("FIRSTNAME" => $this->input->post('name'), "LASTNAME" => ""),
+                    "listid" => array(2)
                 );
 
                 $mailin->create_update_user($data);
-            }
-            else
-            {
+            } else {
                 $dataArr['is_subscribed'] = 0; //update in contact table
-                $data = array( "email" => $this->input->post('email'),
-                "listid_unlink" => array(2)
+                $data = array("email" => $this->input->post('email'),
+                    "listid_unlink" => array(2)
                 );
                 $mailin->create_update_user($data);
             }
-           
-             
+
+
             if (is_numeric($id)) {
                 $dataArr['modified'] = date('Y-m-d H:i:s');
                 $this->contacts_model->common_insert_update('update', TBL_CONTACTS, $dataArr, ['id' => $id]);
                 $this->session->set_flashdata('success', 'Contact details has been updated successfully.');
-            } else{
+            } else {
                 $dataArr['created'] = date('Y-m-d H:i:s');
                 $this->contacts_model->common_insert_update('insert', TBL_CONTACTS, $dataArr);
                 $this->session->set_flashdata('success', 'Contact details has been added successfully');
             }
 
-            if (isset($_POST['save_add_another']))
-            {
+            if (isset($_POST['save_add_another'])) {
                 redirect('contacts/add');
-            }
-            else
-            {
+            } else {
                 redirect('contacts');
             }
-            
         }
         $this->template->load('default', 'contacts/form', $data);
     }
@@ -162,16 +160,16 @@ class Contacts extends MY_Controller {
         $id = base64_decode($id);
         if (is_numeric($id)) {
             $contact = $this->contacts_model->sql_select(TBL_CONTACTS, 'id,email', ['where' => ['id' => $id]], ['single' => true]);
-           
+
             if (!empty($contact)) {
                 //Remove Subscribed user from SendInBlue.com
-                require_once(APPPATH."libraries/Mailin.php");
-                $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
-                $data = array( "email" => $contact['email'],
-                "listid_unlink" => array(2)
+                require_once(APPPATH . "libraries/Mailin.php");
+                $mailin = new Mailin('https://api.sendinblue.com/v2.0', 'VGcJrUg9ypYRjExh', 50000);    //Optional parameter: Timeout in MS
+                $data = array("email" => $contact['email'],
+                    "listid_unlink" => array(2)
                 );
                 $mailin->create_update_user($data);
-                
+
                 $update_array = array(
                     'is_delete' => 1,
                     'is_subscribed' => 0
@@ -242,13 +240,12 @@ class Contacts extends MY_Controller {
             //-- cities array
             // $contact_type = $this->contacts_model->sql_select(TBL_CONTACT_TYPES);
             $contact_type = $this->contacts_model->sql_select(TBL_CONTACT_TYPES, 'type,id', ['where' => ['is_delete' => 0]]);
-    
-            foreach ($contact_type as $type) 
-            {
+
+            foreach ($contact_type as $type) {
                 $contact_type_arr[$type['id']] = $type['type'];
             }
             $contact_type_arr = array_map('strtolower', $contact_type_arr);
-            
+
             $cities = $this->contacts_model->sql_select(TBL_CITIES);
             foreach ($cities as $city) {
                 $cities_arr[$city['id']] = $city['name'];
@@ -298,7 +295,6 @@ class Contacts extends MY_Controller {
                             if (!empty($col_data[2])) {
                                 if (array_search(strtolower($col_data[2]), $contact_type_arr) != FALSE) {
                                     $contact['contact_type_id'] = array_search(strtolower($col_data[2]), $contact_type_arr);
-                                    
                                 } else {
                                     $check_contact_type[] = $row;
                                 }
@@ -330,7 +326,7 @@ class Contacts extends MY_Controller {
                             $row++;
                         }
                     }
-                    
+
                     //- check if email is valid or not
                     if (count(array_unique($imported_emails)) != count($imported_emails)) { //-- check emails in column are unique or not
                         fclose($handle);
@@ -347,7 +343,7 @@ class Contacts extends MY_Controller {
                     } else if (!empty($check_contact_type)) { //-- check city in column are unique or not
                         $rows = implode(',', $check_contact_type);
                         $this->session->set_flashdata('error', "Contact type doesn't exist in the system. Please check entries at row number - " . $rows);
-                    }else {
+                    } else {
                         if (!empty($contact_data)) {
                             //-- Insert contact details into database
                             foreach ($contact_data as $val) {
@@ -555,17 +551,16 @@ class Contacts extends MY_Controller {
         }
     }
 
-    public function testing()
-    {
+    public function testing() {
         $this->load->library('Mailin');
-        $mailin = new Mailin('https://api.sendinblue.com/v2.0','VGcJrUg9ypYRjExh',50000);    //Optional parameter: Timeout in MS
-      
-        $data = array( "email" => "sm@narola.email",
-        "attributes" => array("FIRSTNAME"=>"name", "LASTNAME"=>"surname"),
-        "listid" => array(2)
+        $mailin = new Mailin('https://api.sendinblue.com/v2.0', 'VGcJrUg9ypYRjExh', 50000);    //Optional parameter: Timeout in MS
+
+        $data = array("email" => "sm@narola.email",
+            "attributes" => array("FIRSTNAME" => "name", "LASTNAME" => "surname"),
+            "listid" => array(2)
         );
 
-        var_dump($mailin->create_update_user($data));   
+        var_dump($mailin->create_update_user($data));
     }
 
 }
