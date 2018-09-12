@@ -51,6 +51,49 @@
     </div>
     <?php $this->load->view('Templates/footer'); ?>
 </div>
+<div id="modalviewConversation" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-teal">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h6 class="modal-title">View Communication</h6>
+            </div>
+
+            <div class="modal-body">
+                <table class="table table-borderless table-xs content-group-sm">
+                    <tbody>
+                        <tr>
+                            <td><i class="icon-address-book3 position-left"></i> <b>Subject:</b></td>
+                            <td class="text-right"><span class="pull-right subject_value"></span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="icon-alarm-add position-left"></i> <b>Communication date:</b></td>
+                            <td class="text-right communication_date"></td>
+                        </tr>
+                        <tr>
+                            <td><i class="icon-alarm-check position-left"></i> <b>Follow Up date:</b></td>
+                            <td class="text-right follow_up_date"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
+                <h6 class="text-semibold">Note:</h6>
+                <p class="note"></p>
+                <hr>
+                <div class="attached_media" style="display: none;">
+                    <h4>Attached Media</h4>
+                    <div class="media-logo"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a href="" id="check_com_link" onclick="return confirm_alert(this)" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" title="Check communication"><i class="icon-checkmark4"></i></a>
+                <a href="" id="add_com_link" class="btn btn-primary">Add notes</a>
+                <button type="button" class="btn bg-teal" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     var permissions = <?php echo json_encode($perArr); ?>;
@@ -87,7 +130,10 @@
                     searchable: false,
                     sortable: false,
                     render: function (data, type, full, meta) {
-                        return '<a href="' + site_url + 'communication_manager/check_communication/' + btoa(full.id) + '" onclick="return confirm_alert(this)" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" title="Check communication"><i class="icon-checkmark4"></i></a>';
+                        var str = full.category;
+                        var res = str.toLowerCase() + 's';
+//                        return '<a href="' + site_url + 'communication_manager/check_communication/' + btoa(full.id) + '" onclick="return confirm_alert(this)" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" title="Check communication"><i class="icon-checkmark4"></i></a>';
+                        return '<a href="javascript:void(0)" data-toggle="modal" data-category="' + res + '" data-target="#modalviewConversation" data-id="' + btoa(full.id) + '" data-commid="' + btoa(full.communication_id) + '" class="btn border-warning text-warning-600 btn-flat btn-icon btn-rounded btn-xs" onclick="return view_communication(this)" title="Check communication"><i class="icon-checkmark4"></i></a>';
                     }
                 }
             ]
@@ -117,5 +163,46 @@
                     }
                 });
         return false;
+    }
+
+    function view_communication(e) {
+        var url = site_url + 'communication_manager/get_communication_by_id';
+        var id = $(e).attr('data-id');
+        var commid = $(e).attr('data-commid');
+        var category = $(e).attr('data-category');
+        $('.note').html('');
+        $('.subject_value').html('');
+        $('.communication_date').html('');
+        $('.follow_up_date').html('');
+        $('.media-logo').html('');
+        $('#check_com_link').attr('href', '');
+        $('#add_com_link').attr('href', '');
+        $.ajax({
+            type: 'POST',
+            url: url,
+            async: false,
+            dataType: 'JSON',
+            data: {id: commid},
+            success: function (data) {
+                console.log(data);
+                $('#check_com_link').attr('href', site_url + 'communication_manager/check_communication/' + id);
+                $('#add_com_link').attr('href', site_url + category + '/add_communication/' + btoa(data.type_id) + '/' + btoa(data.id));
+                $('.note').html(data.note);
+                $('.subject_value').html(data.subject);
+                $('.communication_date').html(data.communication_date);
+                $('.follow_up_date').html(data.follow_up_date);
+                $('.type_value').html(data.follow_up_date);
+                var valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+                if (data.media != null) {
+                    if (valid_extensions.test(data.media)) {
+                        logo = '<a class="fancybox" href="' + logo_img_url + data.media + '"><img src="' + logo_img_url + data.media + '" style="width: 58px; height: 58px; border-radius: 2px;" class="img-circle"/></a>';
+                    } else {
+                        logo = '<a class="fancybox" target="_blank" href="' + logo_img_url + data.media + '" data-fancybox-group="gallery" ><img src="assets/images/default_file.png" height="55px" width="55px" class="img-circle"/></a>';
+                    }
+                    $('.media-logo').html(logo);
+                }
+            }
+        });
     }
 </script>

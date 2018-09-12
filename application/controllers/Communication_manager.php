@@ -56,36 +56,36 @@ class Communication_manager extends MY_Controller {
                     $fullname = $communication_manager['donor_fullname'];
                 } elseif ($communication_manager['guest_fullname'] != '') {
                     $fullname = $communication_manager['guest_fullname'];
-                } elseif ($communication_manager['action_matters_campaign'] != '') {                    
+                } elseif ($communication_manager['action_matters_campaign'] != '') {
                     $fullname = $communication_manager['action_matters_campaign'];
                 } else {
                     $fullname = $communication_manager['vendor_name'];
                 }
-                
+
                 //----- Donor, Guest, Account Email
                 if ($communication_manager['donor_email'] != '') {
                     $ofemail = $communication_manager['donor_email'];
                 } elseif ($communication_manager['guest_email'] != '') {
                     $ofemail = $communication_manager['guest_email'];
-                } elseif ($communication_manager['account_email'] != '') {                    
+                } elseif ($communication_manager['account_email'] != '') {
                     $ofemail = $communication_manager['account_email'];
                 } else {
                     $ofemail = '';
                 }
-                
+
                 //----- Donor, Guest, Account Phone Number
                 if ($communication_manager['donor_phone'] != '') {
                     $phone_number = $communication_manager['donor_phone'];
                 } elseif ($communication_manager['guest_phone'] != '') {
                     $phone_number = $communication_manager['guest_phone'];
-                } elseif ($communication_manager['account_phone'] != '') {                    
+                } elseif ($communication_manager['account_phone'] != '') {
                     $phone_number = $communication_manager['account_phone'];
                 } else {
-                 $phone_number='';   
+                    $phone_number = '';
                 }
                 $email_data = array(
-                    'firstname'=>$user['firstname'],
-                    'lastname'=>$user['lastname'],
+                    'firstname' => $user['firstname'],
+                    'lastname' => $user['lastname'],
                     'fullname' => $fullname,
                     'ofemail' => $ofemail,
                     'phone_number' => $phone_number,
@@ -96,7 +96,7 @@ class Communication_manager extends MY_Controller {
                     'url' => site_url('login'),
                     'subject' => 'Follow-up Reminder',
                 );
-              send_email($user_email, 'check_communication_manager', $email_data);
+                send_email($user_email, 'check_communication_manager', $email_data);
 
                 $this->session->set_flashdata('success', 'Communication has been checked and email sent successfully!');
             } else {
@@ -107,4 +107,32 @@ class Communication_manager extends MY_Controller {
             show_404();
         }
     }
+
+    /**
+     * Get communication data by its ID 
+     * @author KU
+     * */
+    public function get_communication_by_id() {
+        $id = $this->input->post('id');
+        $id = base64_decode($id);
+        $contact_communication = $this->communication_manager_model->sql_select(TBL_COMMUNICATIONS, '*', ['where' => ['id' => $id, 'is_delete' => 0]], ['single' => true]);
+        if (!empty($contact_communication)) {
+            $contact_communication['type_id'] = 0;
+            $contact_communication['follow_up_date'] = ($contact_communication['follow_up_date'] != '') ? date('m/d/Y', strtotime($contact_communication['follow_up_date'])) : '';
+            $contact_communication['communication_date'] = ($contact_communication['communication_date'] != '') ? date('m/d/Y', strtotime($contact_communication['communication_date'])) : '';
+            
+            if ($contact_communication['donor_id'] != 0)
+                $contact_communication['type_id'] = $contact_communication['donor_id'];
+            else if ($contact_communication['guest_id'] != 0)
+                $contact_communication['type_id'] = $contact_communication['guest_id'];
+            else if ($contact_communication['account_id'] != 0)
+                $contact_communication['type_id'] = $contact_communication['account_id'];
+            else if ($contact_communication['vendor_id'] != 0)
+                $contact_communication['type_id'] = $contact_communication['vendor_id'];
+            else if ($contact_communication['contact_id'] != 0)
+                $contact_communication['type_id'] = $contact_communication['contact_id'];
+        }
+        echo json_encode($contact_communication);
+    }
+
 }
