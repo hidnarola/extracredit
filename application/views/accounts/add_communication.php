@@ -300,27 +300,33 @@ if (isset($account_communication)) {
         return true;
     }
     // Full featured editor
-    CKEDITOR.replace( 'editor-full', {
+    CKEDITOR.replace('editor-full', {
         height: '400px',
         extraPlugins: 'forms'
     });
 
 //save reminder when user navigate away from a record that user have been working on
-var form_changes = false;
-$(document).ready(function () {
-	$("form").on("change", ":input, select", function () {
-        form_changes = true;
-    });
-    $('form').submit(function () {
-        form_changes = false;
-    });
-});
+    var form_changes = false;
+    for (var i in CKEDITOR.instances) {
+        CKEDITOR.instances[i].on('change', function () {
+            form_changes = true;
+        });
 
-window.onbeforeunload = function () {
-    if (form_changes) {
-        return true; // you can make this dynamic, ofcourse...
-    } else {
-        return undefined;
     }
-};
+    $(document).ready(function () {
+        $("form").on("change", ":input, select", function () {
+            form_changes = true;
+        });
+        $('form').submit(function () {
+            form_changes = false;
+        });
+    });
+
+    window.onbeforeunload = function () {
+        if (form_changes) {
+            return true; // you can make this dynamic, ofcourse...
+        } else {
+            return undefined;
+        }
+    };
 </script>

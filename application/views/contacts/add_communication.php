@@ -138,7 +138,7 @@ if (isset($contact_communication)) {
                                 ?>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <div class="col-lg-12">
                                 <button type="submit" name="save" class="btn bg-teal custom_save_button" id="communication_btn_submit">Save<i class="icon-arrow-right14 position-right"></i></button>
@@ -287,21 +287,27 @@ if (isset($contact_communication)) {
     });
 
 //save reminder when user navigate away from a record that user have been working on
-var form_changes = false;
-$(document).ready(function () {
-	$("form").on("change", ":input, select", function () {
-        form_changes = true;
-    });
-    $('form').submit(function () {
-        form_changes = false;
-    });
-});
+    var form_changes = false;
+    for (var i in CKEDITOR.instances) {
+        CKEDITOR.instances[i].on('change', function () {
+            form_changes = true;
+        });
 
-window.onbeforeunload = function () {
-    if (form_changes) {
-        return true; // you can make this dynamic, ofcourse...
-    } else {
-        return undefined;
     }
-};
+    $(document).ready(function () {
+        $("form").on("change", ":input, select", function () {
+            form_changes = true;
+        });
+        $('form').submit(function () {
+            form_changes = false;
+        });
+    });
+
+    window.onbeforeunload = function () {
+        if (form_changes) {
+            return true; // you can make this dynamic, ofcourse...
+        } else {
+            return undefined;
+        }
+    };
 </script>

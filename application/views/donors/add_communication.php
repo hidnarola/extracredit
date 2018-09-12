@@ -288,6 +288,12 @@ if (isset($donor_communication)) {
     });
 //save reminder when user navigate away from a record that user have been working on
     var form_changes = false;
+    for (var i in CKEDITOR.instances) {
+        CKEDITOR.instances[i].on('change', function () {
+            form_changes = true;
+        });
+
+    }
 
     $("form").on("change", ":input, select", function () {
         form_changes = true;
